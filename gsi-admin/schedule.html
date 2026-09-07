@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23E60012'/%3E%3Ctext x='16' y='23' font-size='19' font-family='Helvetica,Arial' font-weight='700' fill='%23fff' text-anchor='middle'%3EG%3C/text%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>편성표 — G Shopping Insight (피그마 DS 적용판)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="ui.css">
+<link rel="stylesheet" href="ui-figma.css">
+</head>
+<body>
+
+<header class="gnb">
+  <span class="gnb__logo"><img src="assets/gsi-logo.svg" alt="G Shopping Insight"></span>
+  <nav class="gnb__nav">
+    <a href="realtime.html">실시간 현황</a>
+    <span class="is-active">시청행태 분석</span>
+    <span>시청반응 분석</span>
+    <span>고객군 분석</span>
+    <span>편성</span>
+    <span>공지사항</span>
+  </nav>
+  <div class="gnb__right">
+    <span class="gnb__stamp">06.19(금) 09:20 기준</span>
+    <span class="vline"></span>
+    <span class="gnb__tools">
+      <span class="ico"><img src="assets/gsi-ic-statusboard.svg" alt="현황판"></span>
+      <span class="ico"><img src="assets/gsi-ic-broadcastchart.svg" alt="방송차트"></span>
+      <span class="ico"><img src="assets/gsi-ic-edit.svg" alt="위젯 편집"></span>
+    </span>
+    <span class="vline"></span>
+    <span class="gnb__account"><span class="avatar">K</span><b class="gnb__who">KT알파 쇼핑</b></span>
+  </div>
+</header>
+
+<!-- 헤더 존 — 타이틀까지 흰 면. 브레드크럼 · 타이틀 · 설명 구조 -->
+<div class="page-top page-top--line">
+  <div class="crumbs">
+    <span class="crumb crumb--on">시청행태 분석</span>
+    <span class="crumb">프로그램별 편성표</span>
+  </div>
+  <div class="page-head">
+    <h1>프로그램별 편성표</h1>
+  </div>
+  <p class="page-desc">홈쇼핑 17개사와 일반채널 편성을 한 판에서 조회하고, 프로그램을 담아 상세 분석으로 넘깁니다.</p>
+</div>
+
+<main class="page-wrap">
+
+  <!-- 조회 조건 6종 — 상시 펼침 -->
+  <section class="card filters is-open" id="filterCard">
+    <div class="card__head">
+      <h2 data-ico="search">조회 조건</h2>
+    </div>
+    <div class="filters__body" id="filterBody">
+      <div class="filters__inner">
+        <div class="card__body">
+          <div class="filter-grid">
+
+              <div class="filter-row">
+                <span class="lbl">조회 기간</span>
+                <div class="val">
+                  <span class="pill" id="pillFrom">
+                    <svg class="i" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M0.5 0C0.5 -0.276 0.276 -0.5 0 -0.5C-0.276 -0.5 -0.5 -0.276 -0.5 0L0.5 0ZM-0.5 2C-0.5 2.276 -0.276 2.5 0 2.5C0.276 2.5 0.5 2.276 0.5 2L-0.5 2ZM-0.5 0L-0.5 2L0.5 2L0.5 0L-0.5 0Z" fill="currentColor" stroke="none" transform="translate(5.333 1.333)"/><path d="M0.33 -0.333C-0.039 -0.333 -0.337 -0.035 -0.337 0.333C-0.337 0.702 -0.039 1 0.33 1L0.33 -0.333ZM0.336 1C0.704 1 1.002 0.702 1.002 0.333C1.002 -0.035 0.704 -0.333 0.336 -0.333L0.336 1ZM0.33 1L0.336 1L0.336 -0.333L0.33 -0.333L0.33 1Z" fill="currentColor" stroke="none" transform="translate(10.133 10.799)"/><path d="M0.5 0C0.5 -0.276 0.276 -0.5 0 -0.5C-0.276 -0.5 -0.5 -0.276 -0.5 0L0.5 0ZM-0.5 2C-0.5 2.276 -0.276 2.5 0 2.5C0.276 2.5 0.5 2.276 0.5 2L-0.5 2ZM-0.5 0L-0.5 2L0.5 2L0.5 0L-0.5 0Z" fill="currentColor" stroke="none" transform="translate(10.667 1.333)"/><path d="M0.33 -0.333C-0.039 -0.333 -0.337 -0.035 -0.337 0.333C-0.337 0.702 -0.039 1 0.33 1L0.33 -0.333ZM0.336 1C0.704 1 1.002 0.702 1.002 0.333C1.002 -0.035 0.704 -0.333 0.336 -0.333L0.336 1ZM0.33 1L0.336 1L0.336 -0.333L0.33 -0.333L0.33 1Z" fill="currentColor" stroke="none" transform="translate(7.667 8.799)"/><path d="M0.33 -0.333C-0.039 -0.333 -0.337 -0.035 -0.337 0.333C-0.337 0.702 -0.039 1 0.33 1L0.33 -0.333ZM0.336 1C0.704 1 1.002 0.702 1.002 0.333C1.002 -0.035 0.704 -0.333 0.336 -0.333L0.336 1ZM0.33 1L0.336 1L0.336 -0.333L0.33 -0.333L0.33 1Z" fill="currentColor" stroke="none" transform="translate(7.667 10.799)"/><path d="M0.33 -0.333C-0.039 -0.333 -0.337 -0.035 -0.337 0.333C-0.337 0.702 -0.039 1 0.33 1L0.33 -0.333ZM0.336 1C0.704 1 1.002 0.702 1.002 0.333C1.002 -0.035 0.704 -0.333 0.336 -0.333L0.336 1ZM0.33 1L0.336 1L0.336 -0.333L0.33 -0.333L0.33 1Z" fill="currentColor" stroke="none" transform="translate(5.2 8.799)"/><path d="M0.33 -0.333C-0.039 -0.333 -0.337 -0.035 -0.337 0.333C-0.337 0.702 -0.039 1 0.33 1L0.33 -0.333ZM0.336 1C0.704 1 1.002 0.702 1.002 0.333C1.002 -0.035 0.704 -0.333 0.336 -0.333L0.336 1ZM0.33 1L0.336 1L0.336 -0.333L0.33 -0.333L0.33 1Z" fill="currentColor" stroke="none" transform="translate(10.133 8.799)"/><path d="M0 -0.5C-0.276 -0.5 -0.5 -0.276 -0.5 0C-0.5 0.276 -0.276 0.5 0 0.5L0 -0.5ZM11.333 0.5C11.609 0.5 11.833 0.276 11.833 0C11.833 -0.276 11.609 -0.5 11.333 -0.5L11.333 0.5ZM0 0.5L11.333 0.5L11.333 -0.5L0 -0.5L0 0.5Z" fill="currentColor" stroke="none" transform="translate(2.333 6.06)"/><path d="M0.33 -0.333C-0.039 -0.333 -0.337 -0.035 -0.337 0.333C-0.337 0.702 -0.039 1 0.33 1L0.33 -0.333ZM0.336 1C0.704 1 1.002 0.702 1.002 0.333C1.002 -0.035 0.704 -0.333 0.336 -0.333L0.336 1ZM0.33 1L0.336 1L0.336 -0.333L0.33 -0.333L0.33 1Z" fill="currentColor" stroke="none" transform="translate(5.2 10.799)"/><path d="M11.5 3.333L11.5 9L12.5 9L12.5 3.333L11.5 3.333ZM11.5 9C11.5 9.923 11.269 10.616 10.842 11.076C10.421 11.53 9.738 11.833 8.667 11.833L8.667 12.833C9.929 12.833 10.912 12.47 11.575 11.757C12.231 11.05 12.5 10.077 12.5 9L11.5 9ZM8.667 11.833L3.333 11.833L3.333 12.833L8.667 12.833L8.667 11.833ZM3.333 11.833C2.262 11.833 1.579 11.53 1.158 11.076C0.731 10.616 0.5 9.923 0.5 9L-0.5 9C-0.5 10.077 -0.231 11.05 0.425 11.757C1.088 12.47 2.071 12.833 3.333 12.833L3.333 11.833ZM0.5 9L0.5 3.333L-0.5 3.333L-0.5 9L0.5 9ZM0.5 3.333C0.5 2.41 0.731 1.717 1.158 1.257C1.579 0.804 2.262 0.5 3.333 0.5L3.333 -0.5C2.071 -0.5 1.088 -0.137 0.425 0.576C-0.231 1.283 -0.5 2.257 -0.5 3.333L0.5 3.333ZM3.333 0.5L8.667 0.5L8.667 -0.5L3.333 -0.5L3.333 0.5ZM8.667 0.5C9.738 0.5 10.421 0.804 10.842 1.257C11.269 1.717 11.5 2.41 11.5 3.333L12.5 3.333C12.5 2.257 12.231 1.283 11.575 0.576C10.912 -0.137 9.929 -0.5 8.667 -0.5L8.667 0.5Z" fill="currentColor" stroke="none" transform="translate(2 2.333)"/></svg>
+                    <input class="input input--date" id="dateFrom" value="2026.06.18" readonly aria-label="조회 시작일">
+                  </span>
+                  <span class="dash">–</span>
+                  <span class="pill" id="pillTo">
+                    <svg class="i" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M0.5 0C0.5 -0.276 0.276 -0.5 0 -0.5C-0.276 -0.5 -0.5 -0.276 -0.5 0L0.5 0ZM-0.5 2C-0.5 2.276 -0.276 2.5 0 2.5C0.276 2.5 0.5 2.276 0.5 2L-0.5 2ZM-0.5 0L-0.5 2L0.5 2L0.5 0L-0.5 0Z" fill="currentColor" stroke="none" transform="translate(5.333 1.333)"/><path d="M0.33 -0.333C-0.039 -0.333 -0.337 -0.035 -0.337 0.333C-0.337 0.702 -0.039 1 0.33 1L0.33 -0.333ZM0.336 1C0.704 1 1.002 0.702 1.002 0.333C1.002 -0.035 0.704 -0.333 0.336 -0.333L0.336 1ZM0.33 1L0.336 1L0.336 -0.333L0.33 -0.333L0.33 1Z" fill="currentColor" stroke="none" transform="translate(10.133 10.799)"/><path d="M0.5 0C0.5 -0.276 0.276 -0.5 0 -0.5C-0.276 -0.5 -0.5 -0.276 -0.5 0L0.5 0ZM-0.5 2C-0.5 2.276 -0.276 2.5 0 2.5C0.276 2.5 0.5 2.276 0.5 2L-0.5 2ZM-0.5 0L-0.5 2L0.5 2L0.5 0L-0.5 0Z" fill="currentColor" stroke="none" transform="translate(10.667 1.333)"/><path d="M0.33 -0.333C-0.039 -0.333 -0.337 -0.035 -0.337 0.333C-0.337 0.702 -0.039 1 0.33 1L0.33 -0.333ZM0.336 1C0.704 1 1.002 0.702 1.002 0.333C1.002 -0.035 0.704 -0.333 0.336 -0.333L0.336 1ZM0.33 1L0.336 1L0.336 -0.333L0.33 -0.333L0.33 1Z" fill="currentColor" stroke="none" transform="translate(7.667 8.799)"/><path d="M0.33 -0.333C-0.039 -0.333 -0.337 -0.035 -0.337 0.333C-0.337 0.702 -0.039 1 0.33 1L0.33 -0.333ZM0.336 1C0.704 1 1.002 0.702 1.002 0.333C1.002 -0.035 0.704 -0.333 0.336 -0.333L0.336 1ZM0.33 1L0.336 1L0.336 -0.333L0.33 -0.333L0.33 1Z" fill="currentColor" stroke="none" transform="translate(7.667 10.799)"/><path d="M0.33 -0.333C-0.039 -0.333 -0.337 -0.035 -0.337 0.333C-0.337 0.702 -0.039 1 0.33 1L0.33 -0.333ZM0.336 1C0.704 1 1.002 0.702 1.002 0.333C1.002 -0.035 0.704 -0.333 0.336 -0.333L0.336 1ZM0.33 1L0.336 1L0.336 -0.333L0.33 -0.333L0.33 1Z" fill="currentColor" stroke="none" transform="translate(5.2 8.799)"/><path d="M0.33 -0.333C-0.039 -0.333 -0.337 -0.035 -0.337 0.333C-0.337 0.702 -0.039 1 0.33 1L0.33 -0.333ZM0.336 1C0.704 1 1.002 0.702 1.002 0.333C1.002 -0.035 0.704 -0.333 0.336 -0.333L0.336 1ZM0.33 1L0.336 1L0.336 -0.333L0.33 -0.333L0.33 1Z" fill="currentColor" stroke="none" transform="translate(10.133 8.799)"/><path d="M0 -0.5C-0.276 -0.5 -0.5 -0.276 -0.5 0C-0.5 0.276 -0.276 0.5 0 0.5L0 -0.5ZM11.333 0.5C11.609 0.5 11.833 0.276 11.833 0C11.833 -0.276 11.609 -0.5 11.333 -0.5L11.333 0.5ZM0 0.5L11.333 0.5L11.333 -0.5L0 -0.5L0 0.5Z" fill="currentColor" stroke="none" transform="translate(2.333 6.06)"/><path d="M0.33 -0.333C-0.039 -0.333 -0.337 -0.035 -0.337 0.333C-0.337 0.702 -0.039 1 0.33 1L0.33 -0.333ZM0.336 1C0.704 1 1.002 0.702 1.002 0.333C1.002 -0.035 0.704 -0.333 0.336 -0.333L0.336 1ZM0.33 1L0.336 1L0.336 -0.333L0.33 -0.333L0.33 1Z" fill="currentColor" stroke="none" transform="translate(5.2 10.799)"/><path d="M11.5 3.333L11.5 9L12.5 9L12.5 3.333L11.5 3.333ZM11.5 9C11.5 9.923 11.269 10.616 10.842 11.076C10.421 11.53 9.738 11.833 8.667 11.833L8.667 12.833C9.929 12.833 10.912 12.47 11.575 11.757C12.231 11.05 12.5 10.077 12.5 9L11.5 9ZM8.667 11.833L3.333 11.833L3.333 12.833L8.667 12.833L8.667 11.833ZM3.333 11.833C2.262 11.833 1.579 11.53 1.158 11.076C0.731 10.616 0.5 9.923 0.5 9L-0.5 9C-0.5 10.077 -0.231 11.05 0.425 11.757C1.088 12.47 2.071 12.833 3.333 12.833L3.333 11.833ZM0.5 9L0.5 3.333L-0.5 3.333L-0.5 9L0.5 9ZM0.5 3.333C0.5 2.41 0.731 1.717 1.158 1.257C1.579 0.804 2.262 0.5 3.333 0.5L3.333 -0.5C2.071 -0.5 1.088 -0.137 0.425 0.576C-0.231 1.283 -0.5 2.257 -0.5 3.333L0.5 3.333ZM3.333 0.5L8.667 0.5L8.667 -0.5L3.333 -0.5L3.333 0.5ZM8.667 0.5C9.738 0.5 10.421 0.804 10.842 1.257C11.269 1.717 11.5 2.41 11.5 3.333L12.5 3.333C12.5 2.257 12.231 1.283 11.575 0.576C10.912 -0.137 9.929 -0.5 8.667 -0.5L8.667 0.5Z" fill="currentColor" stroke="none" transform="translate(2 2.333)"/></svg>
+                    <input class="input input--date" id="dateTo" value="2026.06.18" readonly aria-label="조회 종료일">
+                  </span>
+                  <span class="field-error" id="rangeErr" hidden>조회 기간은 최대 31일입니다</span>
+                  <!-- 26-08-20 KT #1 — 기간 오른쪽에 요일·시간대(시작 시간 기준). 전체 선택 = 필터 없음 -->
+                  <span class="sublbl">요일</span>
+                  <span class="numrow" id="dowRow"><button class="chip chip--xs is-on" data-dow="1">월</button><button class="chip chip--xs is-on" data-dow="2">화</button><button class="chip chip--xs is-on" data-dow="3">수</button><button class="chip chip--xs is-on" data-dow="4">목</button><button class="chip chip--xs is-on" data-dow="5">금</button><button class="chip chip--xs is-on" data-dow="6">토</button><button class="chip chip--xs is-on" data-dow="0">일</button></span>
+                  <span class="sublbl">시간대</span>
+                  <!-- 26-08-25 KT 요청 — 3시간 8구간 칩 → 시작/종료 시각 직접 선택.
+                       홈쇼핑사마다 니즈가 달라 조회 기간처럼 시간대도 직접 고른다 · 디폴트 00–23(전체) · 구간은 하나.
+                       구간 칩으로 되돌릴 땐 아래 주석 한 줄을 살리고 app.js 의 BANDS/bandOn 도 함께 되돌린다
+                  <span class="numrow" id="bandRow"><button class="chip chip--xs is-on" data-band="0">00–03</button><button class="chip chip--xs is-on" data-band="1">03–06</button><button class="chip chip--xs is-on" data-band="2">06–09</button><button class="chip chip--xs is-on" data-band="3">09–12</button><button class="chip chip--xs is-on" data-band="4">12–15</button><button class="chip chip--xs is-on" data-band="5">15–18</button><button class="chip chip--xs is-on" data-band="6">18–21</button><button class="chip chip--xs is-on" data-band="7">21–24</button></span>
+                  -->
+                  <span class="numrow numrow--hour" id="hourRow">
+                    <!-- 26-08-25 — 왼쪽 조회 기간과 같은 필(.pill h44 · 아이콘 16 + 값)을 쓴다. 시간이라 달력 대신 시계 아이콘 -->
+                    <span class="pill"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><select class="input input--hour" id="hourFrom" aria-label="조회 시작 시간"></select></span>
+                    <span class="dash">–</span>
+                    <span class="pill"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><select class="input input--hour" id="hourTo" aria-label="조회 종료 시간"></select></span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="filter-row">
+                <span class="lbl">홈쇼핑사</span>
+                <div class="val" id="coRow">
+                  <button class="chip is-on" data-co="GS SHOP">GS SHOP</button>
+                  <button class="chip is-on" data-co="CJ ONSTYLE">CJ ONSTYLE</button>
+                  <button class="chip is-on" data-co="현대홈쇼핑">현대홈쇼핑</button>
+                  <button class="chip is-on" data-co="롯데홈쇼핑">롯데홈쇼핑</button>
+                  <button class="chip is-on" data-co="NS홈쇼핑">NS홈쇼핑</button>
+                  <button class="chip is-on" data-co="KT알파 쇼핑">KT알파 쇼핑</button>
+                  <button class="chip" data-co="홈앤쇼핑">홈앤쇼핑</button>
+                  <button class="chip" data-co="공영쇼핑">공영쇼핑</button>
+                  <button class="chip" data-co="SK스토아">SK스토아</button>
+                  <button class="chip" data-co="신세계쇼핑">신세계쇼핑</button>
+                  <button class="chip" data-co="쇼핑엔티">쇼핑엔티</button>
+                  <button class="chip" data-co="W쇼핑">W쇼핑</button>
+                  <button class="chip" data-co="GS MY SHOP">GS MY SHOP</button>
+                  <button class="chip" data-co="CJ ONSTYLE+">CJ ONSTYLE+</button>
+                  <button class="chip" data-co="현대홈쇼핑+">현대홈쇼핑+</button>
+                  <button class="chip" data-co="롯데원티비">롯데원티비</button>
+                  <button class="chip" data-co="NS홈쇼핑+">NS홈쇼핑+</button>
+                  <button class="chip chip--all" data-all>전체 선택</button>
+                </div>
+              </div>
+
+              <div class="filter-row">
+                <span class="lbl">일반채널</span>
+                <div class="val" id="tvRow">
+                  <button class="chip is-on" data-tv="KBS1">KBS1</button>
+                  <button class="chip is-on" data-tv="KBS2">KBS2</button>
+                  <button class="chip is-on" data-tv="MBC">MBC</button>
+                  <button class="chip is-on" data-tv="SBS">SBS</button>
+                  <button class="chip" data-tv="EBS1">EBS1</button>
+                  <button class="chip" data-tv="tvN">tvN</button>
+                  <button class="chip" data-tv="JTBC">JTBC</button>
+                  <button class="chip" data-tv="채널A">채널A</button>
+                  <button class="chip" data-tv="TV조선">TV조선</button>
+                  <button class="chip" data-tv="MBN">MBN</button>
+                  <button class="chip" data-tv="OCN">OCN</button>
+                  <button class="chip" data-tv="SBS Plus">SBS Plus</button>
+                  <button class="chip" data-tv="MBC every1">MBC every1</button>
+                  <button class="chip" data-tv="ENA">ENA</button>
+                  <button class="chip chip--all" data-all>전체 선택</button>
+                </div>
+              </div>
+
+              <div class="filter-row">
+                <span class="lbl">공통카테고리</span>
+                <div class="val" id="catRow">
+                  <button class="chip is-on" data-cat="패션" style="--cat:var(--graph-09)">패션</button>
+                  <button class="chip is-on" data-cat="잡화" style="--cat:var(--graph-08)">잡화</button>
+                  <button class="chip is-on" data-cat="뷰티" style="--cat:var(--graph-03)">뷰티</button>
+                  <button class="chip is-on" data-cat="생활/주방" style="--cat:var(--graph-04)">생활/주방</button>
+                  <button class="chip is-on" data-cat="스포츠레저" style="--cat:var(--graph-05)">스포츠레저</button>
+                  <button class="chip is-on" data-cat="식품/건강" style="--cat:var(--graph-06)">식품/건강</button>
+                  <button class="chip is-on" data-cat="가구/홈데코" style="--cat:var(--graph-02)">가구/홈데코</button>
+                  <button class="chip is-on" data-cat="유아/아동" style="--cat:var(--graph-01)">유아/아동</button>
+                  <button class="chip is-on" data-cat="가전/디지털" style="--cat:var(--graph-10)">가전/디지털</button>
+                  <button class="chip is-on" data-cat="취미/펫" style="--cat:var(--graph-07)">취미/펫</button>
+                  <button class="chip is-on" data-cat="여행/보험/렌탈/티켓" style="--cat:var(--graph-12)">여행/보험/렌탈/티켓</button>
+                  <button class="chip is-on" data-cat="기타" style="--cat:var(--graph-11)">기타</button>
+
+                  <button class="chip chip--all" data-all>전체 선택</button>
+                </div>
+              </div>
+
+              <div class="filter-row">
+                <span class="lbl">프로그램명</span>
+                <div class="val">
+                  <span class="pill">
+                    <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.519 15.038C3.374 15.038 0 11.664 0 7.519C0 3.374 3.374 0 7.519 0C11.664 0 15.038 3.374 15.038 7.519C15.038 11.664 11.664 15.038 7.519 15.038ZM7.519 1.1C3.976 1.1 1.1 3.983 1.1 7.519C1.1 11.055 3.976 13.938 7.519 13.938C11.062 13.938 13.938 11.055 13.938 7.519C13.938 3.983 11.062 1.1 7.519 1.1Z" fill="currentColor" stroke="none" transform="translate(3.707 3.707)"/><path d="M7.519 14.788C3.513 14.788 0.25 11.526 0.25 7.519L-0.25 7.519C-0.25 11.802 3.236 15.288 7.519 15.288L7.519 14.788ZM0.25 7.519C0.25 3.513 3.513 0.25 7.519 0.25L7.519 -0.25C3.236 -0.25 -0.25 3.236 -0.25 7.519L0.25 7.519ZM7.519 0.25C11.526 0.25 14.788 3.513 14.788 7.519L15.288 7.519C15.288 3.236 11.802 -0.25 7.519 -0.25L7.519 0.25ZM14.788 7.519C14.788 11.526 11.526 14.788 7.519 14.788L7.519 15.288C11.802 15.288 15.288 11.802 15.288 7.519L14.788 7.519ZM7.519 0.85C3.838 0.85 0.85 3.845 0.85 7.519L1.35 7.519C1.35 4.121 4.114 1.35 7.519 1.35L7.519 0.85ZM0.85 7.519C0.85 11.193 3.838 14.188 7.519 14.188L7.519 13.688C4.114 13.688 1.35 10.917 1.35 7.519L0.85 7.519ZM7.519 14.188C11.201 14.188 14.188 11.193 14.188 7.519L13.688 7.519C13.688 10.917 10.924 13.688 7.519 13.688L7.519 14.188ZM14.188 7.519C14.188 3.845 11.201 0.85 7.519 0.85L7.519 1.35C10.924 1.35 13.688 4.121 13.688 7.519L14.188 7.519Z" fill="currentColor" stroke="none" transform="translate(3.707 3.707)"/><path d="M2.295 2.922C2.137 2.922 1.978 2.864 1.853 2.738L0.182 1.067C-0.061 0.825 -0.061 0.424 0.182 0.182C0.424 -0.061 0.825 -0.061 1.067 0.182L2.738 1.853C2.981 2.095 2.981 2.496 2.738 2.738C2.613 2.864 2.454 2.922 2.295 2.922Z" fill="currentColor" stroke="none" transform="translate(18.121 18.12)"/><path d="M1.853 2.738L1.676 2.915L1.853 2.738ZM0.182 1.067L0.358 0.891L0.182 1.067ZM1.067 0.182L0.891 0.358L1.067 0.182ZM2.738 1.853L2.915 1.676L2.738 1.853ZM2.295 2.672C2.199 2.672 2.105 2.637 2.029 2.561L1.676 2.915C1.851 3.09 2.074 3.172 2.295 3.172L2.295 2.672ZM2.029 2.561L0.358 0.891L0.005 1.244L1.676 2.915L2.029 2.561ZM0.358 0.891C0.214 0.746 0.214 0.503 0.358 0.358L0.005 0.005C-0.335 0.345 -0.335 0.904 0.005 1.244L0.358 0.891ZM0.358 0.358C0.503 0.214 0.746 0.214 0.891 0.358L1.244 0.005C0.904 -0.335 0.345 -0.335 0.005 0.005L0.358 0.358ZM0.891 0.358L2.561 2.029L2.915 1.676L1.244 0.005L0.891 0.358ZM2.561 2.029C2.706 2.174 2.706 2.417 2.561 2.561L2.915 2.915C3.255 2.575 3.255 2.016 2.915 1.676L2.561 2.029ZM2.561 2.561C2.486 2.637 2.391 2.672 2.295 2.672L2.295 3.172C2.517 3.172 2.74 3.09 2.915 2.915L2.561 2.561Z" fill="currentColor" stroke="none" transform="translate(18.121 18.12)"/></svg>
+                    <input class="input input--search" id="q" type="search" placeholder="프로그램명 검색">
+                  </span>
+                </div>
+              </div>
+
+          </div>
+
+          <div class="actions">
+            <button class="btn btn--soft" id="btnExcel" data-tip="조회 조건 그대로 엑셀(.xlsx) 생성 — 기존 편성표 다운로드 양식">
+              <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              엑셀 다운로드
+            </button>
+            <button class="btn btn--soft" id="btnReset">
+              <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12C22 17.52 17.52 22 12 22C6.48 22 3.11 16.44 3.11 16.44M3.11 16.44H7.63M3.11 16.44V21.44M2 12C2 6.48 6.44 2 12 2C18.67 2 22 7.56 22 7.56M22 7.56V2.56M22 7.56H17.56" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>초기화</button>
+            <button class="btn btn--primary" id="btnSearch">
+              <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.519 15.038C3.374 15.038 0 11.664 0 7.519C0 3.374 3.374 0 7.519 0C11.664 0 15.038 3.374 15.038 7.519C15.038 11.664 11.664 15.038 7.519 15.038ZM7.519 1.1C3.976 1.1 1.1 3.983 1.1 7.519C1.1 11.055 3.976 13.938 7.519 13.938C11.062 13.938 13.938 11.055 13.938 7.519C13.938 3.983 11.062 1.1 7.519 1.1Z" fill="currentColor" stroke="none" transform="translate(3.707 3.707)"/><path d="M7.519 14.788C3.513 14.788 0.25 11.526 0.25 7.519L-0.25 7.519C-0.25 11.802 3.236 15.288 7.519 15.288L7.519 14.788ZM0.25 7.519C0.25 3.513 3.513 0.25 7.519 0.25L7.519 -0.25C3.236 -0.25 -0.25 3.236 -0.25 7.519L0.25 7.519ZM7.519 0.25C11.526 0.25 14.788 3.513 14.788 7.519L15.288 7.519C15.288 3.236 11.802 -0.25 7.519 -0.25L7.519 0.25ZM14.788 7.519C14.788 11.526 11.526 14.788 7.519 14.788L7.519 15.288C11.802 15.288 15.288 11.802 15.288 7.519L14.788 7.519ZM7.519 0.85C3.838 0.85 0.85 3.845 0.85 7.519L1.35 7.519C1.35 4.121 4.114 1.35 7.519 1.35L7.519 0.85ZM0.85 7.519C0.85 11.193 3.838 14.188 7.519 14.188L7.519 13.688C4.114 13.688 1.35 10.917 1.35 7.519L0.85 7.519ZM7.519 14.188C11.201 14.188 14.188 11.193 14.188 7.519L13.688 7.519C13.688 10.917 10.924 13.688 7.519 13.688L7.519 14.188ZM14.188 7.519C14.188 3.845 11.201 0.85 7.519 0.85L7.519 1.35C10.924 1.35 13.688 4.121 13.688 7.519L14.188 7.519Z" fill="currentColor" stroke="none" transform="translate(3.707 3.707)"/><path d="M2.295 2.922C2.137 2.922 1.978 2.864 1.853 2.738L0.182 1.067C-0.061 0.825 -0.061 0.424 0.182 0.182C0.424 -0.061 0.825 -0.061 1.067 0.182L2.738 1.853C2.981 2.095 2.981 2.496 2.738 2.738C2.613 2.864 2.454 2.922 2.295 2.922Z" fill="currentColor" stroke="none" transform="translate(18.121 18.12)"/><path d="M1.853 2.738L1.676 2.915L1.853 2.738ZM0.182 1.067L0.358 0.891L0.182 1.067ZM1.067 0.182L0.891 0.358L1.067 0.182ZM2.738 1.853L2.915 1.676L2.738 1.853ZM2.295 2.672C2.199 2.672 2.105 2.637 2.029 2.561L1.676 2.915C1.851 3.09 2.074 3.172 2.295 3.172L2.295 2.672ZM2.029 2.561L0.358 0.891L0.005 1.244L1.676 2.915L2.029 2.561ZM0.358 0.891C0.214 0.746 0.214 0.503 0.358 0.358L0.005 0.005C-0.335 0.345 -0.335 0.904 0.005 1.244L0.358 0.891ZM0.358 0.358C0.503 0.214 0.746 0.214 0.891 0.358L1.244 0.005C0.904 -0.335 0.345 -0.335 0.005 0.005L0.358 0.358ZM0.891 0.358L2.561 2.029L2.915 1.676L1.244 0.005L0.891 0.358ZM2.561 2.029C2.706 2.174 2.706 2.417 2.561 2.561L2.915 2.915C3.255 2.575 3.255 2.016 2.915 1.676L2.561 2.029ZM2.561 2.561C2.486 2.637 2.391 2.672 2.295 2.672L2.295 3.172C2.517 3.172 2.74 3.09 2.915 2.915L2.561 2.561Z" fill="currentColor" stroke="none" transform="translate(18.121 18.12)"/></svg>조회</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 조회 결과 -->
+  <section class="card card--clip">
+    <!-- 줄1 — 무엇을 봤나 + 데이터 상태 -->
+    <div class="card__head">
+      <h2 data-ico="tv">조회 결과</h2>
+      <span class="sub" id="resCount" hidden></span>
+      <div class="right"><span class="aggline" id="aggLine" hidden></span></div>
+    </div>
+
+    <!-- 줄2 — 뷰 · 시점 컨트롤 -->
+    <div class="tabs">
+      <button data-view="timeline" class="is-active">타임라인</button>
+      <button data-view="list">리스트</button>
+      <div class="daystep">
+        <button class="daystep__btn" id="dayPrev" aria-label="전날">
+          <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.9998 19.9201L8.47984 13.4001C7.70984 12.6301 7.70984 11.3701 8.47984 10.6001L14.9998 4.08008" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="daystep__day num" id="dayLabel" type="button" data-tip="날짜를 눌러 바로 이동"></button>
+        <button class="daystep__btn" id="dayNext" aria-label="다음날">
+          <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.90991 19.9201L15.4299 13.4001C16.1999 12.6301 16.1999 11.3701 15.4299 10.6001L8.90991 4.08008" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="tabs__right">
+        <div class="seg" id="chOrder" role="group" aria-label="채널 순서">
+          <span class="seg__lbl">채널 순서</span>
+          <button class="is-on" data-mix="0" data-tip="홈쇼핑 위 · 일반채널 아래">구분</button>
+          <button data-mix="1" data-tip="홈쇼핑·일반채널 채널 번호 순으로 섞기">번호순</button>
+        </div>
+        <span class="tabs__note" id="viewNote" hidden></span>
+        <div class="tl__mini" id="tlMini">
+          <!-- 26-09-02 NOW — 현재 시각(09:20)으로 바로 점프. 항상 노출하고, 오늘이 조회 기간 밖이면 기간을 오늘까지 당겨 온다 -->
+          <button class="tl__now-btn" id="tlNowBtn" type="button" data-tip="현재 시각(09:20)으로 이동"><i></i>NOW</button>
+          <span class="tl__mini-cap num" id="tlMiniCap"></span>
+          <div class="tl__mini-map">
+            <div class="tl__mini-track" id="tlMiniBar" role="slider" tabindex="0" aria-label="표시 구간" aria-valuemin="0" aria-valuemax="24" aria-valuenow="9" aria-valuetext="09:00">
+              <span class="tl__mini-win" id="tlMiniWin"></span>
+              <span class="tl__mini-now" id="tlMiniNow"></span>
+            </div>
+            <span class="tl__mini-scale num"><i>0</i><i>6</i><i>12</i><i>18</i><i>24</i></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="viewTimeline">
+      <div class="tl">
+        <div class="tl__scroll" id="tlScroll">
+          <div class="tl__inner">
+            <span class="tl__now" id="tlNow" hidden></span>
+            <div class="tl__axis"><span class="sp-l"></span><div class="tl__ticks" id="tlAxis"></div><span class="sp-r">채널 하루 성과</span></div>
+            <div id="tlRows"></div>
+            <div class="lane">
+              <div id="laneRows"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="viewList" hidden>
+      <div class="card__body">
+        <div class="plist" id="listBody"></div>
+        <div class="pager" id="listPager"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 담은 편성 비교 시트 — 바구니 바 위로 펼쳐진다. 분석 진입 전 훑어보기 용 -->
+  <section class="card cmpsheet" id="cmpSheet" hidden>
+    <div class="card__head">
+      <h2 data-ico="barChart">담은 편성 비교</h2>
+      <span class="sub" id="cmpCount"></span>
+      <div class="right"><button class="delbtn" id="cmpClose" aria-label="비교 닫기"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+    </div>
+    <div class="card__body">
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="sortable" data-sort="co">채널</th>
+            <th class="sortable" data-sort="title">프로그램명</th>
+            <th class="sortable" data-sort="cat">카테고리</th>
+            <th class="sortable" data-sort="date">방송일</th>
+            <th class="sortable" data-sort="start">방송시작</th>
+            <th class="sortable" data-sort="end">방송종료</th>
+            <th class="num sortable" data-sort="price">가격</th>
+            <th class="num sortable" data-sort="uv10" data-tip="해당 채널 10초 평균값을 1분간 SUM 한 뒤 6으로 나눈 값">시청가구(10초UV평균)</th>
+            <th class="num sortable" data-sort="view" data-tip="해당 채널에서 1분간 고유 시청자수 집계">시청가구(분UV)</th>
+            <th class="num sortable" data-sort="call">콜반응고객수</th>
+            <th class="num sortable" data-sort="web">웹반응고객수</th>
+          </tr>
+        </thead>
+        <tbody id="cmpBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 분석 바구니 -->
+  <div class="basket">
+    <span class="basket__count" id="basketCount">분석 바구니 0 / 5</span>
+    <div class="basket__list" id="basketList"></div>
+    <div class="basket__actions">
+      <button class="btn btn--ghost" id="basketCompare">비교 보기</button>
+      <button class="btn btn--ghost" id="basketClear">전체 비우기</button>
+      <button class="btn btn--primary" id="btnAnalyze">분석하기</button>
+    </div>
+  </div>
+
+</main>
+
+<!-- 위로가기 — 바구니 바(64) 위에 뜬다. 400 넘게 내리면 표시 -->
+<button class="totop" id="toTop" type="button" aria-label="맨 위로" hidden>
+  <svg class="i i--lg" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M0.75 1.5C0.538 1.5 0.359 1.428 0.216 1.283C0.072 1.139 0 0.959 0 0.746C0 0.532 0.072 0.354 0.216 0.213C0.359 0.071 0.538 0 0.75 0L15.25 0C15.463 0 15.641 0.072 15.784 0.217C15.928 0.361 16 0.541 16 0.754C16 0.968 15.928 1.146 15.784 1.288C15.641 1.429 15.463 1.5 15.25 1.5L0.75 1.5ZM7.996 17.95C7.782 17.95 7.604 17.878 7.463 17.734C7.321 17.591 7.25 17.413 7.25 17.2L7.25 5.85L4.8 8.3C4.664 8.433 4.496 8.5 4.298 8.5C4.099 8.5 3.925 8.425 3.775 8.275C3.625 8.125 3.55 7.95 3.55 7.75C3.55 7.55 3.625 7.375 3.775 7.225L7.475 3.525C7.558 3.442 7.643 3.383 7.728 3.35C7.814 3.317 7.906 3.3 8.003 3.3C8.101 3.3 8.192 3.317 8.275 3.35C8.358 3.383 8.442 3.442 8.525 3.525L12.25 7.25C12.383 7.386 12.45 7.554 12.45 7.752C12.45 7.951 12.375 8.125 12.225 8.275C12.075 8.425 11.9 8.5 11.7 8.5C11.5 8.5 11.325 8.425 11.175 8.275L8.75 5.85L8.75 17.2C8.75 17.413 8.678 17.591 8.533 17.734C8.389 17.878 8.209 17.95 7.996 17.95Z" fill="currentColor" stroke="none" transform="translate(4 3)"/></svg>
+</button>
+
+<footer class="kt-footer">
+  <img class="kt-logo" src="assets/kt-logo.png" alt="kt">
+  <div class="kt-footer__body">
+    <nav class="kt-footer__links">
+      <a href="https://corp.kt.com/" target="_blank" rel="noopener">회사소개</a><a>이용약관</a><a>법적고지</a><a class="em">개인정보 처리방침</a><a>오픈소스 사용고지</a>
+    </nav>
+    <p>대표이사 김영섭 사업자등록번호 102-81-42945 (주)케이티 (13606) 경기도 성남시 분당구 불정로 90(정자동 206번지)</p>
+    <p>Tel 031-712-0922 Email ccubeadmin@kt.com</p>
+    <p>Copyright© KT Corp. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="icons-figma.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

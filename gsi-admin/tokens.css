@@ -1,0 +1,58 @@
+/* GSI 공식 변수 — 26-08-12 피그마 라이브 재실측 (FIGMA.md '라이브 재실측' 섹션 근거) */
+:root {
+  /* grayscale */
+  --white: #FFFFFF;
+  --gray-100: #F8F9FF;
+  --gray-200: #D6DDE9;
+  --gray-300: #A7B1BF;
+  --gray-400: #7A8490;
+  --gray-500: #58606A;
+  --gray-600: #353A41;
+  --black: #1D1D1D;
+
+  /* primary */
+  --genie-purple: #6941FF;
+  --genie-blue: #5A64FF;
+  --sub-blue: #E5EAFF;
+  --gnb-gradient: linear-gradient(90deg, #6941FF, #5B35ED, #5832E9, #6941FF);
+  --gnb-mint: #00EEAE; /* GNB 활성탭 전용 — secondary green과 별개 */
+
+  /* secondary */
+  --sec-lightblue: #F1F3FF;
+  --sec-skyblue: #5AACF5;
+  --sec-purple: #C85CF2;
+  --sec-green: #12DB91;
+  --sec-orange: #FF8F6E;
+  --sec-yellow: #FFD232;
+
+  /* graph light (공식 차트 팔레트, 01~17 hex 확정 · 18~20 빌드 시 재실측) */
+  --graph-01: #41B0E0;
+  --graph-02: #347478;
+  --graph-03: #F36580;
+  --graph-04: #1BADAA;
+  --graph-05: #90BF31;
+  --graph-06: #F07B56;
+  --graph-07: #1B926F;
+  --graph-08: #AC8872;
+  --graph-09: #7D83FE;
+  --graph-10: #7FA5C0;
+  --graph-11: #7C746E;
+  --graph-12: #CEB98F;
+  --graph-13: #F9D346;
+  --graph-14: #E43E49;
+  --graph-15: #C2255D;
+  --graph-16: #C74E56;
+  --graph-17: #E7C2D5;
+
+  /* typography — Pretendard, lh 1.4, ls -0.5 */
+  --font: "Pretendard", "Pretendard Variable", -apple-system, sans-serif;
+  --h1: 34px;
+  --h2: 30px;
+  --h3: 22px;
+  --h4: 20px;
+  --title-1: 18px;
+  --title-2: 16px;
+  --body-1: 14px;
+  --body-2: 13px;
+  --body-3: 12px;
+}

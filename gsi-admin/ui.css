@@ -1,0 +1,970 @@
+/* ============================================================
+   ours/ 공용 UI — tokens.css 위 컴포넌트 골격
+   schedule.html · analysis.html 전용. 색은 tokens.css 변수 + color-mix만.
+   ============================================================ */
+
+:root {
+  /* 역할 별칭 — 신규 색 아님, 토큰 재지정 */
+  --page: var(--gray-100);
+  --surface: var(--white);
+  --surface-2: var(--sec-lightblue);
+  --line: var(--gray-200);
+  --line-strong: var(--gray-300);
+  --ink: var(--black);
+  --ink-2: var(--gray-600);
+  --ink-3: var(--gray-500);
+  --ink-4: var(--gray-400);
+  --brand: var(--genie-purple);
+  --brand-tint: var(--sub-blue);
+  --alert: var(--graph-14);          /* ON AIR · 이탈 시점 표식 전용 */
+  --call: var(--sec-orange);
+  --inflow: var(--sec-skyblue);
+  --outflow: var(--graph-03);        /* 콜과 orange 중복을 피해 분리 (M3) */
+  /* graph-13 원색은 흰 바탕 2px 라인에서 대비 3:1 미달 — 채널 식별색으로 쓸 때만 눌러 쓴다 */
+  --graph-13-ink: color-mix(in srgb, var(--graph-13) 62%, var(--gray-600));
+
+  /* GSI 피그마 카드 이펙트 원본값 (admin 1:48752 drop-shadow) */
+  --shadow-card: 10px 20px 15px rgba(0, 0, 0, 0.04);
+
+  /* charts.js 가 읽는 이름 */
+  --grid: var(--gray-200);
+  --axis: var(--gray-300);
+  --tick: var(--gray-400);
+  --hairline: var(--gray-200);
+
+  /* 타임라인 치수 */
+  --tl-ch: 224px;                    /* 채널번호 + 로고 + 사명 + 자사 태그가 줄바꿈 없이 들어가는 폭 */
+  --tl-rail: 168px;
+  --tl-hour: 240px;                  /* 1분 = 4px */
+  --tl-row: 80px;
+  --tl-blk: 64px;                    /* 제목 + 시간 두 줄 — 규모는 배경 강조가 말한다 */
+  /* 일반채널 구획 바탕 — gray-100 은 흰 블록과 거의 붙어 보인다. 보더 대신 이 톤차가 경계다 */
+  --lane-bg: color-mix(in srgb, var(--gray-200) 45%, var(--white));
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  background: var(--page);
+  color: var(--ink);
+  font-size: var(--body-1);
+  line-height: 1.4;
+  letter-spacing: -0.5px;
+  -webkit-font-smoothing: antialiased;
+}
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+[hidden] { display: none !important; }/* display 지정 컴포넌트가 hidden 을 이기지 않게 */
+.num { font-variant-numeric: tabular-nums; }
+
+/* 인라인 아이콘 — 색은 부모 currentColor 상속, 여기서는 크기만 정한다 */
+.i { flex: none; width: 16px; height: 16px; }
+.i--md { width: 18px; height: 18px; }
+.i--lg { width: 20px; height: 20px; }
+.stat .i { width: 14px; height: 14px; }/* 22px 칩 안에서 12px 캡과 균형을 맞춘 예외 */
+
+/* ── 셸 ─────────────────────────────────────────────── */
+
+.gnb {
+  position: sticky; top: 0; z-index: 60;
+  display: flex; align-items: center; gap: 20px;
+  height: 60px; padding: 0 20px 0 28px;
+  background: var(--gnb-gradient);
+}
+.gnb__logo { display: flex; align-items: center; flex: none; height: 44px; }
+.gnb__logo img { width: 120px; height: 44px; display: block; }
+.gnb__nav { display: flex; height: 100%; }
+.gnb__nav a, .gnb__nav span {
+  position: relative;
+  display: inline-flex; align-items: center; height: 100%; padding: 0 13px;
+  font-size: var(--title-2); color: var(--white); white-space: nowrap;
+}
+.gnb__nav a:hover { color: var(--gnb-mint); }
+.gnb__nav .is-active { color: var(--gnb-mint); font-weight: 700; letter-spacing: 0; }
+.gnb__nav .is-active::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0;
+  height: 2px; background: var(--gnb-mint);
+}
+.gnb__right {
+  margin-left: auto; display: flex; align-items: center; gap: 14px;
+  color: var(--white); font-size: var(--body-1);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.gnb__right .vline { width: 1px; height: 12px; background: color-mix(in srgb, var(--white) 50%, transparent); }
+.gnb__tools { display: inline-flex; align-items: center; gap: 12px; }
+.gnb__tools .ico { display: inline-flex; width: 24px; height: 24px; }
+.gnb__tools .ico img { width: 100%; height: 100%; }
+.gnb__account { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; letter-spacing: 0; }
+.gnb__account .avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--white); color: var(--brand);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: var(--body-3); font-weight: 700;
+}
+.gnb__who { font: inherit; }
+
+/* ── 태블릿 ────────────────────────────
+   지원 범위는 아이패드 가로(1024)까지다. 세로(768)는 GNB 뿐 아니라 편성표 미니맵·탭까지
+   손봐야 해서 이번엔 넣지 않았다(사용자 판단).
+   1024 에서 넘치던 건 이 GNB 하나 — 로고 120 + 메뉴 613 + 오른쪽 438 + 여백 = 1359px 이 한 줄 최소(실측) */
+@media (max-width: 1360px) {
+  /* 아이패드 가로(1024) — 기준일시와 계정명을 뺀다. 둘 다 아이콘·아바타로 대신 읽히고,
+     메뉴처럼 눌러서 이동하는 것도 아니라 빠져도 할 수 있는 일이 줄지 않는다 */
+  .gnb { gap: 12px; padding: 0 16px 0 20px; }
+  .gnb__stamp, .gnb__who { display: none; }
+  .gnb__nav a, .gnb__nav span { padding: 0 9px; font-size: var(--body-1); }
+  .gnb__right { gap: 12px; }
+  .gnb__tools { gap: 10px; }
+}
+
+/* 페이지 세로 리듬의 소유자는 page-wrap 하나 — 안쪽 섹션은 margin 을 갖지 않는다.
+   대구획 24 / 그리드 안쪽 거터 16 의 2단 위계. 하단 24 는 바구니 바가 안착할 자리 */
+.page-wrap {
+  display: flex; flex-direction: column; gap: 24px;
+  max-width: none; margin: 0 auto; padding: 24px 48px;   /* 26-08-30 — KT 라이브처럼 가로 무제한(좌우 48 고정, 콘텐츠는 계속 늘어남). (이전) max-width: 1920px */
+}
+/* 헤더 존 — GNB 아래 타이틀(·탭)까지 흰 면. 좌우 padding 은 카드 왼선과 같은 기준선 공식.
+   브레드크럼 · 타이틀 · 설명 3층 구조 */
+.page-top {
+  display: flex; flex-direction: column; gap: 10px;
+  background: var(--surface); padding: 20px 48px 16px;   /* 26-08-30 — KT 라이브처럼 가로 무제한(좌우 48 고정, 콘텐츠는 계속 늘어남). (이전) padding: 20px max(48px, calc(50% - 912px)) 16px */
+}
+.page-top--line { border-bottom: 1px solid var(--line); }
+.crumbs { display: flex; align-items: center; gap: 6px; }
+.crumb {
+  display: inline-flex; align-items: center; height: 24px; padding: 0 10px;
+  border: 1px solid var(--line); border-radius: 6px;
+  background: var(--surface); color: var(--ink-3); font-size: var(--body-3);
+}
+.crumb--on { background: var(--sec-lightblue); border-color: transparent; color: var(--brand); font-weight: 600; }
+.page-desc { margin: 0; font-size: var(--body-1); color: var(--ink-3); }
+.page-head { display: flex; align-items: baseline; gap: 16px; }
+.page-head h1 { margin: 0; font-size: var(--h1); font-weight: 700; letter-spacing: -1px; }
+/* 위로가기 — 우하단 고정, 바구니 바(64) 위 24. 400 넘게 내리면 페이드 인. 상세 페이지 .kttop 과 같은 규격 */
+.totop {
+  position: fixed; right: 32px; bottom: 88px; z-index: 46;
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  box-shadow: 10px 20px 15px rgba(0,0,0,.04), 0 2px 8px rgba(29,29,29,.08);
+  opacity: 0; transform: translateY(8px); pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.totop.is-show { opacity: 1; transform: none; pointer-events: auto; }
+.totop:hover { background: var(--surface-2); color: var(--brand); }
+.totop:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* 콘텐츠 높이 그대로 — 위만 비던 flex-end 정렬과 220 하한을 걷어내고 상하 28 로 조인다 */
+.kt-footer {
+  padding: 28px 48px;
+  background: var(--gray-200);
+  display: flex; gap: 40px; align-items: center;
+}
+.kt-footer .kt-logo { width: 74px; height: 74px; flex: none; display: block; }
+.kt-footer__links { display: flex; flex-wrap: wrap; gap: 6px 0; font-size: var(--body-1); color: var(--ink-2); }
+.kt-footer__links a + a::before { content: "|"; margin: 0 10px; color: var(--line-strong); }
+.kt-footer__links .em { font-weight: 600; }
+.kt-footer__body p { margin: 4px 0 0; font-size: var(--body-2); color: var(--ink-4); }
+.kt-footer__body p:first-of-type { margin-top: 8px; }
+
+/* ── 카드 ───────────────────────────────────────────── */
+
+/* 면은 쉐도우로 뜬다 — 카드 바깥 보더 0, 안쪽 헤어라인(head/foot)만 남긴다. 섹션 카드 r12 = 1:48752 */
+.card {
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+}
+/* 안쪽 면(일반채널 회색 행 등)이 모서리를 덮는 카드 — 클리핑으로 라운드를 지킨다 */
+.card--clip { overflow: clip; }   /* clip = 스크롤 컨테이너가 아니므로 안의 .tabs 가 페이지 기준 sticky 로 붙는다(26-08-20 KT #6) */
+.card__head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 18px 24px; border-bottom: 1px solid var(--line);
+}
+/* 섹션 제목 = title-1(18) 검정 — 본문(14)·탭(16)과 급이 갈려야 훑을 때 계층이 선다 */
+.card__head h2 { margin: 0; display: inline-flex; align-items: center; gap: 8px; font-size: var(--title-1); font-weight: 700; color: var(--ink); letter-spacing: -0.6px; }
+.card__head h2 .i { color: var(--brand); }
+.card__head .sub { font-size: var(--body-2); color: var(--ink-4); padding-top: 2px; }
+.card__head .right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+/* 집계 상태 한 문장 — 칩 2개로 나눠 붙이면 같은 정보가 두 덩어리로 보인다 */
+.aggline { display: inline-flex; align-items: center; gap: 6px; font-size: var(--body-2); color: var(--ink-3); white-space: nowrap; }
+.aggline .i { width: 14px; height: 14px; color: var(--ink-4); }
+.aggline .sep { width: 1px; height: 10px; background: var(--line-strong); }
+/* 카드 안쪽 형제 간격도 소유자는 하나 — 자식은 margin 을 쓰지 않는다 */
+.card__body { display: flex; flex-direction: column; gap: 12px; padding: 24px; }
+
+/* ── 버튼 ───────────────────────────────────────────── */
+
+/* GSI 피그마 button_Large(1:50214) 원본값 — h48 · px24 · 16 Bold */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 48px; padding: 0 24px;
+  border: 1px solid var(--line-strong); border-radius: 6px;
+  background: var(--surface); color: var(--ink-2);
+  font-size: var(--title-2); font-weight: 700;
+}
+.btn:hover { background: var(--surface-2); }
+.btn--primary {
+  padding: 0 24px; border-radius: 8px;
+  border-color: var(--brand); background: var(--brand); color: var(--white);
+}
+.btn--primary:hover { background: color-mix(in srgb, var(--brand) 85%, var(--black)); }
+.btn--ghost { border-color: transparent; background: transparent; color: var(--ink-3); }
+.btn--ghost:hover { background: var(--surface-2); }
+/* 실제품 초기화 버튼 실측(1:47728) — sub-blue #E5EAFF 필 + gray500 텍스트 */
+.btn--soft { border-color: transparent; border-radius: 8px; background: var(--sub-blue); color: var(--ink-3); }
+.btn--soft:hover { background: color-mix(in srgb, var(--brand) 8%, var(--sub-blue)); }
+
+.btn--xs { height: 22px; padding: 0 8px; border-radius: 11px; font-size: 11px; font-weight: 600; }
+/* 코드 정리 26-08-30 — is-active 는 .tabs [data-view] 버튼(.btn 아님)에만 붙는다. 죽은 규칙 주석화.
+.btn.is-active { border-color: var(--brand); background: var(--brand-tint); color: var(--brand); } */
+.btn[disabled], .btn.is-disabled {
+  background: var(--gray-200); border-color: transparent; color: var(--gray-300);
+  opacity: .5; pointer-events: none;
+}
+.btn:focus-visible, .chip:focus-visible, .tabs a:focus-visible {
+  outline: 2px solid var(--brand); outline-offset: 2px;
+}
+
+/* ── 폼 · 조회 패널 ─────────────────────────────────── */
+
+/* 조회 조건 접힘 — 행 높이 0fr↔1fr 로만 여닫는다(높이 측정 JS 없음).
+   접힘 상태에서는 card__head 가 곧 요약 바라 아래 보더가 카드 안에 뜬 선으로 남는다 — 지운다 */
+.filters__body { display: grid; grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows .2s ease, visibility .2s; }
+/* 클리핑은 안쪽 상자가 맡는다 — card__body 를 직접 물리면 상하 padding 48px 이 접힘 높이로 남는다 */
+.filters__inner { min-height: 0; overflow: hidden; }
+.filters.is-open .filters__body { grid-template-rows: 1fr; visibility: visible; }
+/* 코드 정리 26-08-30 — 필터 접기 토글(#filterToggle)은 마크업·JS 어디에도 없고 .filters 는 항상 is-open. 죽은 규칙 3줄 주석화.
+.filters:not(.is-open) .card__head { border-bottom: 0; }
+#filterToggle .i { transition: transform .2s ease; }
+.filters.is-open #filterToggle .i { transform: rotate(180deg); } */
+
+/* 좌우 2열을 걷어내고 위에서 아래로 한 흐름 — 라벨 열 96 고정, 전 행 같은 기준선 */
+.filter-grid { display: flex; flex-direction: column; gap: 20px; }
+.actions { display: flex; justify-content: flex-end; gap: 8px; }
+.filter-row { display: flex; align-items: flex-start; gap: 24px; }
+.filter-row > .lbl { flex: none; width: 96px; padding-top: 12px; font-size: var(--body-1); color: var(--ink-3); }
+.filter-row > .val { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 8px; }
+.filter-row .dash { color: var(--ink-4); }
+.filter-row .field-error { padding-left: 16px; }
+
+.input {
+  height: 40px; padding: 0 12px;
+  border: 1px solid var(--line-strong); border-radius: 6px;
+  background: var(--surface); color: var(--ink);
+  font-family: inherit; font-size: var(--body-1); letter-spacing: -0.5px;
+}
+.input::placeholder { color: var(--ink-4); }
+.input:focus { outline: none; border-color: var(--brand); }
+/* GSI admin 캘린더 날짜 필 문법(1:47225 실측) — gray100 필 · 캡슐 · h44 */
+.pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 44px; padding: 0 18px; border-radius: 22px;
+  background: var(--gray-100); border: 1px solid transparent;
+}
+.pill:hover { border-color: var(--line-strong); }
+.pill:focus-within { border-color: var(--brand); background: var(--surface); }
+.pill.is-error { border-color: var(--sec-orange); }
+.pill > .i { flex: none; color: var(--ink-4); }
+.pill .input { height: 100%; padding: 0; border: 0; border-radius: 0; background: transparent; }
+.pill .input:focus { outline: none; }
+.input--date { width: 92px; font-variant-numeric: tabular-nums; cursor: pointer; }
+.input--search { width: 280px; }
+
+.field-error { margin: 0; font-size: var(--body-3); color: var(--sec-orange); }
+
+/* 선택형 칩 — GSI 실제품 조회 폼 문법: 선택 = 흰 면 + 1px 브랜드 보더 + 브랜드 텍스트.
+   (#F1F3FF 필 Breadcrumb 칩은 "적용된 필터 표시" 용도라 여기 쓰지 않는다) */
+/* DS 실측(1:47214) — 선택 칩 h32 */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 32px; padding: 0 12px;
+  border: 1px solid var(--line); border-radius: 16px;
+  background: var(--surface); color: var(--ink-3);
+  font-size: var(--body-2); white-space: nowrap;
+}
+.chip:hover { opacity: .7; }
+/* 26-08-23 — 조회조건 칩은 라벨만 둔다(체크 아이콘 삭제).
+   선택 상태는 보더·글자색(카테고리는 틴트)으로 구분한다.
+   참고: KT 피그마 칩 컴포넌트에는 ic_check_chip 이 있다 — 의도적 이탈 */
+.chip.is-on { background: var(--surface); border-color: var(--brand); color: var(--brand); font-weight: 600; }
+.chip.is-on:hover { background: var(--surface-2); }
+.chip[disabled] { opacity: .4; pointer-events: none; }
+/* 상한 초과 칩 — 클릭은 살려 두고(안내 토스트) 시각만 죽인다 */
+.chip.is-disabled { opacity: .4; }
+
+/* 캘린더 팝업 — DS 3판 */
+.cal {
+  position: fixed; z-index: 50;
+  display: flex; flex-direction: column; gap: 12px;
+  width: 300px; padding: 16px;
+  background: var(--surface); border-radius: 8px; box-shadow: var(--shadow-card);
+}
+.cal__head { display: flex; align-items: center; justify-content: space-between; font-weight: 700; }
+.cal__grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.cal__grid .dow { height: 28px; display: grid; place-items: center; font-size: var(--body-3); color: var(--ink-4); }
+.cal__grid button {
+  height: 34px; border: 0; border-radius: 6px; background: transparent;
+  font-size: var(--body-2); color: var(--ink-2); font-variant-numeric: tabular-nums;
+}
+.cal__grid button:hover { background: var(--surface-2); }
+.cal__grid .is-sel { background: var(--brand); color: var(--white); font-weight: 700; }
+.cal__grid .is-range { background: var(--brand-tint); color: var(--brand); }
+
+/* ── 탭 (실제품 장르탭 문법) ────────────────────────── */
+
+/* 좌측 24 = 카드 헤더와 같은 잉크 기준선. 첫 탭의 자체 padding 만 회수해 밑줄은 글자 폭에 남긴다 */
+/* 모든 탭 버튼은 같은 규격 — 첫 탭만 패딩을 깎으면 박스가 서로 달라져 줄이 어긋나 보인다.
+   첫 탭 텍스트가 카드 잉크 기준선(24)에 서도록 행 좌측 패딩으로만 조정한다 */
+.tabs { display: flex; align-items: stretch; min-height: 54px; padding: 0 24px 0 8px; border-bottom: 1px solid var(--line); }
+/* 26-08-20 KT #6 — 조회결과 헤더(구분·날짜 스테퍼·미니맵)는 GNB(60) 아래 고정 */
+.card--clip .tabs { position: sticky; top: 60px; z-index: 45; background: var(--surface); }
+/* 시간축 복제본(app.js stickyAxis) — 탭 행 바로 밑, 가로 스크롤은 --gx 로 따라간다 */
+.tl__axis.tl__axis--ghost { position: fixed; top: auto; z-index: 44; overflow: hidden; box-shadow: 0 6px 12px -8px rgba(0,0,0,.18); }
+.tl__axis--ghost > * { transform: translateX(var(--gx, 0)); }
+.tl__axis--ghost .sp-l, .tl__axis--ghost .sp-r { position: relative; transform: none; }
+.tabs a, .tabs button {
+  position: relative;
+  padding: 0 16px;
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 0; background: transparent;
+  font-size: var(--title-2); color: var(--ink-4); white-space: nowrap;
+}
+.tabs a:hover, .tabs button:hover { color: var(--ink-2); }
+.tabs a:focus, .tabs button:focus { outline: none; }
+.tabs a:focus-visible, .tabs button:focus-visible { outline: 2px solid var(--brand); outline-offset: -4px; border-radius: 6px; }
+.tabs .is-active { color: var(--ink); font-weight: 700; letter-spacing: 0; }
+.tabs .is-active::after {
+  content: ""; position: absolute; left: 16px; right: 16px; bottom: -1px;
+  height: 2px; background: var(--ink);
+}
+/* 권장 뷰 안내 = 보조 정보. 헤더가 좁아지면 이 줄이 먼저 줄어들고(말줄임), 컨트롤·미니맵은 온전히 남는다 */
+.tabs__note { margin-left: auto; align-self: center; font-size: var(--body-3); color: var(--ink-4);
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 탭 행 우측 그룹 — auto 여백의 소유자는 그룹 하나뿐이다(안쪽 note 의 auto 는 회수).
+   우측 24px 는 카드 헤더·툴바와 같은 잉크 기준선(탭 행 자체엔 padding 이 없다) */
+.tabs__right { margin-left: auto; align-self: center; display: flex; align-items: center; gap: 12px; }
+.tabs__right > .tabs__note { margin-left: 0; }
+
+/* 조회일 스테퍼 — 축 위에 떠 있던 원형 ‹› 는 스크롤 버튼으로 읽혔다. 날짜를 가운데 두고 무엇이 바뀌는지 밝힌다.
+   좌측 12 는 탭 그룹과의 거리(탭 사이 4 와 합쳐 16) */
+.daystep { display: flex; align-self: center; align-items: center; gap: 2px; padding-left: 12px; }
+/* 날짜 라벨 = 버튼 — 누르면 달력이 떠서 원하는 날로 바로 간다(‹› 는 하루씩, 꾹 누르면 연속 이동) */
+.tabs .daystep__day {
+  min-width: 92px; height: 32px; padding: 0 8px; border-radius: 6px; text-align: center; justify-content: center;
+  font-size: var(--body-1); font-weight: 700; color: var(--ink);
+}
+.tabs .daystep__day:hover { background: var(--surface-2); color: var(--ink); }
+.tabs .daystep__day.is-open { background: var(--surface-2); color: var(--brand); }
+/* 달력 하루 선택 모드 — 기준일 이후는 누를 수 없다 */
+.cal__grid button:disabled { color: var(--ink-4); opacity: .45; cursor: not-allowed; background: none; }
+.tabs .daystep__btn {
+  width: 32px; height: 32px; padding: 0; border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink-3);
+}
+.tabs .daystep__btn:hover { background: var(--surface-2); color: var(--ink-2); }
+.tabs .daystep__btn.is-disabled { opacity: .4; pointer-events: none; }
+/* 채널 순서 세그먼트 — 구분(홈쇼핑 위·일반채널 아래) | 번호순(섞어서 채널 번호 순). 스테퍼 버튼과 같은 32 높이·r6 */
+.seg { display: inline-flex; align-items: center; gap: 8px; }
+.seg__lbl { font-size: var(--body-3); color: var(--ink-4); white-space: nowrap; }
+/* 좁은 폭 양보 순서 — app.js stickyHour.fit() 가 붙인다 */
+.tabs.is-tight .tl__mini-cap { display: none; }
+.tabs.is-tighter .tabs__note { display: none; }
+.tabs__note[hidden] { display: none; }
+.tabs .seg button {
+  height: 32px; padding: 0 12px; margin-left: -1px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink-3);
+  font-size: var(--body-2); font-weight: 500;
+}
+.tabs .seg button:first-of-type { margin-left: 0; border-radius: 6px 0 0 6px; }
+.tabs .seg button:last-of-type { border-radius: 0 6px 6px 0; }
+.tabs .seg button:hover { background: var(--surface-2); color: var(--ink-2); }
+.tabs .seg button.is-on { position: relative; z-index: 1; background: var(--surface-2); border-color: var(--brand); color: var(--brand); font-weight: 600; }
+
+/* ── 상태칩 · 각주 ──────────────────────────────────── */
+
+.stat {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 22px; padding: 0 8px; border-radius: 4px;
+  font-size: var(--body-3); font-weight: 600; white-space: nowrap;
+}
+.stat--fixed   { background: color-mix(in srgb, var(--sec-green) 16%, var(--white)); color: color-mix(in srgb, var(--sec-green) 70%, var(--black)); }
+.stat--interim { background: color-mix(in srgb, var(--sec-yellow) 24%, var(--white)); color: color-mix(in srgb, var(--sec-yellow) 45%, var(--black)); }
+.stat--pending { background: var(--gray-100); color: var(--ink-4); border: 1px solid var(--line); }
+/* 집계 중 = 돌아가는 로더 — "아직 끝나지 않았다"가 정지 아이콘보다 바로 읽힌다. 1.2s 등속, 모션 축소 환경은 정지 */
+.stat--pending .i { animation: spin 1.2s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .stat--pending .i { animation: none; } }
+
+/* ── 타임라인 ───────────────────────────────────────── */
+
+.tl { position: relative; }
+.tl__scroll { overflow-x: auto; overflow-y: hidden; }
+/* 끝의 12px 는 마지막 블록이 레일 밑에 깔려 잘려 보이지 않게 비워 두는 자리 */
+.tl__inner { position: relative; min-width: calc(var(--tl-hour) * 24 + var(--tl-ch) + var(--tl-rail) + 12px); }
+
+/* ── NOW (26-08-30) — 현재 시각 세로선 + 시간축 배지. 표시일 = 오늘일 때만 보인다(render 가 hidden 토글).
+   선은 .tl__inner 기준 절대배치라 채널 열(sticky z10)·시간축(z20) 밑으로 자연히 들어간다 */
+.tl__now {
+  position: absolute; top: 44px; bottom: 0; z-index: 5; width: 2px; margin-left: -1px;
+  background: var(--alert); pointer-events: none;
+}
+.tl__now-cap {
+  position: absolute; top: 3px; height: 18px; padding: 0 6px 0 5px; border-radius: 4px;
+  display: inline-flex; align-items: center; gap: 4px; transform: translateX(-1px);
+  background: var(--alert); color: var(--white);
+  font-size: 11px; line-height: 1; font-weight: 700; letter-spacing: .02em; white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  padding-top: 1px;   /* Pretendard 글립이 em 박스 위쪽에 앉아 시각적으로 뜬다 — 1px 내려 가운데 (26-08-30) */
+}
+.tl__now-cap::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--white); animation: onair 1.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .tl__now-cap::before { animation: none; } }
+
+.tl__axis {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; height: 44px;
+  background: var(--surface); border-bottom: 1px solid var(--line);
+}
+.tl__axis .sp-l { position: sticky; left: 0; z-index: 2; width: var(--tl-ch); flex: none; background: var(--surface); }
+.tl__axis .sp-r {
+  position: sticky; right: 0; z-index: 2; width: var(--tl-rail); flex: none;
+  display: flex; align-items: center; padding: 0 16px;
+  background: var(--gray-100); border-left: 1px solid var(--line);
+  font-size: var(--body-2); font-weight: 600; color: var(--ink-2); white-space: nowrap;
+}
+.tl__ticks { position: relative; flex: 1; }
+.tl__tick { position: absolute; bottom: 0; height: 12px; border-left: 1px solid var(--line); }
+.tl__hour {
+  position: absolute; bottom: 14px;
+  padding-left: 6px; font-size: var(--body-2); color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.tl__date {
+  position: absolute; top: 4px;
+  height: 22px; padding: 0 8px; border-radius: 4px;
+  display: inline-flex; align-items: center;
+  background: var(--ink-2); color: var(--white);
+  font-size: var(--body-3); font-weight: 700;
+}
+.tl__date--next { background: var(--brand); }
+.tl__row { display: flex; height: var(--tl-row); border-bottom: 1px solid var(--line); }
+.tl__row:hover { background: var(--gray-100); }
+/* 자사 행 — 리스트 뷰와 같은 문법(브랜드 5% 틴트)으로 한 눈에 찾게 */
+
+.tl__ch {
+  position: sticky; left: 0; z-index: 10;
+  width: var(--tl-ch); flex: none;
+  display: flex; align-items: center; gap: 8px; padding: 0 12px;
+  background: var(--surface); border-right: 1px solid var(--line);
+}
+.tl__row:hover .tl__ch { background: var(--gray-100); }
+.tl__ch .no {
+  width: 20px; height: 20px; flex: none; border-radius: 3px;
+  display: grid; place-items: center;
+  background: var(--ink-2); color: var(--white);
+  font-size: var(--body-3); font-weight: 700;
+}
+.tl__ch .name {
+  min-width: 0; font-size: var(--body-1); font-weight: 600; color: var(--ink);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* 홈쇼핑사 로고 — 파비콘이 뜨지 않으면 뒤에 깔린 이니셜이 자리를 지킨다 */
+/* GSI 프로필 아이콘 문법(Component_04) — 흰 원 안에 로고를 contain */
+.colog {
+  position: relative; flex: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  display: inline-grid; place-items: center; overflow: hidden;
+  background: var(--white); border: 1px solid var(--line);
+  font-size: 10px; font-weight: 700; color: var(--ink-3);
+}
+.colog img { position: absolute; inset: 2px; width: calc(100% - 4px); height: calc(100% - 4px); object-fit: contain; }
+
+.tag {
+  height: 18px; padding: 0 6px; border-radius: 3px;
+  display: inline-flex; align-items: center;
+  background: var(--brand-tint); color: var(--brand);
+  font-size: 11px; font-weight: 700;
+}
+
+.tl__track { position: relative; flex: 1; }
+.tl__track::before {
+  content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(to right, var(--line) 0 1px, transparent 1px var(--tl-hour));
+}
+
+/* 좌 28px = 체크박스 히트존(24) 고정 거터. 선택 UI가 호버 시 나타나도 텍스트가 밀리지 않게 자리를 미리 뺀다.
+   블록은 전부 흰 카드다(6px 거터 + 1px 보더) — 시청 규모는 면이 아니라 하단 게이지가 말한다.
+   하단 12px = 게이지 자리(4px 바 + 여백) */
+.tl__blk {
+  position: absolute; top: 8px; height: var(--tl-blk);
+  min-width: 56px;
+  display: flex; flex-direction: column; justify-content: center; gap: 3px;
+  padding: 8px 12px; overflow: hidden;
+  /* 경계는 보더가, 규모는 배경이 — 기본은 흰 카드 + 중성 보더, 상위만 틴트 필 */
+  border: 1px solid var(--line); border-radius: 8px;
+  background: var(--surface); text-align: left; cursor: pointer;
+}
+/* 블록 자체가 담기 타깃 — 눌러도 되는 면임을 호버가 알린다. 면 문법 = DS 편성표 위젯(1:48419) */
+.tl__blk:hover { background: color-mix(in srgb, var(--brand) 6%, var(--white)); }
+.tl__blk--pending { cursor: default; }
+/* 키보드 초점 테두리 — 블록이 서로 12px 거터라 offset 2 면 이웃을 침범하지 않는다 */
+.tl__blk:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+/* 담김 표시는 상시 소형 뱃지, 호버하면 해제 버튼이 대신 나온다 */
+.tl__in {
+  flex: none; height: 16px; padding: 0 5px; border-radius: 3px;
+  display: inline-flex; align-items: center;
+  /* 틴트 블록 위에서도 떠야 한다 — 같은 보라 계열 틴트 대신 솔리드 필 */
+  background: var(--brand); color: var(--white); font-size: 11px; font-weight: 700;
+}
+/* 우측 22px = 콜 도트 자리. 제목이 도트 밑으로 파고들지 않게 미리 뺀다 */
+.tl__blk .t { display: flex; align-items: center; gap: 4px; padding-right: 22px; font-size: var(--body-1); font-weight: 600; color: var(--ink-2); white-space: nowrap; overflow: hidden; }
+/* 일반채널 블록엔 콜 도트가 없다 — 도트 자리를 회수하고 한 급 낮춰 읽는다 */
+.lane__row .tl__blk .t { padding-right: 0; font-size: var(--body-2); }
+.tl__blk .t .nm { overflow: hidden; text-overflow: ellipsis; }
+.tl__blk .h .vw { margin-left: auto; padding-left: 8px; font-size: 11px; color: var(--ink-4); }
+.tl__blk .h {
+  display: flex; align-items: baseline;
+  font-size: var(--body-3); color: var(--ink-3); font-variant-numeric: tabular-nums;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* 블록 색 = 카테고리(26-08-20 KT #4). 켜진 카테고리 블록만 고유색 틴트, 꺼진 건 흰 카드. 성과(상위 25/10%) 틴트는 삭제 */
+.tl__blk--cat { background: color-mix(in srgb, var(--cat) 10%, var(--white)); border-color: color-mix(in srgb, var(--cat) 40%, var(--white)); }
+.tl__blk--cat:hover { background: color-mix(in srgb, var(--cat) 18%, var(--white)); }
+
+/* 폭별 축약 — 30분 미만은 프로그램명 + 게이지만(시간·수치는 팝오버), 거터도 회수 */
+.tl__blk--tiny { padding-left: 8px; }
+.tl__blk--tiny .h { display: none; }
+/* 채널 열 밑으로 들어가 60px 미만만 남은 블록 — 글자 조각 대신 연속 표식만 남긴다.
+   호버 규칙이 display 를 되살리므로 가시성으로 잠근다 */
+.tl__blk.is-clipped > * { visibility: hidden; }
+.tl__blk.is-clipped::before {
+  content: "‹"; position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  font-size: var(--body-1); color: var(--ink-4);
+}
+/* 플로어 폭 블록 — 콜 도트를 1개로 줄여 제목 폭을 회수한다 (정확한 콜 수는 팝오버) */
+.tl__blk--floor .t { padding-right: 12px; }
+.tl__blk--floor .calldots i + i { display: none; }
+
+/* 플로어 폭 적용 블록 — 길이 왜곡 표식 */
+.tl__blk--floor::after {
+  content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: 6px;
+  background: repeating-linear-gradient(135deg, var(--line-strong) 0 2px, transparent 2px 5px);
+}
+/* 미집계 블록 — 채도 인코딩 대신 사선 해칭 */
+.tl__blk--pending {
+  background: repeating-linear-gradient(135deg, var(--gray-100) 0 6px, var(--white) 6px 12px);
+}
+.tl__blk--pending .t { color: var(--ink-4); }
+.tl__blk .h .st { margin-left: auto; padding-left: 8px; font-size: 11px; color: var(--ink-4); }
+
+/* ON AIR는 제목 줄 인라인 뱃지 — 절대배치하면 체크 거터·콜 도트와 자리를 다툰다 */
+.tl__onair {
+  flex: none; height: 16px; padding: 0 5px 0 4px; border-radius: 3px;
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--alert); color: var(--white);
+  font-size: 11px; font-weight: 700;
+}
+.tl__onair::before {
+  content: ""; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--white); animation: onair 1.6s ease-in-out infinite;
+}
+@keyframes onair { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) {
+  .tl__onair::before { animation: none; }
+  .filters__body { transition: none; }   /* 코드 정리 26-08-30 — 원래: .filters__body, #filterToggle .i */
+}
+/* 콜 도트 — 개수 인코딩 1~3. 미집계는 아예 찍지 않는다(빈 도트가 전 블록에 반복되면 노이즈만 남는다) */
+.calldots { position: absolute; top: 6px; right: 6px; display: flex; gap: 2px; }
+.calldots i { width: 4px; height: 4px; border-radius: 50%; background: var(--call); }
+
+/* 성과 레일 — 블록 트랙과 다른 면(gray-100)이라 "여기부터는 하루 합계"임이 면으로 갈린다.
+   열 이름은 축 행의 같은 폭 sticky 칸(.sp-r)이 진다 */
+.tl__rail {
+  position: sticky; right: 0; z-index: 10;
+  width: var(--tl-rail); flex: none;
+  display: flex; flex-direction: column; justify-content: center; gap: 5px;
+  padding: 0 16px;
+  background: var(--gray-100); border-left: 1px solid var(--line);
+}
+.tl__row:hover .tl__rail { background: var(--surface-2); }
+/* 레일 숫자는 표 안 숫자 — 히어로가 아니다 (14px) */
+.tl__rail-v { display: flex; align-items: baseline; font-size: var(--body-2); color: var(--ink-3); }
+.tl__rail-v b { font-size: var(--body-1); font-weight: 700; color: var(--ink); margin-left: 4px; }
+/* .rk(N사 중 M위) · .tl__rail-g(상대비교 게이지) — 클라이언트 미제공으로 마크업은 app.js 에서 주석 처리, 스타일은 복원 대비 유지 */
+.tl__rail-v .rk { margin-left: auto; font-size: 11px; color: var(--ink-4); white-space: nowrap; }
+.tl__rail-g { display: flex; }
+.tl__rail-g .minibar { flex: 1; min-width: 0; }
+.tl__rail-c { margin-left: auto; padding-left: 8px; font-size: var(--body-3); color: var(--ink-4); white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* [시안] 하루 시청 추이 스파크라인 — 시청 줄 아래 22px, 그라데이션 면 + 1.5 선 */
+.tl__rail-sp { display: block; width: 100%; height: 22px; overflow: visible; }
+/* 일반채널 레인 레일 — 합계 한 값이라 두 줄로 충분하다 */
+/* 코드 정리 26-08-30 — 레일 값은 <b class="num"> 으로 찍는다(app.js 980). .v 마크업 없음. 주석화.
+.tl__rail .v { font-size: var(--body-1); font-weight: 600; font-variant-numeric: tabular-nums; } */
+.tl__rail .m { font-size: var(--body-3); color: var(--ink-4); }
+
+.minibar { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.minibar > i { display: block; height: 100%; background: var(--brand); }
+
+/* 표시 구간 미니맵 — 하루 24시간 전체를 그려 두고 그 위에 "지금 보고 있는 창"을 얹는다.
+   0·6·12·18·24 눈금이 있어야 창의 위치가 시각으로 읽힌다.
+   flex 안에서 줄어들면 눈금이 겹쳐 붙는다 — 트랙·눈금 모두 폭 고정 */
+.tl__mini { display: flex; align-items: center; gap: 10px; flex: none; }
+.tl__mini-cap { font-size: var(--body-3); color: var(--ink-3); white-space: nowrap; }
+/* NOW 점프 버튼 — 미니맵 왼쪽. 미니맵 트랙 위 빨간 눈금(.tl__mini-now)과 같은 색.
+   `.tabs button`(테두리 0·회색·16px) 이 이기지 않게 .tabs 를 앞에 붙여 우선순위를 올린다 (26-08-30) */
+.tabs .tl__now-btn {
+  flex: none; height: 28px; padding: 0 10px 0 8px; border-radius: 6px;
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid color-mix(in srgb, var(--alert) 45%, var(--white)); background: var(--surface); color: var(--alert);
+  font-size: var(--body-3); font-weight: 700; letter-spacing: .02em; cursor: pointer;
+}
+.tabs .tl__now-btn i { width: 6px; height: 6px; border-radius: 50%; background: var(--alert); animation: onair 1.6s ease-in-out infinite; }
+.tabs .tl__now-btn:hover { background: color-mix(in srgb, var(--alert) 8%, var(--white)); }
+.tabs .tl__now-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.tabs .tl__now-btn[hidden] { display: none; }
+.tl__mini-now { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--alert); border-radius: 1px; pointer-events: none; }
+.tl__mini-now[hidden] { display: none; }
+.tl__mini-map { display: flex; flex-direction: column; gap: 2px; flex: none; }
+.tl__mini-track {
+  flex: none;
+  position: relative; width: 320px; height: 16px;
+  border: 1px solid var(--line); border-radius: 8px;
+  /* 6시간 단위 밴딩 — 창 위치가 하루 중 어디인지 눈금 없이도 잡힌다 */
+  background: repeating-linear-gradient(90deg,
+    var(--gray-100) 0 calc(100% / 8),
+    color-mix(in srgb, var(--gray-200) 40%, var(--white)) calc(100% / 8) calc(100% / 4));
+  cursor: pointer;
+  touch-action: none;
+}
+/* 히트 영역 — 보이는 트랙은 16 이지만 위아래 6 씩 더 받는다(28). 얇은 막대를 정확히 겨누지 않아도 잡힌다 */
+.tl__mini-track::before { content: ""; position: absolute; left: 0; right: 0; top: -6px; bottom: -6px; }
+.tl__mini-track:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.tl__mini-win {
+  position: absolute; top: -1px; bottom: -1px; min-width: 20px;
+  border: 1px solid var(--brand); border-radius: 8px;
+  background: color-mix(in srgb, var(--brand) 22%, var(--white));
+  cursor: grab;
+  transition: background-color .12s ease, box-shadow .12s ease;
+}
+/* 창 위에 올리면 짙어지고 살짝 뜬다 — 여기가 잡는 곳. 드래그 중엔 grabbing */
+.tl__mini-track:hover .tl__mini-win { background: color-mix(in srgb, var(--brand) 32%, var(--white)); }
+.tl__mini-track.is-dragging, .tl__mini-track.is-dragging .tl__mini-win { cursor: grabbing; }
+.tl__mini-track.is-dragging .tl__mini-win {
+  background: color-mix(in srgb, var(--brand) 40%, var(--white));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 18%, transparent);
+}
+/* 창 가운데 그립 3점 — 잡을 수 있는 물건이라는 신호. 양끝 선보다 "손잡이"로 읽힌다 */
+.tl__mini-win::before {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 10px; height: 2px; transform: translate(-50%, -50%);
+  background: radial-gradient(circle, var(--brand) 1px, transparent 1.2px) 0 0 / 4px 2px repeat-x; opacity: .7;
+}
+/* 눈금 라벨은 절대 위치 — 폭이 흔들려도 0·6·12·18·24 가 제자리에 선다 */
+.tl__mini-scale { position: relative; flex: none; width: 320px; height: 14px; font-size: var(--body-3); color: var(--ink-4); }
+/* 다섯 눈금 모두 자기 시각 위에 중앙 정렬. 예전엔 0 을 왼쪽·24 를 오른쪽 맞춤으로 밀어 넣었는데
+   트랙 밖으로 안 나가는 대신 0 이 3.7px 오른쪽, 24 가 7.4px 왼쪽으로 어긋났다(26-08-24 실측).
+   축 라벨이 양 끝에서 반 글자 걸치는 건 정상 — 오른쪽 여백 24px 안에서 잘리지 않는다 */
+.tl__mini-scale i { position: absolute; top: 0; font-style: normal; transform: translateX(-50%); }
+.tl__mini-scale i:nth-child(1) { left: 0; }
+.tl__mini-scale i:nth-child(2) { left: 25%; }
+.tl__mini-scale i:nth-child(3) { left: 50%; }
+.tl__mini-scale i:nth-child(4) { left: 75%; }
+.tl__mini-scale i:nth-child(5) { left: 100%; }
+
+/* 범례는 방향만 말한다 — 구간 경계 숫자는 툴팁으로 내리고 한 번에 훑히게 남긴다 */
+
+/* ── 일반채널 레인 ──────────────────────────────────── */
+
+/* 일반채널 — 홈쇼핑 행과 같은 문법의 연속 행. 성과 데이터가 없어 블록만 중성 톤 */
+/* 일반채널 구획 — 분석 대상이 아닌 편성 정보. 간격 대신 어두운 면으로 갈린다 */
+.lane { border-top: 1px solid var(--line); }
+.lane__row { display: flex; height: 72px; border-bottom: 1px solid var(--line); background: var(--lane-bg); }
+.lane__row .tl__ch, .lane__row .tl__rail { background: var(--lane-bg); }
+.lane__row .tl__ch .name { color: var(--ink-3); font-weight: 600; }
+.lane__row .tl__blk {
+  top: 8px; height: 56px; padding: 8px 10px;
+  background: var(--surface); border-color: transparent;
+  color: var(--ink-3); cursor: default;
+}
+.lane__row .tl__blk:hover { background: var(--surface); }
+.lane__row .tl__blk .t { color: var(--ink-3); }
+.lane__row:hover, .lane__row:hover .tl__ch, .lane__row:hover .tl__rail { background: var(--lane-bg); }
+.lane__row .tl__rail .m { font-size: var(--body-3); color: var(--ink-4); }
+
+/* ── 테이블 · 리스트 뷰 ─────────────────────────────── */
+
+.table { width: 100%; border-collapse: collapse; font-size: var(--body-1); }
+.table th {
+  padding: 12px 12px; text-align: left; white-space: nowrap;
+  border-bottom: 1px solid var(--line);
+  background: var(--gray-100);
+  font-size: var(--body-2); font-weight: 600; color: var(--ink-3);
+}
+.table td { padding: 12px; border-bottom: 1px solid var(--line); color: var(--ink-2); vertical-align: middle; }
+.table tbody tr:hover { background: var(--gray-100); }
+.table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.table .co { display: flex; align-items: center; gap: 8px; }
+.table .is-pending { color: var(--ink-4); font-size: var(--body-3); }
+.table .sortable { cursor: pointer; user-select: none; }
+.table .sortable:hover { color: var(--ink); }
+.table .sortable::after { content: " ↕"; color: var(--line-strong); }
+.table .sortable[aria-sort]::after { content: " ↑"; color: var(--brand); }
+.table .sortable[aria-sort="descending"]::after { content: " ↓"; }
+
+/* KT 편성표 리스트 문법 이식 — 시간대 한 세트(방송 밴드 헤더 + 홈쇼핑 행)가 한 테두리 안 */
+.plist { display: flex; flex-direction: column; gap: 12px; }
+.plist__grp { display: flex; flex-direction: column; gap: 12px; }   /* 시간 밴드 + 그 시간의 자사 편성 한 행 = sticky 구역(26-08-23) */
+.plist__hour {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 16px; background: var(--gray-100); border-bottom: 1px solid var(--line);
+  /* 26-08-23 KT #6 — 리스트에서 '기준 시간' 역할. 결과 헤더(탭 행) 아래에 붙는다 */
+  position: sticky; top: var(--res-line, 114px); z-index: 20;
+}
+.plist__hour .hh {
+  flex: none; height: 36px; padding: 0 14px;
+  display: inline-flex; align-items: center;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  font-size: var(--body-1); font-weight: 700;
+}
+.plist__tv {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 40px; padding: 0 12px;               /* 26-08-27 KT #1 로 32 → 40 — 재핑 눈금 자리 */
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  font-size: var(--body-2); color: var(--ink-3); white-space: nowrap;
+}
+.plist__tv b { color: var(--brand); font-weight: 600; }
+.plist__tv i { width: 1px; height: 10px; background: var(--line); }
+/* 26-08-27 KT #1 — 리스트에도 재핑. 일반채널 칸을 늘려 그 공간에 눈금을 세운다.
+   칸 높이 32 → 40(위 .plist__tv)이 그 늘린 칸이다. 눈금 색은 타임라인 재핑(.tl__zap)과 같은 적색 */
+.plist__zap { display: inline-flex; align-items: center; gap: 3px; }
+.plist__zap em { font-style: normal; font-size: var(--body-3); font-weight: 600; color: var(--graph-14); margin-right: 2px; }
+.plist__zap .zk { width: 2px; height: 14px; border-radius: 1px; background: var(--graph-14); opacity: .85; cursor: help; }
+.plist__zap .zk:hover { opacity: 1; box-shadow: 0 0 0 2px color-mix(in srgb, var(--graph-14) 25%, transparent); }
+.plist__row {
+  display: flex; align-items: center; gap: 24px;
+  padding: 16px;
+}
+.plist__row + .plist__row { border-top: 1px solid var(--line); }
+.plist__row.is-pickable { cursor: pointer; }
+.plist__row.is-pickable:hover { background: var(--gray-100); }
+/* 26-08-28 — 여기에 왼쪽 붉은 표식을 뒀다가 뺐다. ON AIR 배지가 같은 줄에 이미 있어
+   같은 말을 두 번 하는 꼴이었다. 표시는 배지 하나로 충분하다 */
+.plist__thumb {
+  flex: none; width: 72px; height: 72px; border-radius: 8px;
+  object-fit: cover; background: var(--gray-100); border: 1px solid var(--line);
+}
+.plist__id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.plist__chips { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.pchip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 26px; padding: 0 10px;
+  border: 1px solid var(--line); border-radius: 6px;
+  font-size: var(--body-3); color: var(--ink-3);
+}
+/* 날짜·카테고리 = 보라 강조 칩 (KT 리스트 문법) */
+.pchip--em { color: var(--brand); font-weight: 600; border-color: color-mix(in srgb, var(--brand) 30%, var(--white)); }
+.plist__title { font-size: var(--title-2); font-weight: 700; }
+.plist__price { font-size: var(--title-2); font-weight: 700; color: var(--brand); }
+.plist__stats {
+  flex: none; display: grid; grid-template-columns: repeat(2, 132px); gap: 4px 24px;
+  padding: 12px 16px; background: var(--gray-100); border-radius: 8px;
+}
+.plist__stats .k { display: flex; align-items: center; gap: 4px; font-size: var(--body-3); color: var(--ink-4); }
+.plist__stats .k .i { width: 13px; height: 13px; color: var(--brand); }
+.plist__stats b { font-size: var(--body-1); font-weight: 700; }
+.table .minibar { display: block; width: 96px; margin: 4px 0 0 auto; }
+.table .is-top { color: var(--brand); font-weight: 700; }
+.table .is-top .minibar > i { background: var(--brand); }
+/* 행 아무 데나 = 담기 (타임라인 블록과 같은 문법) */
+.table tr.is-pickable { cursor: pointer; }
+
+/* 비교표 — 5행 넘으면 표 내부 스크롤(§1.9) */
+
+.pager { display: flex; justify-content: center; align-items: center; gap: 4px; }
+.pager button {
+  min-width: 32px; height: 32px; padding: 0 8px;
+  border: 1px solid var(--line); border-radius: 6px;
+  background: var(--surface); color: var(--ink-3); font-size: var(--body-2);
+}
+.pager .is-on { border-color: var(--brand); background: var(--brand-tint); color: var(--brand); font-weight: 700; }
+
+/* ── 팝오버 · 툴팁 ──────────────────────────────────── */
+
+.pop {
+  position: fixed; z-index: 55; width: 340px;   /* sticky 결과 헤더(45)·시간축 복제본(44) 위, GNB(60) 아래 — 26-08-20 KT #6 이후 */
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+/* 3층 — 제목 / 메타 한 줄 / 지표 2열. 기준시각은 맨 아래 캡션으로 강등한다 */
+.pop__body { padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+.pop__img { display: block; width: 100%; height: 90px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+/* 제목 옆 담김 뱃지 — 인라인으로 붙이면 글자에 눌어붙고 기준선이 어긋난다. flex 로 세로 중앙, 8 띄움 */
+.pop__title { display: flex; align-items: center; gap: 8px; font-size: var(--title-2); font-weight: 700; color: var(--ink); }
+.pop__title .tl__in { position: relative; top: -1px; }
+/* .pop__rank(동시간대 N편 중 M위) — 클라이언트 미제공으로 마크업 주석 처리, 스타일은 복원 대비 유지 */
+.pop__rank { font-size: var(--body-1); color: var(--ink-2); }
+.pop__rank b { color: var(--brand); }
+.pop__meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: var(--body-2); color: var(--ink-3); }
+.pop__moved {
+  height: 18px; padding: 0 6px; border-radius: 3px;
+  display: inline-flex; align-items: center;
+  background: var(--surface-2); color: var(--ink-3); font-size: 11px; font-weight: 700;
+}
+.pop__note { font-size: var(--body-3); color: var(--ink-4); }
+/* 세로 간격은 body 의 gap 4 + 각 층의 padding-top 으로만 만든다(margin 없음) */
+.pop__stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-top: 8px; border-top: 1px solid var(--line); }
+/* 26-08-23 — 3열(시청가구 2값 + 콜)은 라벨이 nowrap 이라 340 폭을 넘겨 세 번째 칸이 잘렸다.
+   KT 데이터 예시와 같은 2열로 두고 콜은 아랫줄로 내린다 */
+/* 26-08-28 — 지표가 3칸에서 4칸이 됐다(KT 요구 5번, 웹 반응수 추가). 2열 그대로 2×2 로 떨어진다 */
+.pop__stats--4 { grid-template-columns: 1fr 1fr; gap: 6px 12px; }
+.pop__stats--4 .k { white-space: nowrap; font-size: 11.5px; letter-spacing: -.2px; }
+.pop__stats .k[data-tip] { text-decoration: underline dotted; text-underline-offset: 2px; cursor: help; }
+.pop__stats .k { font-size: var(--body-3); color: var(--ink-4); }
+.pop__stats .v { display: flex; align-items: center; gap: 6px; font-size: var(--body-1); font-weight: 700; font-variant-numeric: tabular-nums; }
+.pop__when { padding-top: 6px; font-size: var(--body-3); color: var(--ink-4); }
+
+.tip {
+  position: fixed; z-index: 58;
+  max-width: 260px; padding: 8px 20px; border-radius: 8px;
+  background: var(--ink); color: var(--white);
+  font-size: var(--body-3); line-height: 1.5;
+  white-space: pre-line;   /* 편성일자 목록을 줄바꿈으로 받는다 */
+  overflow-wrap: anywhere;   /* 긴 한글 문장이 260px 안에서 끊기게(26-08-23) */
+}
+/* DS Tooltip(1:48419) 꼬리 화살표 — 대상 위에 뜨면 아래로, 아래에 뜨면 위로 */
+.tip::after {
+  content: ""; position: absolute; left: 50%; transform: translateX(-50%);
+  border: 6px solid transparent;
+}
+.tip--above::after { top: 100%; border-top-color: var(--ink); }
+.tip--below::after { bottom: 100%; border-bottom-color: var(--ink); }
+
+/* 토스트 — 바구니 상한 안내 */
+.toast {
+  position: fixed; left: 50%; bottom: 88px; transform: translateX(-50%);
+  z-index: 70; padding: 12px 18px; border-radius: 8px;
+  background: var(--ink); color: var(--white); font-size: var(--body-1);
+  /* 파일명·조건이 들어가 문구가 길다 — 화면 밖으로 나가지 않게 폭을 묶고 줄바꿈시킨다(26-08-23) */
+  max-width: min(560px, calc(100vw - 48px)); overflow-wrap: anywhere; line-height: 1.5;
+}
+
+/* ── 분석 바구니 바 ─────────────────────────────────── */
+
+/* 분석 전 비교 시트 — 바구니 바 바로 위에 뜬다. 보면서 계속 담을 수 있는 패널 */
+.cmpsheet {
+  position: sticky; bottom: 64px; z-index: 44;
+  border-radius: 0;   /* 바에 붙는 도킹 시트 — 카드 라운드를 물려받지 않는다 */
+  margin-bottom: -24px;   /* page-wrap 의 24 간격을 되물려 바에 밀착 */
+  max-height: 44vh; overflow: auto;
+}
+/* 26-08-23 — 흰 시트가 흰 카드 위에 얹혀 경계가 안 보였다. 상단 헤어라인으로 경계를 긋고
+   위로만 번지는 쉐도우를 넓게 깔아 "뒤 콘텐츠 위에 떠 있음"을 만든다.
+   .card.cmpsheet 로 특이도를 올린다 — figma 스킨의 .card 그림자(10/20/30 4%)가 뒤에서 덮고 있었다 */
+.card.cmpsheet {
+  box-shadow:
+    0 -1px 0 var(--line),
+    0 -14px 36px -10px color-mix(in srgb, var(--black) 16%, transparent);
+}
+/* 시트 헤더는 스크롤해도 남는다 — 어느 표를 보고 있는지 잃지 않게 */
+.cmpsheet .card__head {
+  position: sticky; top: 0; z-index: 3;
+  background: var(--surface); border-bottom: 1px solid var(--hairline, var(--line));
+}
+/* 26-08-23 — 9행 중 1440×900 에서 4행이 가려진다(스크롤이 정상 경로). 숫자 열이 6개라
+   헤더를 잃으면 어느 값인지 못 읽는다. 정렬 토글도 헤더에 있어 매번 올라가야 했다.
+   → 표 헤더를 제목 행 바로 아래에 고정. 제목 행과 겹쳐 보이지 않게 불투명 배경 + 하단선 */
+.cmpsheet thead th {
+  position: sticky; top: var(--cmp-head, 73px); z-index: 2;
+  background: var(--surface); box-shadow: inset 0 -1px 0 var(--line);
+}
+
+/* 스크롤 중엔 화면 하단에 붙고, 마지막 카드 끝에서는 그 자리에 안착한다(page-wrap 하단 padding 24 가 착지점).
+   떠 있는 바가 아니라 콘텐츠의 마지막 행 — 헤어라인 + 위쪽으로만 번지는 저강도 쉐도우 */
+.basket {
+  position: sticky; bottom: 0; z-index: 45;
+  display: flex; align-items: center; gap: 12px;
+  min-height: 64px; margin-bottom: -24px;   /* page-wrap 하단 24 를 되물어 푸터에 밀착. 칩이 줄바꿈하면 세로로 자란다 */
+  /* 풀블리드 — 26-08-23 수정: 100vw 는 세로 스크롤바 폭을 포함해 가로 오버플로와 기준선 어긋남을 만든다.
+     app.js fitHeader 가 실측해 넣는 --sbw(스크롤바 폭)를 빼서 화면 폭에 정확히 맞춘다.
+     padding 은 카드 좌측 기준선과 같은 공식 — 안쪽 내용은 카드와 한 줄에 선다 */
+  width: calc(100vw - var(--sbw, 0px));
+  margin-left: calc(50% - 50vw + var(--sbw, 0px) / 2);
+  padding: 12px 48px;   /* 26-08-30 좌우 48 고정(카드·page-wrap 과 동일). 원래: 12px max(48px, calc(50vw - var(--sbw, 0px) / 2 - 912px)) — 최대폭 1824 시절 공식 */
+  background: var(--surface); border-top: 1px solid var(--line);
+  box-shadow: 0 -4px 14px color-mix(in srgb, var(--black) 4%, transparent);
+}
+.basket__count { display: inline-flex; align-items: center; gap: 8px; font-size: var(--body-1); font-weight: 700; color: var(--ink-2); white-space: nowrap; }
+.basket__count .i { color: var(--brand); }
+/* 26-08-23 — 숨긴 가로 스크롤은 마우스로 움직일 수단이 없었다(휠도 안 먹고 스크롤바도 없음).
+   상한이 9개뿐이니 줄바꿈으로 전부 보여준다 — 담은 걸 확인하는 게 이 줄의 목적이다 */
+.basket__list {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px; flex: 1; min-width: 0;
+}
+/* 담긴 항목 = 적용된 필터 — 브레드크럼 칩 문법(1:48987: lightblue 필 h40 캡슐 · gray600 · × 회색 원) */
+.basket__item {
+  display: inline-flex; align-items: center; gap: 6px;
+  /* 26-08-23 — 피그마 브레드크럼 칩(h40)의 밀도 변형. 필터 행의 칩과 달리 여기는 최대 9개가
+     두 줄로 쌓이는 트레이라 h32 로 낮춘다. 캡슐·틴트·× 원 등 정체성은 그대로(프로젝트에 chip--xs 28 선례) */
+  height: 32px; padding: 0 12px; border-radius: 16px;
+  background: var(--sec-lightblue); color: var(--gray-600);
+  font-size: var(--body-2); white-space: nowrap;
+}
+.basket__item .nm { max-width: 132px; overflow: hidden; text-overflow: ellipsis; }
+.basket__item .nm + span { font-size: var(--body-2); color: var(--ink-4); }
+.delbtn {
+  flex: none; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 50%;
+  display: inline-grid; place-items: center;
+  background: transparent; color: var(--ink-4);
+}
+.delbtn .i { width: 14px; height: 14px; }
+.delbtn:hover { background: var(--surface-2); color: var(--ink-2); }
+/* 카드 헤더의 닫기 — 시트 폭에 맞는 크기 */
+.card__head .delbtn { width: 36px; height: 36px; color: var(--ink-3); }
+.card__head .delbtn .i { width: 20px; height: 20px; }
+/* 칩 안의 × 는 브레드크럼 저장값 그대로 — gray300 원 16px + 흰 × */
+.basket__item .delbtn {
+  width: 16px; height: 16px;
+  background: var(--gray-300); color: var(--white);
+}
+.basket__item .delbtn .i { width: 10px; height: 10px; }
+.basket__item .delbtn:hover { background: var(--ink-3); color: var(--white); }
+.basket__actions { display: flex; align-items: center; gap: 8px; flex: none; }
+
+/* ── 1600 이하 축소 대응 ────────────────────────────── */
+
+@media (max-width: 1600px) {
+  .page-wrap { padding: 24px 24px 0; }
+  .page-top { padding-left: 24px; padding-right: 24px; }
+  .basket { padding: 0 24px; }   /* 풀블리드 폭은 그대로, 안쪽 기준선만 좁힌다 */
+  /* 근거 4칸은 접지 않는다 — 판정 한 줄과 근거 한 줄이 세트로 읽혀야 한다 */
+}
+
+/* ── 26-08-20 KT #1 요일·시간대 (조회 기간 행 오른쪽) ── */
+.filter-row .sublbl { margin-left: 20px; font-size: var(--body-2); color: var(--ink-3); white-space: nowrap; }
+.filter-row .numrow { display: inline-flex; gap: 6px; }
+/* 시간대 줄만 조회 기간과 같은 간격(.val 의 8px)으로 — 같은 컴포넌트끼리 사이가 달라 보이지 않게 */
+.filter-row .numrow--hour { align-items: center; gap: 8px; }
+.chip--xs { height: 28px; padding: 0 12px; }
+/* 26-08-25 KT 요청 — 시간대 구간 칩을 시작/종료 시각 선택으로 바꿨다.
+   26-08-25(2차) — 바로 왼쪽의 **조회 기간 날짜 필과 같은 컴포넌트**를 쓴다. 같은 뜻(범위를 고른다)인데
+   낮은 캡슐(28)로 따로 만들었더니 한 줄 안에서 규격이 둘로 갈렸다. 되돌릴 땐 아래 다섯 줄을 살리고
+   schedule.html 의 pill--hour · cv 셰브론도 함께 되돌린다
+   .pill.pill--hour { height: 28px; padding: 0 6px 0 10px; border-radius: 14px; gap: 4px; }
+   .pill--hour .i { width: 13px; height: 13px; }
+   .pill--hour .cv { flex: none; width: 12px; height: 12px; color: var(--ink-4); pointer-events: none; }
+   .input--hour { width: 46px; height: 100%; padding: 0; ... font-size: var(--body-2); }
+   .input--hour:focus { outline: none; } */
+/* 날짜 필의 .input--date 와 같은 문법 — 폭만 '00시' 에 맞춘다(높이·여백·글자는 .pill .input 이 준다).
+   select 의 네이티브 화살표는 지운다 — 날짜 필에도 없는 장식이라 둘의 생김새가 갈린다 */
+.input--hour { width: 40px; font-variant-numeric: tabular-nums; cursor: pointer;
+  appearance: none; -webkit-appearance: none; }
+/* ── 26-08-20 KT #11 재핑 세로줄 — 일반채널 레인, 1분 = 4px 한 칸. 색은 공식 팔레트 적색(graph-14) */
+/* 재핑 줄이 선 블록은 오른쪽 끝을 줄에게 내준다 — 글자·도트가 줄 위로 올라오면 둘 다 안 읽힌다 */
+.tl__blk.has-zap { padding-right: calc(12px + var(--zapw, 0px)); }
+.tl__blk.has-zap .calldots { right: calc(6px + var(--zapw, 0px)); }
+/* 재핑 세로줄 — 홈쇼핑 편성 블록의 종료 지점, 블록 높이를 가로지르는 선.
+   블록 위 레이어에 얹힌다 */
+/* 재핑 표시 — 1분 = 4px 안에서 선 2 + 틈 2. KT 요구 「이어져도 합쳐지지 않음」: 틈이 선보다 좁으면 바코드로 뭉쳐 개수가 안 세어진다(26-08-23) */
+.tl__zap { position: absolute; top: 10px; bottom: 10px; width: 2px; margin-left: 1px; border-radius: 1px; background: var(--graph-14); opacity: .85; z-index: 6; cursor: help; }
+.tl__zap:hover { opacity: 1; box-shadow: 0 0 0 2px color-mix(in srgb, var(--graph-14) 25%, transparent); }

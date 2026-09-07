@@ -1,0 +1,620 @@
+/* 코드 정리 26-08-30 — 실시간 화면(realtime.html)이 쓰지 않는 옛 프로토타입 화면 규칙(사이드바 어드민·bh-·pv-·sv- 등).
+   어떤 HTML 도 로드하지 않는다. 복원 시 assets/ui.css 로 옮긴다. 원본 위치는 git 01ebe9e 의 assets/ui.css */
+
+
+/* 서브탭 (채널별 · 프로그램별 · 지역별) — Figma 프로그램별 화면 실측 */
+.subtabs { display: flex; gap: 26px; margin: 24px 0 16px; }
+.subtabs a, .subtabs span {
+  font-size: 18px; font-weight: 400;
+  color: var(--gsi-gray400);
+}
+.subtabs .is-active { color: var(--ink); font-weight: 700; letter-spacing: 0; }
+.subtabs a:hover { color: var(--ink-2); } /* 원본은 카피라이트만 사업자정보와 한 칸 띄움 */
+
+/* ── 셸 B · 어드민웹 사이드바 (GSI admin, 실측) ──── */
+.adm-body { display: flex; min-height: 100vh; }
+.adm-side {
+  width: 216px; flex: none;
+  background: linear-gradient(180deg, var(--gsi-grad-a), var(--gsi-grad-b));
+  display: flex; flex-direction: column;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+}
+.adm-side__logo { display: flex; align-items: center; padding: 20px 20px 24px; }
+.adm-side__logo img { width: 120px; height: 44px; display: block; }
+.adm-side__menu { display: flex; flex-direction: column; gap: 2px; padding: 0 10px; }
+.adm-side__menu a, .adm-side__menu span {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 9px;
+  font-size: 13px; font-weight: 600; color: var(--gsi-lav);
+  position: relative;
+}
+.adm-side__menu .ico { display: inline-flex; opacity: .85; }
+.adm-side__menu .ico svg { width: 16px; height: 16px; }
+.adm-side__menu .caret { margin-left: auto; font-size: 9px; opacity: .55; }
+.adm-side__menu a:hover { background: rgba(255, 255, 255, .08); color: #fff; }
+.adm-side__menu .is-active { background: var(--gsi-active); color: #fff; font-weight: 700; }
+.adm-side__menu .is-active::after {
+  content: ""; position: absolute; right: -10px; top: 6px; bottom: 6px;
+  width: 3px; border-radius: 2px 0 0 2px; background: var(--gsi-mint-2);
+}
+.adm-side__foot { margin-top: auto; padding: 14px 10px 18px; display: flex; flex-direction: column; gap: 2px; }
+.adm-side__foot a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 9px;
+  font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, .62);
+}
+.adm-side__foot a:hover { background: rgba(255, 255, 255, .08); color: #fff; }
+.adm-side__foot .ico { display: inline-flex; }
+.adm-side__foot .ico svg { width: 15px; height: 15px; }
+.adm-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.adm-topmeta {
+  display: flex; justify-content: flex-end; align-items: center; gap: 8px;
+  padding: 12px 28px 0; font-size: 12px; color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.adm-topmeta b { color: var(--ink-2); font-weight: 700; }
+.adm-title {
+  margin: 10px 28px 0; padding: 16px 22px;
+  background: var(--surface); border: 1px solid var(--hairline);
+  border-radius: var(--r-card);
+  display: flex; align-items: center; gap: 12px;
+}
+.adm-title .ico {
+  width: 30px; height: 30px; border-radius: 8px; flex: none;
+  background: var(--brand-tint); color: var(--brand);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.adm-title .ico svg { width: 16px; height: 16px; }
+.adm-title h1 { margin: 0; font-size: 18px; font-weight: 700; }
+.adm-title .sub { color: var(--ink-3); font-size: 13px; margin-left: 2px; }
+.adm-footer {
+  margin-top: auto; padding: 22px; text-align: center;
+  font-size: 12px; color: var(--ink-3);
+}
+
+.page-wrap { max-width: 1824px; margin: 0 auto; padding: 24px 48px 64px; }
+.adm-main .page-wrap { max-width: none; margin: 0; padding: 18px 28px 40px; width: 100%; }
+/* 03 동결 화면 — 12차(A2·A4) 전역 변경으로부터 원값 보존 */
+.adm-main .card__body { padding: 16px 16px 24px; }
+.adm-main .table { width: 100%; margin: 0; }
+.adm-main .chart-legend { padding: 8px 8px 0; }
+.adm-main .card__head { padding: 16px 16px 0 24px; }
+
+/* ── 페이지 헤더 ────────────────────────────────── */
+.page-head { margin: 0 0 24px; }
+.page-head__badges { display: flex; gap: 8px; margin-bottom: 8px; }
+.page-head h1 {
+  margin: 0; font-size: 22px; font-weight: 700;
+}
+.page-head p { margin: 8px 0 0; color: var(--ink-2); font-size: 13px; }
+.section-gap { margin-top: 24px; }
+
+/* ── KPI 스탯 타일 ─────────────────────────────── */
+.kpi-row {
+  display: grid; gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+}
+.kpi__meta { font-size: 12px; color: var(--ink-3); }
+
+/* ── 뱃지 · 칩 · 필 ─────────────────────────────── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: 4px;
+  font-size: 12px; font-weight: 600; line-height: 1.4;
+  background: var(--hairline-2); color: var(--gsi-gray600);
+}
+.badge--brand { background: var(--brand-tint); color: var(--brand); }
+.badge--up   { background: var(--up-tint);   color: var(--up); }
+.badge--down { background: var(--down-tint); color: var(--down); }
+.btn--primary { height: 48px; padding: 0 24px; border-radius: 8px;
+  background: var(--brand); color: #fff; font-size: 16px; font-weight: 700; }
+
+/* radio tab (원본 1:49812) — 흰 알약이 회색 트랙을 달리는 iOS식 → 보라 알약.
+   아이템 폭은 고정 110/80 대신 auto(원본 uvpv_tab 변형) — 라벨 길이가 가변이라 */
+.toggle-group {
+  display: inline-flex; align-items: center; height: 44px;
+  padding: 4px; gap: 6px; border: 0; border-radius: 24px;
+  background: var(--page);
+}
+.toggle-group button {
+  height: 100%; padding: 0 18px; border: 0; border-radius: 26px;
+  background: none; color: var(--gsi-gray600);
+  font-size: 14px; font-weight: 400;
+  transition: background .15s ease, color .15s ease, opacity .15s ease;
+}
+.toggle-group button.is-on { background: var(--brand); color: #fff; font-weight: 600; }
+.toggle-group button:not(.is-on):hover { opacity: .7; }
+
+/* ── 필터 행 (차트 위 한 줄) ────────────────────── */
+.filter-row {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+  
+}
+.filter-row .label { font-size: 12px; font-weight: 700; color: var(--ink-3); margin-right: 2px; }
+.filter-row .sep { width: 1px; height: 20px; background: var(--hairline); margin: 0 4px; }
+/* 조회옵션 필드 (원본 1:48441) — 네모난 흰 인풋 → 보더 없는 회색 알약.
+   우리 인스턴스는 전부 select 라 좌 캘린더가 아니라 우 chevron */
+.date-field {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 44px; min-width: 120px; padding: 0 14px 0 24px;
+  border: 0; border-radius: 50px; background: var(--page);
+  font-size: 14px; font-weight: 400; color: var(--gsi-gray600);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 테이블 ─────────────────────────────────────── */
+/* 잉크는 카드 본문선(24)에, 행 배경 밴드(틴트·hover)는 좌우 12px 블리드 —
+   셀 패딩 0으로 잉크만 붙이면 글자가 밴드 가장자리에 닿는다(A4 1안 기각) */
+.table { width: calc(100% + 24px); margin: 0 -12px; border-collapse: collapse; font-size: 13px; }
+.table th {
+  text-align: left; font-size: 12px; font-weight: 700; color: var(--ink-3);
+  padding: 10px 12px; border-bottom: 1px solid var(--hairline);
+  white-space: nowrap;
+}
+.table td {
+  padding: 11px 12px; border-bottom: 1px solid var(--hairline-2);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.table tr:last-child td { border-bottom: 0; }
+.table tbody tr { transition: background .12s ease; }
+.table tbody tr:hover { background: var(--surface-2); }
+.table .num { text-align: right; }
+.table .pos { color: var(--up); font-weight: 700; }
+.table .neg { color: var(--down); font-weight: 700; }
+.adm-main svg text[font-size="11"] { font-size: 11px; }
+
+/* ============================================================
+   05 시청행태 분석 (bh-) — 라이트 분석형 레이아웃 (히어로 없음)
+   신규 전용 섹션. 기존 셀렉터 무수정. 크롬(card/subtabs/badge/rt-lg/rt-tools) 재사용.
+   ============================================================ */
+/* 리스킨 후 05는 .page-wrap/.kpi/.toggle-group/.filter-row 재사용 — 아래는 유지 요소만 */
+.subtabs .is-disabled { opacity: .45; cursor: default; }
+
+/* ── ③ 메인: 히트맵 | 순위 ── */
+.bh-main { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 24px; align-items: start; }
+.kpi__spark { margin-top: 8px; width: 100%; display: block; }
+/* 2-5 네이티브 화살표 대신 우측 24px chevron (원본 ic_dropdown_line_bk) */
+.date-field select { border: 0; font: inherit; color: var(--gsi-gray600); cursor: pointer; padding: 0 26px 0 0;
+  -webkit-appearance: none; appearance: none;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2358606A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>") no-repeat right center / 24px 24px; }
+.table tbody tr.bh-featured-row, .table tbody tr.sv-featured-row, .table tbody tr.pv-featured-row { background: var(--brand-tint); }
+.table tbody tr.bh-featured-row:hover, .table tbody tr.sv-featured-row:hover, .table tbody tr.pv-featured-row:hover { background: var(--brand-tint-2); }
+.bh-heat__grid { display: grid; grid-template-columns: 56px repeat(24, 1fr); gap: 3px; align-items: center; }
+.bh-heat__axis { font-size: 12px; color: var(--ink-3); text-align: center; font-variant-numeric: tabular-nums; height: 18px; line-height: 18px; }
+.bh-heat__daylabel { font-size: 12px; font-weight: 600; color: var(--ink-2); }
+.bh-heat__cell { height: 34px; border-radius: 4px; cursor: pointer; transition: transform .2s cubic-bezier(.22, .8, .36, 1); }
+.bh-heat__cell:hover { transform: scale(1.06); }
+.bh-heat__cell:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+.bh-heat__cell.is-peak { box-shadow: inset 0 0 0 1.5px var(--brand); }
+.bh-lv0 { background: var(--hairline-2); }
+.bh-lv1 { background: color-mix(in srgb, var(--series-1) 14%, transparent); }
+.bh-lv2 { background: color-mix(in srgb, var(--series-1) 32%, transparent); }
+.bh-lv3 { background: color-mix(in srgb, var(--series-1) 55%, transparent); }
+.bh-lv4 { background: color-mix(in srgb, var(--series-1) 78%, transparent); }
+.bh-lv5 { background: var(--series-1); }
+.bh-heat__legend { display: flex; align-items: center; gap: 8px; margin-top: 16px; font-size: 12px; color: var(--ink-3); }
+.bh-heat__steps { display: flex; gap: 3px; }
+.bh-heat__step { width: 26px; height: 12px; border-radius: 4px; }
+
+/* ── ③-B 채널 순위 바 ── */
+.bh-rank { margin-inline: -8px; display: flex; flex-direction: column; gap: 0; }
+.bh-rank__row { height: 56px; display: flex; align-items: center; gap: 12px; padding: 0 8px; border-radius: 8px; cursor: pointer; transition: background .15s ease; }
+.bh-rank__row:hover { background: var(--surface-2); }
+.bh-rank__row:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
+.bh-rank__no { width: 24px; height: 24px; border-radius: 50%; flex: none; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; background: var(--surface-2); color: var(--ink-2); }
+.bh-rank__no.is-first { background: var(--brand); color: #fff; }
+.bh-rank__name { font-size: 16px; font-weight: 700; color: var(--ink); white-space: nowrap; }
+.bh-rank__track { flex: 1; height: 8px; border-radius: 4px; background: var(--hairline-2); overflow: hidden; }
+.bh-rank__fill { height: 100%; border-radius: 4px; background: var(--series-deemph); transition: background .15s ease, width .5s cubic-bezier(.22, .8, .36, 1); }
+.bh-rank__fill.is-first { background: var(--series-1); }
+.bh-rank__row:hover .bh-rank__fill { background: var(--brand); }
+.bh-rank__val { font-size: 16px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; flex: none; }
+.bh-rank__pct { font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; margin-left: 6px; flex: none; min-width: 42px; text-align: right; }
+
+/* ── ④ 라이브 피드 ── */
+/* 1176px+600px 고정은 page-wrap(1440)을 넘겨 가로 오버플로가 났다 — 같은 비율의 유동 트랙으로 */
+.bh-livebody { display: grid; grid-template-columns: minmax(0, 1176fr) minmax(0, 600fr); gap: 24px; }
+.bh-livechart { position: relative; }
+.bh-feed { display: flex; flex-direction: column; }
+.bh-feed__row { height: 44px; flex: none; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--hairline-2); font-size: 13px; }
+.bh-feed__row:last-child { border-bottom: 0; }
+.bh-feed__time { font-weight: 600; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.bh-feed__ch { font-weight: 600; color: var(--ink); }
+.bh-feed__in { margin-left: auto; font-weight: 700; color: var(--up); font-variant-numeric: tabular-nums; display: inline-flex; align-items: center; gap: 2px; }
+.bh-feed__out { font-weight: 700; color: var(--down); font-variant-numeric: tabular-nums; display: inline-flex; align-items: center; gap: 2px; }
+.bh-feed__in svg, .bh-feed__out svg { width: 12px; height: 12px; }
+.bh-feed__row.is-new { animation: bh-slidein .22s cubic-bezier(.22, .8, .36, 1); }
+
+/* ── ⑤ 상세 테이블 (.table 재사용 + bh 수식) ── */
+th.bh-sortable { cursor: pointer; user-select: none; }
+th.bh-sortable:hover { color: var(--ink); }
+.bh-sort { display: inline-flex; margin-left: 4px; vertical-align: middle; opacity: .5; }
+th[aria-sort="ascending"] .bh-sort, th[aria-sort="descending"] .bh-sort { opacity: 1; color: var(--brand); }
+.bh-sort svg { width: 8px; height: 8px; }
+.bh-td-spark { width: 96px; }
+
+/* ── 스켈레톤 시머 ── */
+.bh-skeleton { background: linear-gradient(90deg, var(--hairline-2) 25%, var(--surface-2) 37%, var(--hairline-2) 63%); background-size: 400% 100%; animation: bh-shimmer 1.2s ease-in-out infinite; border-radius: 8px; color: transparent !important; }
+@media (prefers-reduced-motion: reduce) {
+  .bh-heat__cell { transition: none; }
+  .bh-feed__row.is-new { animation: none; }
+  .bh-skeleton { animation: none; }}
+@media (max-width: 980px) {
+  .bh-main, .bh-livebody { grid-template-columns: 1fr; }}
+
+
+/* ============================================================
+   07 프로그램 상세 v2 (pv-) — 스토리 4단 · 라이브 진행 · 유출색 단일화
+   ============================================================ */
+/* 리스킨 후 07은 .page-wrap 재사용 (.pv-scope는 유출색 오버라이드 스코프) */
+.pv-back { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: var(--ink-3); margin: 0 0 16px; }
+.pv-back:hover { color: var(--brand); }
+.pv-back svg { width: 16px; height: 16px; }
+.pv-stack { display: flex; flex-direction: column; gap: 24px; }
+
+/* ① 히어로 */
+.pv-hero__title { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.pv-hero__h1 { margin: 0; font-size: 22px; font-weight: 700; color: var(--ink); }
+.pv-hero__meta { margin-top: 8px; font-size: 14px; color: var(--ink-2); }
+/* 대표 지표 밴드 — 콜(전화) 반응 + 파생 전환율 */
+.pv-hero__call { display: flex; align-items: stretch; flex-wrap: wrap; gap: 24px;
+  margin-top: 16px; padding: 16px; border: 1px solid var(--brand);
+  border-radius: var(--r-card); background: var(--brand-tint); }
+.pv-hero__call-item { display: flex; flex-direction: column; gap: 8px; }
+.pv-hero__call-item.is-lead { flex: 1; min-width: 0; }
+.pv-hero__call-k { font-size: 12px; font-weight: 700; color: var(--ink-2);
+  display: inline-flex; align-items: center; gap: 6px; }
+.pv-hero__call-fig { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.pv-hero__call-v { font-size: 34px; font-weight: 700; line-height: 1;
+  color: var(--ink); font-variant-numeric: tabular-nums; flex: none; }
+.pv-hero__call-v.is-sm { font-size: 22px; }
+.pv-hero__call-v small { font-size: 14px; font-weight: 600; color: var(--ink-3); margin-left: 2px; }
+.pv-hero__call-sub { font-size: 13px; color: var(--ink-3); }
+.pv-hero__call-div { width: 1px; background: var(--brand-tint-2); flex: none; }
+.pv-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 16px; }
+
+/* ② 시간별 성과 — 히어로 2단 + 스몰멀티플 3열 */
+.pv-cap { font-size: 12px; font-weight: 700; color: var(--ink-3); margin: 0 0 8px; }
+.pv-perf { display: flex; flex-direction: column; gap: 24px; }
+.pv-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px;
+  margin-right: 6px; vertical-align: -1px; }
+/* 통합 분석 카드 — 세 패널 + 재핑 밴드를 관통하는 세로선 (좌표는 페이지 JS가 계산) */
+#pvIntegrated .card__body { position: relative; }
+.pv-cross { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--axis);
+  pointer-events: none; }
+
+/* ④ 고객 구성 */
+.pv-audience__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.pv-audience__grid > .pv-wide { grid-column: 1 / -1; }
+.pv-panel { border: 1px solid var(--hairline); border-radius: var(--r-card); padding: 16px; background: var(--surface-2); }
+.pv-panel__head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
+.pv-panel__title { font-size: 14px; font-weight: 700; color: var(--ink); }
+.pv-panel__title small { font-size: 12px; font-weight: 600; color: var(--ink-3); margin-left: 6px; }
+.pv-panel__total { margin-left: auto; font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.pv-agsum { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+.pv-agsum .cell { border: 1px solid var(--hairline); border-radius: var(--r-ctl); padding: 10px 12px; background: var(--surface); }
+.pv-agsum .k { font-size: 12px; color: var(--ink-3); }
+.pv-agsum .v { font-size: 16px; font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; }
+/* 유출색 단일화 (M2 해소) — pv 스코프에서만 재정의 */
+.pv-scope .table .t-in { color: var(--series-1); font-weight: 700; }
+.pv-scope .table .t-out { color: var(--series-4); font-weight: 700; }
+.pv-scope .table .t-net { font-weight: 700; }
+.pv-scope .table .t-net.up { color: var(--series-1); }
+.pv-scope .table .t-net.down { color: var(--series-4); }
+.pv-scope .table tbody tr { transition: background .12s ease; }
+.pv-scope .table tbody tr:hover { background: var(--surface-2); }
+@media (max-width: 1100px) {
+  .pv-kpis { grid-template-columns: repeat(2, 1fr); }
+  .pv-audience__grid { grid-template-columns: 1fr; }}
+
+
+/* 라이브 피드 우측 컬럼(유지 요소) */
+.bh-feedcol { display: flex; flex-direction: column; min-width: 0; }
+.bh-feed__head {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 13px; font-weight: 700; color: var(--ink-2); padding: 0 2px 8px;
+}
+
+/* ── §0.5 매핑 보강: B3 저장 · B6 재핑밴드 · B7 요약칩 ── */
+.pv-hero__save { margin-left: auto; flex: none; }
+.pv-hero__save svg { width: 15px; height: 15px; }
+.pv-zap { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--hairline-2); }
+.pv-zap__title { display: flex; align-items: baseline; font-size: 12px; font-weight: 700; color: var(--ink-2); margin: 0 18px 8px 48px; }
+.pv-zap__totals { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.pv-zap__row { position: relative; display: flex; align-items: center; height: 30px; margin-left: 48px; padding-right: 18px; border-top: 1px solid var(--hairline-2); }
+.pv-zap__row:first-of-type { border-top: 0; }
+.pv-zap__ch { position: absolute; left: -40px; top: 50%; transform: translateY(-50%); font-size: 12px; font-weight: 700; color: var(--ink); }
+.pv-zap__track { position: relative; flex: 1; height: 100%; }
+.pv-zap__pill { position: absolute; top: 50%; transform: translate(-50%, -50%); font-size: 12px; font-weight: 700; border-radius: var(--r-pill); padding: 2px 8px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pv-summary { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.pv-summary__chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: var(--r-pill); background: var(--surface-2); border: 1px solid var(--hairline); font-size: 13px; }
+.pv-summary__ch { font-weight: 700; color: var(--ink-2); }
+.pv-summary__net { font-weight: 700; font-variant-numeric: tabular-nums; }
+.pv-summary__net.up { color: var(--series-1); }
+.pv-summary__net.down { color: var(--series-4); }
+.pv-summary__sub { font-size: 12px; color: var(--ink-3); }
+/* ============================================================
+   06 V3 — EPG 타임라인 편성 맵 (sv-epg) + 선택 비교 (sv-compare)
+   배치 화면. page-wrap/card/table/chip/badge 재사용, 신규 최소.
+   ============================================================ */
+.sv-epg__statusbar { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; font-size: 12px; color: var(--ink-2); }
+.sv-epg__statusbar span { display: inline-flex; align-items: center; gap: 6px; }
+.sv-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.sv-dot--ok { background: var(--good); }
+.sv-dot--warn { background: var(--warning); }
+.sv-dot--none { background: var(--ink-3); }
+.sv-epg { overflow-x: auto; overflow-y: hidden; padding-bottom: 4px; scrollbar-width: thin; scrollbar-color: var(--axis) transparent; }
+.sv-epg::-webkit-scrollbar { height: 10px; }
+.sv-epg::-webkit-scrollbar-track { background: transparent; }
+.sv-epg::-webkit-scrollbar-thumb { background: var(--axis); border-radius: 5px; }
+.sv-epg::-webkit-scrollbar-thumb:hover { background: var(--ink-3); }
+.sv-epg__inner { position: relative; min-width: 100%; }
+.sv-epg__timehead { display: flex; height: 30px; background: var(--surface); border-bottom: 1px solid var(--hairline); }
+.sv-epg__timehead.is-foot { border-bottom: 0; border-top: 1px solid var(--hairline); }
+.sv-epg__corner { position: sticky; left: 0; z-index: 8; width: 140px; flex: none; background: var(--surface); border-right: 1px solid var(--hairline); }
+.sv-epg__ticks { position: relative; flex: none; }
+.sv-epg__tick { position: absolute; top: 0; height: 100%; border-left: 1px solid var(--hairline); font-size: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; padding: 7px 0 0 5px; }
+/* minor 눈금은 색이 아니라 길이로 구분 — 상단 축은 아래로, 하단 축은 위로(대칭) */
+.sv-epg__tick--half { border-left-color: var(--hairline-2); top: auto; bottom: 0; height: 9px; }
+.sv-epg__row { position: relative; display: flex; height: 98px; border-bottom: 1px solid var(--hairline-2); }
+.sv-epg__row:last-child { border-bottom: 0; }
+/* 일반채널 = 참조 행 (홈쇼핑 성과 행보다 한 단계 낮은 톤) */
+.sv-epg__row--ref .sv-epg__block { background: var(--surface-2); border-color: var(--hairline); justify-content: center; }
+.sv-epg__row--ref .sv-blk__title { color: var(--ink-2); font-weight: 600; font-size: 12px; }
+/* 톤은 웨이트로 낮추고 대비는 색으로 확보 (--ink-3는 3.16:1로 AA 미달) */
+.sv-epg__row--ref .sv-epg__ch { color: var(--ink-2); font-weight: 600; }
+.sv-epg__row:not(.sv-epg__row--ref) + .sv-epg__row--ref { border-top: 1px solid var(--hairline); }
+.sv-epg__ch { position: sticky; left: 0; z-index: 6; width: 140px; flex: none; display: flex; align-items: center; gap: 6px; padding: 0 12px; background: var(--surface); border-right: 1px solid var(--hairline); font-size: 13px; font-weight: 700; color: var(--ink-2); }
+.sv-epg__ch.is-own { color: var(--brand); }
+.sv-epg__ch .own { font-size: 12px; font-weight: 700; background: var(--brand-tint); color: var(--brand); border-radius: 4px; padding: 1px 5px; }
+.sv-epg__track { position: relative; flex: 1; }
+.sv-blk { position: absolute; top: 10px; bottom: 10px; }
+.sv-epg__block { position: absolute; inset: 0 1px; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-ctl); padding: 8px 12px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; gap: 3px; transition: transform .15s cubic-bezier(.22,.8,.36,1), border-color .15s ease, box-shadow .15s ease; }
+.sv-epg__block:hover { transform: translateY(-2px); border-color: var(--brand); box-shadow: var(--shadow-sm); z-index: 4; }
+.sv-epg__block:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+.sv-epg__block.is-featured { border-color: var(--brand); }
+.sv-epg__block.is-checked { box-shadow: 0 0 0 1px var(--brand) inset; border-color: var(--brand); }
+/* 축 밖으로 이어지는 블록 — 직각 + 파선 모서리로 연속 표시 */
+.sv-epg__block.is-cutl { border-top-left-radius: 0; border-bottom-left-radius: 0; border-left-style: dashed; }
+.sv-epg__block.is-cutr { border-top-right-radius: 0; border-bottom-right-radius: 0; border-right-style: dashed; }
+.sv-blk__cont { font-size: 12px; font-weight: 700; color: var(--ink-2); flex: none; font-variant-numeric: tabular-nums; }
+.sv-blk__top { display: flex; align-items: center; gap: 5px; padding-right: 20px; }
+.sv-blk__title { font-size: 13px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sv-blk__bot { margin-top: auto; display: flex; align-items: baseline; gap: 8px; font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sv-blk__kpi { font-size: 12px; font-weight: 700; color: var(--ink-2); }
+/* 네이티브를 벗기고 토큰 보더로 재작성 — 저투명도는 1.4.11(3:1)을 못 넘겨서 형태·굵기로 저감 */
+/* 히트 영역 32px(입력 박스 전체), 시각 박스 16px(중앙 background로 묘사) — 누르기 쉬움과 시각 저감 양립 */
+.sv-blk__chk { position: absolute; appearance: none; -webkit-appearance: none; top: 3px; right: 5px; width: 32px; height: 32px; border: 0; cursor: pointer; z-index: 5; margin: 0;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='.5' y='.5' width='15' height='15' rx='4' fill='%23FFFFFF' stroke='%238B8DA3'/></svg>") center / 16px 16px no-repeat; }
+.sv-compare__sel { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
+.sv-compare__count { font-size: 13px; font-weight: 700; color: var(--ink-2); margin-right: 4px; }
+.sv-compare__empty { margin: 0; padding: 22px 0; font-size: 13px; color: var(--ink-3); }
+
+/* ============================================================
+   07 V3 — 콜(전화) 반응 상세 (pv-call) · 연관 방송 (pv-related)
+   배치 사후 보고서. card/table/kpi/KTC 재사용, 신규 최소.
+   ============================================================ */
+.pv-lg { margin-top: 12px; }  /* 차트 하단 레전드 카드 컨테이너 (id=pv-lg-*) */
+.pv-call__grid { margin-top: 16px; display: grid; grid-template-columns: 1.25fr 1fr; gap: 24px; align-items: start; }
+.pv-funnel { display: flex; flex-direction: column; gap: 12px; }
+.pv-funnel__row { display: flex; align-items: center; gap: 12px; }
+.pv-funnel__label { width: 88px; flex: none; font-size: 13px; font-weight: 700; color: var(--ink-2); }
+.pv-funnel__track { flex: 1; height: 34px; border-radius: 8px; background: var(--hairline-2); overflow: hidden; }
+.pv-funnel__fill { display: block; height: 100%; border-radius: 8px; }
+.pv-funnel__val { width: 92px; flex: none; text-align: right; font-size: 16px; font-weight: 700;
+  color: var(--ink); font-variant-numeric: tabular-nums; }
+.pv-funnel__pct { width: 116px; flex: none; text-align: right; font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.pv-path { display: flex; flex-direction: column; gap: 12px; }
+.pv-path__row { display: flex; align-items: center; gap: 12px; font-size: 13px; }
+.pv-path__name { width: 84px; flex: none; color: var(--ink-2); font-weight: 600; }
+.pv-path__track { flex: 1; height: 10px; border-radius: 5px; background: var(--hairline-2); overflow: hidden; }
+.pv-path__fill { display: block; height: 100%; border-radius: 5px; }
+.pv-path__val { width: 42px; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); flex: none; }
+.pv-callpeak { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+.pv-callpeak b { font-size: 22px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.pv-callpeak span { font-size: 12px; color: var(--ink-3); }
+@media (max-width: 900px) { .pv-call__grid { margin-top: 16px; grid-template-columns: 1fr; }}
+
+
+.pv-hero__batch { margin: 6px 0 0; font-size: 13px; color: var(--ink-3); }
+
+/* ⑤-A 관심사 (P2-5) — 코호트 2계열 가로 바. 값은 --ink(텍스트에 시리즈색 금지) */
+.pv-intr { display: flex; flex-direction: column; gap: 12px; }
+.pv-intr__row { display: flex; align-items: center; gap: 12px; }
+.pv-intr__name { width: 92px; flex: none; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.pv-intr__grp { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.pv-intr__line { display: flex; align-items: center; gap: 10px; }
+.pv-intr__track { flex: 1; height: 9px; border-radius: 5px; background: var(--hairline-2); overflow: hidden; }
+.pv-intr__track i { display: block; height: 100%; border-radius: 5px; }
+.pv-intr__val { width: 46px; flex: none; text-align: right; font-size: 12px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+/* 출처·산출 근거 캡션 */
+.pv-src { margin: 16px 0 0; font-size: 12px; color: var(--ink-2); }
+
+/* ============================================================
+   06 V3-IMPACT — 성과 히트 인코딩(10차부터 시청 축) · 요약 스트립 · 행 위계
+   전부 기존 sv- 규칙과 같은 특정도라 파일 끝 배치가 필수.
+   블록 내 순서도 의존적: 범례 스와치 → 히트(히트가 스와치를 덮어야 함).
+   ============================================================ */
+.sv-summary { grid-template-columns: repeat(4, 1fr); }
+.sv-summary__empty { grid-column: 1 / -1; }
+
+.sv-heatlegend { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; }
+.sv-heatlegend__k { font-size: 12px; color: var(--ink-2); }
+/* 피치(스와치+gap) > 구간 라벨 폭 — 겹침 방지 */
+/* .sv-epg__statusbar span(0,1,1)의 gap 6px에 지지 않게 2클래스로 명시 */
+.sv-heatlegend .sv-heatlegend__steps { display: inline-flex; gap: 26px; }
+.sv-heatlegend__step { position: relative; width: 26px; height: 12px; border-radius: 4px;
+                       border: 1px solid var(--hairline); background: var(--surface); }
+
+/* 시청 규모 — 절대 임계 5단계 (10차 CH-1: 매출→시청가구 축 전환. 25%에서 멈춤: 그 위 텍스트가 AA 유지) */
+/* 단계당 6%p(7~25%)는 인접 비교 시 동색으로 읽힘(사용자 확인) — 명도 스팬 확장 */
+.sv-heat1 { background: color-mix(in srgb, var(--brand)  8%, var(--surface)); }
+.sv-heat2 { background: color-mix(in srgb, var(--brand) 18%, var(--surface)); }
+.sv-heat3 { background: color-mix(in srgb, var(--brand) 29%, var(--surface)); }
+.sv-heat4 { background: color-mix(in srgb, var(--brand) 42%, var(--surface)); }
+.sv-heat2 .sv-blk__kpi { font-size: 13px; }
+.sv-heat3 .sv-blk__kpi { font-size: 14px; }
+.sv-heat4 .sv-blk__kpi { font-size: 13px; }   /* 15 → 13.5: 조회 프로그램 블록에 방송시간을 되살릴 폭 확보 */
+/* 램프 확장 후 대비 규칙: 옅은 셀(lv2)만 보라 강조, 진한 셀(lv3·4)은 배경이 레벨을
+   말하므로 글자는 잉크 — 42% 틴트 위 brand 2.85:1·brand-strong 3.55:1 미달이 근거 */
+.sv-heat2 .sv-blk__kpi { color: var(--brand-strong); }
+.sv-heat3 .sv-blk__kpi, .sv-heat4 .sv-blk__kpi,
+.sv-heat3 .sv-blk__cat, .sv-heat3 .sv-blk__time, .sv-heat3 .sv-blk__cont,
+.sv-heat4 .sv-blk__cat, .sv-heat4 .sv-blk__time, .sv-heat4 .sv-blk__cont { color: var(--ink); }
+
+/* 행 3층 — 기준 채널 100 / 경쟁 홈쇼핑 86 / 일반채널 62 */
+.sv-epg__row--own { height: 114px; }
+.sv-epg__row--ref { height: 68px; }
+.sv-epg__row--own .sv-epg__ch { background: var(--brand-tint); }
+/* 틴트 셀 위에서는 틴트 뱃지가 사라진다 — 흰 칩 + 1px 보더로 뱃지답게 */
+.sv-epg__row--own .sv-epg__ch .own { background: var(--surface); border: 1px solid var(--brand-tint-2); padding: 1px 5px; }
+
+/* 기준 프로그램 — 높이 + 별표 플래그만으로 강조(색·그림자 추가 없음) */
+.sv-blk.is-ft { top: 5px; bottom: 5px; z-index: 2; }
+.sv-blk__flag { color: inherit; margin-right: 4px; }
+
+/* 히트 틴트 위에서도 AA를 유지해야 해 --ink-3 대신 --ink-2 (lv4에서 4.7:1)
+   분류↔시간은 색이 같으므로 웨이트 + 반투명 구분선으로 가른다 */
+.sv-blk__cat { font-size: 12px; font-weight: 600; color: var(--ink-2); flex: none; }
+.sv-blk__time { font-size: 12px; font-weight: 500; color: var(--ink-2); flex: none; font-variant-numeric: tabular-nums;
+  padding-left: 7px; border-left: 1px solid var(--hairline); }
+
+/* 기준 구간 밴드 — 면 채움은 히트 틴트와 겹쳐 탁해지므로 트랙에선 경계선만 긋는다.
+   면 틴트는 상하 축 스트립(is-head)의 라벨 존에만 남긴다 */
+.sv-epg__band { position: absolute; top: 0; bottom: 0; background: transparent;
+  border-left: 1px dashed color-mix(in srgb, var(--brand) 45%, transparent);
+  border-right: 1px dashed color-mix(in srgb, var(--brand) 45%, transparent); }
+.sv-epg__band.is-head { display: flex; align-items: center; justify-content: center;
+  background: var(--brand-tint); border-left-style: solid; border-right-style: solid;
+  font-size: 12px; font-weight: 700; color: var(--brand); }
+
+/* ============================================================
+   06 V3-DETAIL — 마감 디테일 (체크박스 · 눈금 · 필터바 · 비교표)
+   공용 클래스는 전부 .sv-scope 접두. sv-* 는 06 전용이라 접두 불필요.
+   .sv-epg__block:hover 에 background 금지(히트 인코딩을 덮음).
+   ============================================================ */
+/* A — 체크박스 */
+.sv-epg__row--ref .sv-blk__chk { display: none; }          /* 성과 null 행은 비교 산출물이 0 */
+.sv-epg__row:hover .sv-blk__chk {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='.5' y='.5' width='15' height='15' rx='4' fill='%23FFFFFF' stroke='%236941FF'/></svg>"); }
+.sv-blk__chk:checked, .sv-epg__row:hover .sv-blk__chk:checked {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='4' fill='%236941FF'/><path d='M4.3 8.3l2.3 2.3 4.8-5.3' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>"); }
+.sv-blk__chk:focus-visible { outline: 2px solid var(--brand); outline-offset: -6px; border-radius: 10px; }
+
+/* C-1 — 하단 축은 minor 눈금이 위(트랙 쪽)를 향한다 */
+.sv-epg__timehead.is-foot .sv-epg__tick--half { top: 0; bottom: auto; }
+
+/* D-2 — 그룹 경계를 1px 단일선으로(앞 행 보더 제거) */
+.sv-epg__row:not(.sv-epg__row--ref):has(+ .sv-epg__row--ref) { border-bottom: 0; }
+
+/* E-1 — lv0 스와치가 "간격"이 아니라 "빈 단계"로 읽히게 */
+.sv-heatlegend__steps i:first-child { border-color: var(--hairline); }
+
+/* G — 필터 바: 1행 주 컨트롤 38px · 13/700 통일, 2행 칩은 하위 티어 */
+.sv-scope .filter-row .btn .ico { display: inline-flex; }
+/* 주말 인라인 색(--up/--down)을 죽이지 않도록 색 대신 opacity */
+.sv-scope #svDay button small { font-size: 12px; font-weight: 600; opacity: .72; margin-left: 1.5px; } /* 14px×83% 상속 우연값(11.67) 차단 */
+.sv-scope .filter-row .chip { cursor: pointer; }
+.sv-scope .filter-row .chip:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.sv-scope .filter-row .label { color: var(--ink-2); }
+.card__body .filter-row + .filter-row { margin-top: 12px; }
+.sv-scope #svRefresh { margin-left: auto; }
+
+/* H — 비교표: 잉여 폭을 방송정보 열로 모아 숫자 4열을 우측에 붙인다 */
+/* 비례 배분 — 방송정보가 잔여 폭을 독식해 숫자 4열이 우측 끝으로 쏠리던 문제(와이드에서 심화) 해소.
+   남는 폭을 숫자열들에 분산해 한 덩어리 공백이 생기지 않게 한다 */
+.sv-scope #svCompareTable { table-layout: fixed; }
+.sv-scope #svCompareTable th:nth-child(1) { width: 7%; }
+.sv-scope #svCompareTable th:nth-child(2) { width: 29%; }
+.sv-scope #svCompareTable th:nth-child(3) { width: 7%; }
+.sv-scope #svCompareTable th:nth-child(4) { width: 12%; }
+.sv-scope #svCompareTable th:nth-child(n+5) { width: 9%; }
+.sv-scope #svCompareTable .bh-sort { opacity: 1; }
+.sv-scope #svCompareTable tbody tr { cursor: pointer; }
+.sv-scope #svCompareTable tbody tr:hover { background: var(--hairline-2); }
+.sv-scope #svCompareTable tbody tr:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
+.sv-scope #svCompareTable .sv-dot { display: inline-block; vertical-align: -1px; }
+
+/* I — 체크된 블록도 hover 리프트가 보이게(링 + 그림자 동시) */
+.sv-epg__block.is-checked:hover { box-shadow: inset 0 0 0 1px var(--brand), var(--shadow-sm); }
+.sv-scope .filter-row button:focus-visible,
+.sv-scope .filter-row select:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* J-2 — 값의 정의를 담는 텍스트만 승격(전역 --ink-3 티켓 서면 불필요) */
+.sv-scope .sv-summary .kpi__meta { color: var(--ink-2); }
+.sv-scope .table th { color: var(--ink-2); }
+/* LD2 — 비교표 채널명: 인라인 제거, 행 식별자라 J-1과 동급 승격 */
+.sv-cmp__ch { color: var(--ink-2); font-size: 12px; }
+
+/* ============================================================
+   06 V4-AUDIT — 히트 범례 임계값 · 맵 헤드 카운터
+   ============================================================ */
+/* 각 스와치 밑에 자기 구간을 직접 인쇄 — 경계값+화살표 문장식은 해독이 필요해 기각 */
+.sv-heatlegend__steps { padding-bottom: 13px; align-items: center; } /* 하단 라벨 공간 */
+.sv-heatlegend__step b { position: absolute; left: 50%; top: calc(100% + 3px); transform: translateX(-50%);
+  font-size: 12px; font-weight: 700; color: var(--ink-2); background: transparent;
+  padding: 0; font-variant-numeric: tabular-nums; z-index: 1;
+  white-space: nowrap; line-height: 1.2; }
+.sv-jump { display: inline-flex; align-items: center; font-size: 12px; font-weight: 700;
+  color: var(--brand); background: var(--brand-tint); border-radius: var(--r-pill);
+  padding: 4px 11px; cursor: pointer; }
+.sv-jump:hover { background: var(--brand-tint-2); }
+.sv-jump:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* ============================================================
+   07 V4-AUDIT — 연관 방송 델타 · 재핑 캡션/축 · 인쇄
+   ============================================================ */
+/* 과거 평균 대비 — 국내 관례(상승 red / 하락 blue). 유입·유출 색과 다른 축이라 --up/--down 사용 */
+.pv-rel-delta { font-weight: 700; font-variant-numeric: tabular-nums; }
+.pv-rel-delta.up { color: var(--up); }
+.pv-rel-delta.down { color: var(--down); }
+.pv-scope #pvRelatedTable tbody tr { cursor: default; }
+/* 시간대가 다른 회차 = 무보정 비교 주의. 증감색(--up/--down)과 겹치지 않게 status --warning 사용 */
+.pv-rel-slot { background: color-mix(in srgb, var(--warning) 14%, #fff); color: var(--warning); }
+.pv-hero__jump { margin-left: 4px; }
+.pv-zap__desc { margin: 0 0 10px 48px; font-size: 12px; color: var(--ink-2); }
+.pv-zap__axis { position: relative; height: 16px; margin-left: 48px; padding-right: 18px; }
+.pv-zap__atick { position: absolute; top: 2px; transform: translateX(-50%); font-size: 12px;
+  color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+@media print {
+  .page-wrap.pv-scope { max-width: none; padding: 0; }
+  .pv-stack { gap: 16px; } /* 제목만 남고 본문이 다음 장으로 갈리는 고아 헤더 방지 */
+  /* A4 한 장을 넘는 카드는 쪼개지게 둔다 — avoid 로 두면 앞에 빈 페이지가 생긴다 */
+  .card:has(.pv-perf), .card:has(#pvAgeView) { break-inside: auto; page-break-inside: auto; }
+  .pv-audience__grid { display: block; }
+  .pv-audience__grid > .card { margin-bottom: 14px; }}
+
+
+/* ============================================================
+   DS-ALIGN R2 — 컨트롤 마감
+   ============================================================ */
+/* 2-1b 선택 토큰 칩 — 필터 칩(틴트)과 갈리도록 채움 방식은 원본 선택채널칩에서 가져오되 치수는 우리 밀도 */
+.sv-compare__sel .chip { background: var(--brand); border-color: var(--brand); color: #fff; }
+.sv-compare__sel .chip:hover { opacity: .7; }
+.sv-compare__sel .chip .x { width: 20px; height: 20px; flex: none; display: inline-flex; }
+.sv-compare__sel .chip .x svg { width: 100%; height: 100%; }
+/* 2-2 단서 — 필터 행에서는 버튼도 컨트롤 높이 44로 (토글·날짜필드와 같은 줄) */
+.filter-row .btn { height: 44px; }
+
+/* ============================================================
+   V6-PERSONA2 — 오답 이동 차단 · 없는 기능의 어포던스 제거
+   ============================================================ */
+/* 상세가 없는 경쟁사 블록·행 — 링크가 아니라는 걸 커서로 먼저 알린다 */
+.sv-epg__block.is-nolink { cursor: default; }
+.sv-epg__block.is-nolink:hover { transform: none; border-color: var(--hairline); box-shadow: none; }
+.sv-epg__row--own .sv-epg__block.is-nolink:hover,
+.sv-epg__block.is-nolink.is-featured:hover { border-color: var(--brand); }
+.sv-scope #svCompareTable tbody tr.is-nolink { cursor: default; }
+/* 데모 데이터가 없는 날짜 — 눌리는 척하지 않게 */
+.sv-scope .filter-row .toggle-group button[disabled] { opacity: .4; pointer-events: none; }
+/* 주말색은 선택 가능할 때만 — 비활성인데 색만 남으면 회색 비활성과 흐림이 이원화됨 */
+.toggle-group .wknd-sat:not(:disabled) { color: var(--down); }
+.toggle-group .wknd-sun:not(:disabled) { color: var(--up); }
+/* B2 비교표 합계 — 소계는 한 단 옅게, 총합계는 상단 경계로 본문과 분리 */
+.sv-scope #svCompareTable tfoot td { font-weight: 700; color: var(--ink); }
+.sv-scope #svCompareTable tfoot .sv-sub-row td { background: var(--surface-2); font-weight: 600; color: var(--ink-2); }
+.sv-scope #svCompareTable tfoot .sv-total-row td { border-top: 1px solid var(--hairline); background: var(--brand-tint); }
+/* C5 히어로 한 줄 총평 — 인쇄 1페이지에서 결론이 먼저 읽히게 */
+.pv-hero__verdict { margin: 6px 0 0; font-size: 13px; font-weight: 700; color: var(--brand); }
+/* C3 재핑 밴드 단위 */
+.pv-zap__title small { font-size: 12px; font-weight: 400; color: var(--ink-3); margin-left: 4px; }

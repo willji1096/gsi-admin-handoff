@@ -1,0 +1,58 @@
+/* ============================================================
+   피그마 DS 적용판 — 상세(ours/analysis.html) 주입 UI + KT 마크업 위 오버라이드. ?ds=figma 로 들어올 때만 로드된다.
+   근거: GSI_admin.fig 노드 실측(편성표 1:23894 · GNB 1:49612 · 칩 1:2145/2149 · ic_gotop 1:24224 · 버튼 1:50231). 편성표 쪽 ui-figma.css 와 같은 값.
+   그래프(recharts 인라인 색·틱 글자)는 건드리지 않는다 — KT 파스텔 유지.
+   ============================================================ */
+
+/* GNB — 좌 48 · 우 24 · 로고→메뉴 60 · 탭 gap 8 pad 10 18px Bold(on)/Regular · hover 흰 5% · 우측 16 gap 22 · 아이콘 gap 16 */
+.ktgnb { padding: 0 24px 0 48px !important; gap: 60px !important; }
+.ktgnb__nav { gap: 8px !important; }
+.ktgnb__nav a, .ktgnb__nav span { font-size: 18px !important; padding: 0 10px !important; }
+.ktgnb__nav a:hover { background: rgba(255, 255, 255, .05); }
+.ktgnb__nav .is-active { font-weight: 700 !important; }
+.ktgnb__right { font-size: 16px !important; gap: 22px !important; }
+.ktgnb__tools { gap: 16px !important; }
+
+/* 위로가기 — ic_gotop 48: 흰 + #D6DDE9 보더 + 그림자 3/8/10 10%, 화살표 24 #5A64FF */
+.kttop { width: 48px !important; height: 48px !important; box-shadow: 3px 8px 10px rgba(0, 0, 0, .1) !important; color: #5A64FF !important; }
+.kttop svg { width: 24px !important; height: 24px !important; }
+.kttop:hover { color: #5A64FF !important; }
+
+/* 담은 프로그램 탭 — 원래(본체) 칩 그대로 두고 색 계열만 32h r20 정렬 유지 */
+.ktsn__ptab { height: 32px !important; padding: 0 16px 0 8px !important; border-radius: 20px !important; font-size: 14px !important; font-weight: 600 !important; gap: 4px !important; }
+/* 코드 정리 26-08-30 — .n 마크업 없음. 주석화: .ktsn__ptab .n { font-size: 12px !important; } */
+.ktsn__ptab.is-on { background: color-mix(in srgb, #5A64FF 10%, #fff) !important; border-color: #5A64FF !important; color: #5A64FF !important; }
+.ktsn__ptab.is-on .n, .ktsn__ptab.is-on .d { color: #5A64FF !important; }
+
+/* 섹션 스티키 탭(주요 지표·통합 분석…) — 피그마 라인 탭 문법: 활성 = 검정 Bold + 2px 검정 밑줄, 비활성 gray400 (결과 카드 채널 탭 1:23937 과 동일) */
+.ktsn button { color: #7A8490 !important; font-weight: 400 !important; }
+.ktsn button:hover { color: #353A41 !important; }
+.ktsn button.is-active { color: #1D1D1D !important; font-weight: 700 !important; }
+.ktsn button.is-active::after { background: #1D1D1D !important; }
+
+/* 헤더 존 — 스티키 바 하단선 토큰 gray200, 타이틀 24 Bold(편성표 1:24216 과 같은 슬롯) */
+/* 코드 정리 26-08-30 — .ktbar 요소 없음(번들·주입 모두). 주석화: .ktbar { border-bottom-color: #D6DDE9 !important; } */
+.ktpt__head h1 { font-size: 24px !important; letter-spacing: -0.5px !important; }
+
+/* KT 카드·버튼 — 그림자 10/20/30 4%(1:23915), 버튼 hover opacity .6 */
+.shadow-panel { box-shadow: 10px 20px 30px rgba(0, 0, 0, .04) !important; }
+main button.bg-violet-600:hover, main a.bg-violet-600:hover { opacity: .6; }
+
+/* 글자색 — KT shadcn foreground #0F1729(body·.text-card-foreground)를 GSI black 으로 */
+body, main .text-card-foreground { color: #1D1D1D; }
+
+/* 타이포 최소 12 — KT 마크업의 9/10/11px 캡션(그래프 svg 텍스트 제외) */
+main .text-\[9px\]:not(tspan):not(text), main .text-\[10px\]:not(tspan):not(text), main .text-\[11px\]:not(tspan):not(text) { font-size: 12px; }
+.mix3-cap { color: #7A8490 !important; }
+.mix3-tip { border-color: #D6DDE9 !important; }
+
+/* 자간 — 편성표 화면 기준 본문 0, 버튼·GNB 우측 −0.5 */
+body, .ktbar, .ktpt, .ktsn, .ktft { letter-spacing: 0; }
+main button, .ktgnb__right { letter-spacing: -0.5px; }
+
+/* 태블릿 — 아이패드 가로(1024)까지. 위 GNB 규칙이 !important 라 같은 무게로 되돌린다.
+   값은 ui-figma.css 14번 항과 같다 */
+@media (max-width: 1360px) {
+  .ktgnb__nav { gap: 4px !important; }
+  .ktgnb__nav a, .ktgnb__nav span { font-size: 15px !important; padding: 0 8px !important; }
+}

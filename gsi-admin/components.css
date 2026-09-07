@@ -1,0 +1,141 @@
+/* ============================================================
+   GSI 디자인 시스템 컴포넌트 시트 — GSI_admin.fig Component_01~04 노드 실측 1:1 구현.
+   토큰은 tokens.css. 각 규칙 끝 주석의 (1:xxxx) 가 피그마 노드 id.
+   화면(편성표·상세)에서 쓰는 것은 ui-figma.css / kt-skin-figma.css 와 같은 값이고, 여기엔 화면에 없는 것까지 전부 있다.
+   ============================================================ */
+:root { --line-tab: #E1E6EF; }                                               /* 탭 행 하단선 — 피그마 실측(1:23935), tokens.css 미정의라 figma 층 전용 토큰 */
+.ds { max-width: 1824px; margin: 0 auto; padding: 24px 48px 80px; color: var(--black); letter-spacing: 0; }
+.ds h1 { font-size: 24px; font-weight: 700; margin: 24px 0 8px; }
+.ds h2 { font-size: 20px; font-weight: 700; margin: 48px 0 4px; padding-top: 24px; border-top: 1px solid var(--gray-200); }
+.ds h2 small { font-size: 13px; font-weight: 400; color: var(--gray-400); margin-left: 10px; }
+.ds p.note { margin: 0 0 16px; font-size: 13px; color: var(--gray-400); }
+.ds .row { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; margin: 12px 0; }
+.ds .row--top { align-items: flex-start; }
+.ds .lbl { font-size: 12px; color: var(--gray-400); min-width: 120px; }
+.ds .card { background: #fff; border-radius: 12px; box-shadow: 10px 20px 30px rgba(0, 0, 0, .04); padding: 24px; }
+.ds .new { display: inline-block; margin-left: 8px; padding: 1px 6px; border-radius: 4px; background: var(--sec-orange); color: #fff; font-size: 11px; font-weight: 600; vertical-align: middle; }
+.ds svg.ic { display: block; flex: none; }
+
+/* ---------- 1. 컬러 (Color style, tokens.css) ---------- */
+.sw { display: inline-flex; flex-direction: column; gap: 6px; width: 112px; font-size: 12px; color: var(--gray-500); }
+.sw i { display: block; height: 56px; border-radius: 8px; border: 1px solid rgba(0,0,0,.06); }
+.sw b { font-weight: 600; color: var(--gray-600); }
+
+/* ---------- 2. 타이포 (H1 34 / H2 30 / H3 22 / H4 20 / T1 18 / T2 16 / B1 14 / B2 13 / B3 12 · lh 1.4 · ls 0 기본, 버튼·GNB −0.5) ---------- */
+.ty { display: grid; grid-template-columns: 160px 1fr; gap: 8px 24px; align-items: baseline; }
+.ty .k { font-size: 12px; color: var(--gray-400); }
+.ty .v { line-height: 1.4; }
+
+/* ---------- 3. 버튼 ---------- */
+.dbtn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 48px; padding: 0 24px; border: 0; border-radius: 8px;
+  background: var(--brand); color: #fff; font-size: 16px; font-weight: 700; line-height: 1.4; letter-spacing: -0.5px; cursor: pointer; font-family: inherit; }   /* button Default 152×48 r8 pad 24 Bold 16 (1:50231) */
+.dbtn:hover { opacity: .6; }                                                                                                         /* Property 2=hover */
+.dbtn--sub { background: var(--sub-blue); color: var(--gray-500); font-weight: 400; }                                                /* sub #E5EAFF #58606A Regular 16 (1:50240) */
+.dbtn:disabled, .dbtn--disable { background: var(--gray-200); color: var(--gray-300); cursor: default; }                            /* disable #D6DDE9 / #A7B1BF (1:50221) */
+.dbtn:disabled:hover { opacity: 1; }
+.dbtn--large { width: 272px; padding: 0; }                                                                                           /* button_Large 272×48 (1:50215) */
+.dbtn--small { height: 46px; padding: 0 19px; border-radius: 6px; background: var(--gray-100); color: var(--gray-600); font-size: 14px; font-weight: 600; line-height: 1.4; font-family: inherit; gap: 4px; } /* button_small 111×46 r6 #F8F9FF pad 13/19 SemiBold 14 (1:50259) */
+.dbtn--xs { height: 34px; padding: 0 16px; border-radius: 6px; background: var(--gray-100); color: var(--gray-500); font-size: 14px; font-weight: 400; line-height: 1.4; font-family: inherit; gap: 14px; } /* button_xsmall 79×34 r6 #F8F9FF pad 7/16 Regular 14 #58606A (1:50254) */
+.dbtn--small:hover, .dbtn--xs:hover { opacity: .7; }                                                                                  /* hover 변형은 피그마에 치수·색 동일(1:50256) — 불투명도로만 */
+.dbtn--round { width: 30px; height: 30px; padding: 0; border-radius: 50%; background: #fff; border: 1px solid var(--gray-200); color: var(--gray-600); } /* 축약데이터 좌우 버튼 30 r50 (1:50270) */
+.dgotop { width: 48px; height: 48px; border-radius: 50%; background: #fff; border: 1px solid var(--gray-200); color: var(--genie-blue); box-shadow: 3px 8px 10px rgba(0,0,0,.1); display: inline-flex; align-items: center; justify-content: center; } /* ic_gotop 48 (1:24224) */
+
+/* ---------- 4. 칩 ---------- */
+.dchip { display: inline-flex; align-items: center; gap: 0; height: 32px; padding: 0 16px 0 8px; border: 1px solid var(--gray-200); border-radius: 20px; background: #fff; color: var(--gray-600); font-size: 14px; font-weight: 600; line-height: 1.4; font-family: inherit; cursor: pointer; white-space: nowrap; } /* 시청반응_목록 off 85×32 (1:2145) */
+.dchip .tk { width: 24px; height: 24px; color: var(--gray-300); }
+.dchip:hover { opacity: .7; }                                                                                                         /* hover opacity .7 (1:2175 Variant7 = 검정 3% 바탕 변형) */
+.dchip.is-on { background: color-mix(in srgb, var(--genie-blue) 10%, #fff); border-color: var(--genie-blue); color: var(--genie-blue); } /* on (1:2149) */
+.dchip.is-on .tk { color: var(--genie-blue); }
+.dchip .cat { width: 24px; height: 24px; margin-left: 2px; margin-right: -10px; color: var(--gray-600); }                             /* category 변형 ▾ ic_category_down 24 (1:2153) */
+.dcatq { display: inline-flex; align-items: center; gap: 12px; height: 34px; padding: 0 12px 0 16px; border: 1px solid var(--gray-200); border-radius: 37px; color: var(--gray-400); font-size: 14px; letter-spacing: -0.5px; } /* 카테고리 검색 134×34 r37 pad 7/12/7/16 (1:49971) */
+.dcatq:hover, .dcatq:focus-within { border-color: var(--brand); color: var(--gray-600); }                                            /* hover (1:49977) */
+.dcatq.is-result { color: var(--black); font-weight: 600; }                                                                           /* result (1:49974) */
+.dlegend { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 10px 0 4px; border-radius: 20px; background: var(--gray-100); color: var(--gray-400); font-size: 13px; } /* button_badge 99×28 r20 pad 4/10/4/4 (1:120) */
+.dlegend .tk { width: 20px; height: 20px; margin-right: -2px; }
+.dlegend b { font-weight: 600; }
+.dlegend.is-on { background: color-mix(in srgb, var(--s, #41B0E0) 10%, #fff); color: var(--s, #41B0E0); }                            /* select = 시리즈색 10% 바탕 + 시리즈색 글자 (1:125) */
+.dlegend.is-on .dot { width: 18px; height: 18px; border-radius: 50%; background: var(--s, #41B0E0); margin: 1px; }
+
+/* ---------- 5. 탭 ---------- */
+.dradio { display: inline-flex; align-items: center; gap: 6px; height: 44px; padding: 4px; border-radius: 24px; background: var(--gray-100); } /* radio tab 234×44 (1:49813) */
+.dradio button { min-width: 110px; height: 36px; padding: 0 18px; border: 0; border-radius: 26px; background: transparent; color: var(--gray-600); font-size: 14px; font-weight: 400; line-height: 1.4; font-family: inherit; letter-spacing: -0.5px; cursor: pointer; }
+.dradio button.is-on { background: var(--brand); color: #fff; font-weight: 600; }
+.duvpv { display: inline-flex; align-items: center; gap: 2px; height: 44px; padding: 3px 4px; border-radius: 23px; background: var(--gray-100); } /* uvpv_tab 127×44 r23 (1:49824) */
+.duvpv button { height: 38px; padding: 0 20px; border: 0; border-radius: 30px; background: transparent; color: var(--gray-600); font-size: 14px; font-weight: 400; line-height: 1.4; font-family: inherit; letter-spacing: -0.5px; cursor: pointer; }
+.duvpv button.is-on { background: var(--brand); color: #fff; font-weight: 600; }
+.dtabs { display: flex; height: 54px; padding: 0 24px; border-bottom: 1px solid var(--line-tab); gap: 30px; }                                 /* 장르 탭 행 54h #E1E6EF gap 30 (1:23935) */
+.dtabs button { position: relative; padding: 0; border: 0; background: transparent; color: var(--gray-400); font-size: 16px; font-weight: 400; line-height: 1.4; font-family: inherit; cursor: pointer; }
+.dtabs button.is-on { color: var(--black); font-weight: 700; }
+.dtabs button.is-on::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--black); }  /* 활성 밑줄 1px #1D1D1D (1:23937) */
+.dsub { display: flex; gap: 20px; }                                                                                                   /* 서브메뉴 22 Medium #7A8490 / Bold #1D1D1D (1:47311) */
+.dsub span { font-size: 22px; font-weight: 500; color: var(--gray-400); }
+.dsub span.is-on { font-weight: 700; color: var(--black); }
+
+/* ---------- 6. 배지 ---------- */
+.dbadge { display: inline-flex; align-items: center; height: 21px; padding: 0 7px; border-radius: 6px; background: var(--gray-600); color: #fff; font-size: 12px; font-weight: 600; } /* Badge 37×21 (1:24062) */
+.dbadge--next { background: var(--sec-purple); }                                                                                     /* 다음날 #C85CF2 (1:24059) */
+.dbadge--now { background: var(--brand); }                                                                                           /* Now #6941FF (1:24194) */
+.dchno { display: inline-flex; align-items: center; height: 20px; padding: 0 6px; border-radius: 4px; background: var(--gray-600); color: #fff; font-size: 13px; font-weight: 600; } /* 채널번호 21×20 (1:23992) */
+.dchname { font-size: 16px; font-weight: 700; color: var(--gray-600); margin-left: 6px; }                                             /* 채널명 16 Bold gap 6 (1:23994) */
+
+/* ---------- 7. 입력 ---------- */
+.dfield { display: flex; flex-direction: column; gap: 8px; width: 272px; }                                                            /* Input 272 (1:49987) */
+.dfield label { font-size: 16px; font-weight: 700; color: var(--black); letter-spacing: -0.5px; }
+.dfield .box { display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 16px; border: 1px solid transparent; border-radius: 8px; background: var(--gray-100); } /* Textfield/item 48 r8 pad 12/16 (1:49991) */
+.dfield input { flex: 1; min-width: 0; border: 0; background: transparent; font-size: 14px; font-weight: 400; line-height: 1.4; font-family: inherit; letter-spacing: -0.5px; color: var(--black); outline: none; }
+.dfield input::placeholder { color: var(--gray-400); }
+.dfield .box:hover { border-color: var(--gray-300); }                                                                                 /* Hover 보더 #A7B1BF (1:50013) */
+.dfield .box:focus-within, .dfield.is-select .box { border-color: var(--brand); }                                                    /* Select 보더 #6941FF (1:50021) */
+.dfield.is-error .box { border-color: var(--sec-orange); }                                                                            /* Error 보더 #FF8F6E + ic_cancel_16 (1:50049) */
+.dfield.is-disabled .box { background: var(--gray-200); }                                                                              /* Disabled 바탕 #D6DDE9 (1:49999) */
+.dfield .msg { font-size: 12px; font-weight: 600; color: var(--brand); letter-spacing: -0.5px; }                                      /* 안내 12 SemiBold #6941FF (1:49994) */
+.dfield.is-error .msg { color: var(--sec-orange); }                                                                                    /* 오류 #FF8F6E (1:50059) */
+.dsearch { display: inline-flex; align-items: center; gap: 1px; width: 215px; height: 60px; padding: 0 24px; border: 1px solid var(--gray-200); border-radius: 50px; color: var(--gray-600); font-size: 16px; letter-spacing: -0.5px; } /* 검색바 Default 215×60 r50 pad 21/24 (1:49954) */
+.dsearch input { flex: 1; min-width: 0; border: 0; background: transparent; font: inherit; letter-spacing: inherit; outline: none; color: var(--gray-600); }
+.dsearch:hover, .dsearch:focus-within { border-color: var(--brand); width: 400px; }                                                   /* Hover 400×60 보더 #6941FF (1:49962) */
+.dpill { display: inline-flex; align-items: center; gap: 6px; min-width: 150px; height: 44px; padding: 0 24px; border-radius: 50px; background: var(--gray-100); color: var(--gray-600); font-size: 14px; } /* 날짜 필 150×44 r50 pad 10/24 cal16 gap6 (1:24210) */
+.dcheck { display: inline-grid; place-items: center; width: 24px; height: 24px; }                                                    /* ic_check 24 (1:49573) */
+.dcheck i { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 4px; background: var(--gray-200); }         /* off #D6DDE9 (1:49577) */
+.dcheck.is-on i { background: var(--sec-skyblue); }                                                                                       /* on #5AACF5 (1:49574) */
+.dradiobtn { display: inline-grid; place-items: center; width: 18px; height: 18px; border: 2px solid var(--gray-300); border-radius: 50%; } /* ic_radio 18 보더 2 off #A7B1BF (1:49568) */
+.dradiobtn.is-on { border-color: var(--brand); }
+.dradiobtn.is-on::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }                      /* on #6941FF + 8 dot (1:49566) */
+.dtoggle { position: relative; display: inline-block; width: 34px; height: 20px; }                                                     /* ic_toggle 34×20 (1:49557) */
+.dtoggle i { position: absolute; left: 0; top: 2px; width: 34px; height: 16px; border-radius: 14px; background: var(--gray-200); }
+.dtoggle b { position: absolute; top: 0; left: 0; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 0 1px rgba(0,0,0,.24); }
+.dtoggle.is-on i { background: var(--brand); }
+.dtoggle.is-on b { left: 14px; }
+
+/* ---------- 8. 오버레이 ---------- */
+.dmenu { width: 143px; padding: 12px 0; border-radius: 12px; background: #fff; box-shadow: 5px 10px 20px rgba(0,0,0,.06); }          /* 메뉴_팝업 143 r12 pad 12/0 (1:8104) */
+.dmenu button { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 38px; padding: 0 13px 0 20px; border: 0; background: transparent; color: var(--gray-600); font-size: 14px; font-weight: 400; line-height: 1.4; font-family: inherit; letter-spacing: -0.5px; cursor: pointer; text-align: left; } /* item 38 pad 7/13/7/20 (1:49594) */
+.dmenu button.is-on { color: var(--brand); font-weight: 600; }                                                                        /* select (1:49598) */
+.dmenu button:hover { background: color-mix(in srgb, var(--genie-blue) 5%, #fff); color: var(--brand); font-weight: 600; }          /* hover #5A64FF 5% (1:49602) */
+.dtip { position: relative; width: 232px; padding: 12px 16px; border-radius: 8px; background: var(--black); color: #fff; font-size: 12px; letter-spacing: -0.5px; text-align: center; margin-top: 6px; } /* Tooltip 232×85 r8 #1D1D1D pad 12/16 (1:6908) */
+.dtip::before { content: ""; position: absolute; left: 50%; top: -6px; margin-left: -6px; border: 6px solid transparent; border-top: 0; border-bottom-color: var(--black); } /* 화살표 6×12 (1:6909) */
+.dtip b { display: block; font-weight: 600; margin-bottom: 4px; }
+.dpopup { width: 514px; padding: 36px 40px; border-radius: 26px; background: var(--gray-100); display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; } /* popup 514 r26 pad 36/40 (1:6856) */
+.dpopup .tag { display: inline-block; padding: 4px 10px; border-radius: 8px; background: color-mix(in srgb, var(--genie-blue) 10%, #fff); color: var(--brand); font-size: 22px; font-weight: 700; letter-spacing: -0.5px; } /* 제목 칩 22 Bold (1:6857) */
+.dpopup .ic { width: 150px; height: 150px; border-radius: 50%; background: #fff; display: grid; place-items: center; }                 /* ic_time 150 (1:6859) */
+.dpopup .ic b { padding: 6px 12px; border-radius: 99px; background: var(--brand); color: #fff; font-size: 14px; }                      /* ic_time 안 45×32 r99 #6941FF (1:50268) */
+.dpopup h3 { margin: 0; font-size: 22px; font-weight: 700; color: var(--gray-600); letter-spacing: -0.5px; }
+.dpopup p { margin: 0; font-size: 18px; color: var(--gray-400); letter-spacing: -0.5px; }
+.dpopup p b { font-weight: 700; }
+.dpopup .dbtn { width: 100%; }
+
+/* ---------- 9. 카드·상태 ---------- */
+.dchart-title { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 16px 0 24px; font-size: 16px; font-weight: 700; color: var(--gray-600); } /* chart_title light 592×56 pad 16/24 (1:3128) */
+.dchart-title .l { display: inline-flex; align-items: center; gap: 4px; }
+.dchart-title .r { display: inline-flex; align-items: center; gap: 12px; color: var(--gray-600); }
+.dchart-title--dark { background: var(--gray-600); color: rgba(255,255,255,.8); border-radius: 12px; }                                /* dark 변형 (1:3121) */
+.dempty { display: flex; justify-content: center; padding: 0 260px; }                                                                  /* 빈 상태 ic_emptydata 72 중앙 (1:47309) */
+.dload { width: 70px; height: 70px; border-radius: 50%; border: 6px solid var(--gray-200); border-top-color: var(--brand); animation: dspin 1s linear infinite; } /* 로딩 70×70 4프레임 → 회전 근사 */
+@keyframes dspin { to { transform: rotate(360deg); } }
+.dbar { display: flex; align-items: center; justify-content: space-between; height: 78px; padding: 0 24px; border-radius: 8px; background: #fff; box-shadow: 10px 20px 30px rgba(0,0,0,.04); } /* 조회바 1824×78 r8 pad 17/24 (1:24199) */
+.dbar .t { font-size: 20px; font-weight: 700; }
+.dblk { display: inline-flex; flex-direction: column; gap: 6px; width: 472px; height: 80px; padding: 16px; border-radius: 8px; background: var(--sec-lightblue); color: var(--gray-500); } /* 편성표_위젯 472×80 pad 12/16 (1:2068) */
+.dblk .t { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dblk .m { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.dblk .m .more { display: inline-flex; align-items: center; gap: 2px; height: 22px; padding: 0 4px 0 8px; border-radius: 4px; background: var(--gray-200); color: var(--gray-600); } /* 상세보기 76×22 r4 #D6DDE9 (1:2079) */
+.dblk--live { background: var(--sec-skyblue); color: #fff; }                                                                               /* 방송 중 #5AACF5 (1:2082) */
+.dblk--live .m .more { display: none; }

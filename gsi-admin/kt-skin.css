@@ -1,0 +1,69 @@
+/* ============================================================
+   GSI 디자인 시스템 스킨 — KT 제공 상세페이지(Tailwind) 위에 덮는 오버라이드.
+   그래프(recharts 인라인 색)는 건드리지 않는다 — KT 파스텔 톤 유지 결정.
+   토큰 출처: ours/tokens.css (GSI 피그마 라이브 실측)
+   ============================================================ */
+
+:root {
+  --g-black: #1D1D1D;
+  --g-600: #353A41;
+  --g-500: #58606A;
+  --g-400: #7A8490;
+  --g-300: #A7B1BF;
+  --g-200: #D6DDE9;
+  --g-100: #F8F9FF;
+  --g-brand: #6941FF;
+  --g-lightblue: #F1F3FF;
+  --g-subblue: #E5EAFF;
+  --g-shadow: 10px 20px 15px rgba(0, 0, 0, 0.04);
+}
+
+body {
+  font-family: "Pretendard", "Pretendard Variable", -apple-system, sans-serif;
+  letter-spacing: -0.5px;
+  background: var(--g-100);
+}
+
+/* 섹션 폭 — 편성표(우리안)·실시간과 같은 공식: 바깥 1920 + 안쪽 좌우 48.
+   1920 뷰포트에서 카드 1824(피그마 정본), 스크롤바가 있으면 셋 다 같이 1809 로 줄어든다(26-08-24) */
+.max-w-\[1500px\] { max-width: none; }   /* 26-08-30 — KT 라이브처럼 가로 무제한(좌우 48 고정, 콘텐츠는 계속 늘어남). (이전) max-width: 1920px — 그 전 KT 원본은 1500px */
+.max-w-\[1500px\].lg\:px-8 { padding-left: 48px; padding-right: 48px; }
+
+/* 페이지 바닥 — 편성표와 같은 gray-100. KT 원본은 main 이 흰 면(bg-white)이라 카드가 바닥과 구분되지 않는다.
+   min-h-screen 도 걷어낸다 — 풋터가 뷰포트 한 화면 아래로 밀리지 않게 */
+main.bg-white { background-color: var(--g-100); min-height: 0; }
+
+/* 카드 — 보더 0 · r12 · GSI 쉐도우 (1:48752 저장값) */
+.shadow-panel {
+  border-radius: 12px;
+  border-color: transparent;
+  box-shadow: var(--g-shadow);
+}
+
+/* 그레이스케일 → GSI gray */
+.text-slate-950, .text-slate-900 { color: var(--g-black); }
+.text-slate-800, .text-slate-700 { color: var(--g-600); }
+.text-slate-600 { color: var(--g-500); }
+.text-slate-500, .text-slate-400 { color: var(--g-400); }
+.text-slate-300 { color: var(--g-300); }
+.hover\:text-slate-800:hover { color: var(--g-600); }
+.border-slate-300 { border-color: var(--g-300); }
+.border-slate-200 { border-color: var(--g-200); }
+.border-slate-200\/40 { border-color: color-mix(in srgb, var(--g-200) 40%, transparent); }
+.border-slate-100 { border-color: var(--g-200); }
+.bg-slate-50 { background-color: var(--g-100); }
+.bg-slate-50\/70 { background-color: color-mix(in srgb, var(--g-100) 70%, transparent); }
+.hover\:bg-slate-50:hover { background-color: var(--g-100); }
+
+/* 바이올렛 → Genie Purple 계열 */
+.text-violet-700, .text-violet-600 { color: var(--g-brand); }
+/* 그래프 범례 스와치(rounded-sm h-2.5)는 제외 — 차트 바 색(#c4b5fd/#8b5cf6 파스텔)과 맞아야 한다 */
+.bg-violet-500:not(.rounded-sm), .bg-violet-300:not(.rounded-sm) { background-color: var(--g-brand); }
+.bg-violet-50 { background-color: var(--g-lightblue); }
+.bg-violet-50\/40 { background-color: color-mix(in srgb, var(--g-lightblue) 40%, transparent); }
+.bg-violet-50\/20 { background-color: color-mix(in srgb, var(--g-lightblue) 20%, transparent); }
+.hover\:bg-violet-50\/30:hover { background-color: color-mix(in srgb, var(--g-lightblue) 30%, transparent); }
+.border-violet-100 { border-color: var(--g-subblue); }
+.border-violet-200 { border-color: color-mix(in srgb, var(--g-brand) 30%, #FFFFFF); }
+.ring-violet-100 { --tw-ring-color: var(--g-subblue); }
+.focus\:ring-violet-300:focus { --tw-ring-color: color-mix(in srgb, var(--g-brand) 35%, #FFFFFF); }

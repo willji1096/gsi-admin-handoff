@@ -1,0 +1,124 @@
+/* ============================================================
+   피그마 DS 적용판 — ui.css 위에 얹는 오버라이드만. 본체(ours/)는 건드리지 않는다.
+   근거: _docs/figma/DS-MATCH-260819.md (GSI_admin.fig Component_01~04 실측). 적용 항목 = 매칭표 C 의 1~5
+   ============================================================ */
+:root { --line-tab: #E1E6EF; }                                               /* 탭 행 하단선 — 피그마 실측(1:23935), tokens.css 미정의라 figma 층 전용 토큰 */
+
+/* 1. 체크칩 — 32h r20, 좌 8 · 체크 24 · gap 0 · 텍스트 14 SemiBold · 우 16 (Component_02 시청반응_목록 Property 1=off/on 실측 85×32 "홈쇼핑")
+      off = 보더 #D6DDE9 텍스트 #353A41 체크 #A7B1BF / on = #5A64FF 10% 바탕 + #5A64FF 보더 + #5A64FF 텍스트·체크 (Genieblue 스타일) */
+.chip {
+  /* 좌 8 / 우 16 비대칭은 왼쪽 24px 체크 아이콘을 전제한 값이었다.
+     아이콘 제거(26-08-23)로 라벨만 남았으므로 좌우 16 으로 맞춘다 */
+  height: 32px; padding: 0 16px; gap: 0;
+  border-radius: 20px;
+  font-size: var(--body-1); font-weight: 600; color: var(--gray-600);
+}
+/* 26-08-23 칩 체크 아이콘(피그마 ic_check_tag_1 24 · 체크 획 7×5 stroke 1.5) 삭제 —
+   마크업·스타일 모두 제거했다. 되살릴 때는 이 치수로 .tick 을 다시 만든다 */
+.chip.is-on {
+  background: color-mix(in srgb, var(--genie-blue) 10%, var(--white));
+  border-color: var(--genie-blue); color: var(--genie-blue); font-weight: 600;
+}
+.chip.is-on:hover { background: color-mix(in srgb, var(--genie-blue) 16%, var(--white)); }
+/* 공통카테고리 칩 — 켜지면 카테고리 고유색(GRAPH 팔레트 var(--cat))으로. 26-08-20 KT #4 참고 이미지 문법: 틴트 바탕 + 같은 색 보더·체크·텍스트 */
+.chip.is-on[data-cat] { background: color-mix(in srgb, var(--cat) 12%, var(--white)); border-color: var(--cat); color: var(--cat); }
+.chip.is-on[data-cat]:hover { background: color-mix(in srgb, var(--cat) 20%, var(--white)); }
+/* 전체 선택 칩 — 피그마 button_xsmall(34h r6 #F8F9FF Regular 14) */
+.chip--xs { height: 28px !important; padding: 0 12px !important; font-size: 13px; }
+.chip--all { height: 34px; padding: 0 16px; border-radius: 6px; border-color: transparent; background: var(--gray-100); color: var(--ink-3); font-weight: 400; }
+
+/* 2. GNB — 1:49612 Menu01 실측: 좌 48(로고 x) · 우 24 · 로고→메뉴 60 · 탭 gap 8 pad 10 · 탭 18 Bold(on)/Regular(off) · hover 흰 5% · 우측 16 gap 22 · 아이콘 24 gap 16 */
+.gnb { padding: 0 24px 0 48px; gap: 60px; }
+.gnb__nav { gap: 8px; }
+.gnb__nav a, .gnb__nav span { font-size: 18px; padding: 0 10px; }
+.gnb__right { gap: 22px; }
+.gnb__tools { gap: 16px; }
+.gnb__nav a:hover, .gnb__nav span:hover { background: color-mix(in srgb, var(--white) 5%, transparent); }
+.gnb__nav .is-active { font-weight: 700; }
+.gnb__right { font-size: 16px; }
+.gnb__account { font-size: 16px; }
+
+/* 3. 세그먼트(채널 순서 구분|번호순) → 피그마 radio tab: 44h r24 #F8F9FF pad 4, 아이템 36h r26, on #6941FF 흰 SemiBold */
+.tabs .seg { gap: 0; }
+.tabs .seg .seg__lbl { margin-right: 10px; }
+.tabs .seg button {
+  height: 36px; padding: 0 18px; margin-left: 0;
+  border: 0; border-radius: 26px !important; background: transparent; color: var(--gray-600);
+  font-size: var(--body-1); font-weight: 400;
+}
+.tabs .seg button + button { margin-left: 6px; }
+.tabs .seg button:first-of-type { margin-left: 0; }
+.tabs .seg button:hover { background: color-mix(in srgb, var(--brand) 8%, var(--gray-100)); color: var(--gray-600); }
+.tabs .seg button.is-on { background: var(--brand); border-color: transparent; color: var(--white); font-weight: 600; }
+/* 트랙 — 버튼들을 감싸는 연회색 필. 마크업을 안 건드리려고 첫/마지막 버튼 바깥 여백으로 트랙을 그린다 */
+.tabs .seg { position: relative; padding: 4px; border-radius: 24px; background: var(--gray-100); }
+.tabs .seg .seg__lbl { position: absolute; right: calc(100% + 10px); top: 50%; transform: translateY(-50%); margin: 0; }
+.tabs .seg button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 26px; }
+
+/* 4. 날짜 배지 — r6, 다음날 secondary/purple #C85CF2 (편성표 1:23894 Badge) */
+.tl__date { border-radius: 6px; height: 21px; padding: 0 7px; font-weight: 600; }
+.tl__date--next { background: var(--sec-purple); }
+
+/* 5. 위로가기 — 48 원형, 흰 + #D6DDE9 보더 (ic_gotop 48). 그림자는 §10 */
+.totop { width: 48px; height: 48px; color: var(--genie-blue); } /* 화살표 = ic_gotop 24 #5A64FF */
+
+/* 버튼 hover — 피그마 규칙 opacity .6 (Default/sub 공통) */
+.btn--primary:hover { background: var(--brand); opacity: .6; }
+.btn--soft:hover { background: var(--sub-blue); opacity: .6; }
+
+/* 6. 타이포 최소 단위 = Body3 12 (피그마 스케일 밖 11·10px 캡션을 12로). 배지 높이는 글자에 맞춰 16→18 */
+.tl__in, .tl__onair { height: 18px; font-size: 12px; }
+.tag, .pop__moved, .tl__blk .h .vw, .tl__blk .h .st, .tl__rail-v .rk { font-size: 12px; }
+.colog { font-size: 12px; }
+.btn--xs { height: 24px; border-radius: 6px; font-size: 12px; }
+
+/* 7. 배지 라운드 — 피그마 Badge r6 · 채널번호 칩 r4. r3 은 스케일 밖 */
+.tag, .pop__moved, .tl__in, .tl__onair { border-radius: 4px; }
+.tl__ch .no { border-radius: 4px; }
+
+/* 8. 소형 버튼 — 피그마 button_xsmall 34 r6 #F8F9FF 무보더 (스테퍼 ‹ ›) */
+.tabs .daystep__btn { width: 34px; height: 34px; background: var(--gray-100); border-color: transparent; }
+
+/* 9. 아이콘 세트 — 피그마 ic_*(검색·달력·gotop·체크) 원본 벡터 + 같은 세트인 Iconsax linear. 교체 목록은 icons-figma.js */
+.tabs .daystep__btn .i { width: 18px; height: 18px; }
+
+/* 10. 편성표 화면(1:23894) 노드 실측 정렬 — 26-08-19 2차 감사에서 잡힌 차이 */
+.page-head h1 { font-size: 24px; letter-spacing: -0.5px; }                 /* 타이틀 "편성표" Pretendard Bold 24 #1D1D1D (1:24216) */
+.card { box-shadow: 10px 20px 30px rgba(0, 0, 0, .04); }                     /* 목록 카드·조회바 그림자 10/20/30 4% (1:23915, 1:24199) */
+.filter-row > .val { gap: 12px; }                                            /* 칩 간격 12 (1:23924 Frame gap12) */
+.pill { padding: 0 24px; gap: 6px; }                                         /* 날짜 필 150×44 r50 pad 24 · 달력16→텍스트 gap 6 (1:24210) */
+.pill .input, .pill > .i { color: var(--gray-600); }                         /* 필 텍스트·아이콘 #353A41 */
+.filter-row .dash { color: var(--gray-600); }                                /* "-" 14 #353A41 (1:24209) */
+.btn--soft { font-weight: 400; }                                             /* sub 버튼 Regular 16 (1:50242) */
+.btn, .tabs .seg button { letter-spacing: -0.5px; }                          /* 버튼 텍스트 ls −0.5 (1:50233, 1:49815) */
+.tabs { border-bottom-color: var(--line-tab); }                                      /* 탭 행 하단선 #E1E6EF (1:23935) */
+.tabs .is-active::after { height: 1px; }                                     /* 활성 탭 밑줄 1px #1D1D1D (1:23937 stroke w1) */
+.tl__ch .no { width: auto; min-width: 20px; height: 20px; padding: 0 6px; font-size: 13px; font-weight: 600; } /* 채널번호 칩 21×20 pad 6 13 SemiBold (1:23992) */
+.tl__ch .name { color: var(--gray-600); }                                    /* 채널명 #353A41 (1:23994) — 크기 14는 레일 폭 때문에 유지(피그마 16 Bold) */
+.totop { box-shadow: 3px 8px 10px rgba(0, 0, 0, .1); }                       /* ic_gotop 48 DROP_SHADOW r10 o3,8 10% (1:24224) — 이전 "그림자 없음" 판정 오류 정정 */
+
+/* 11. 폰트 — 편성표 화면 TEXT 노드 전수(1:23894) 대조 */
+.card__head h2 { font-size: 20px; letter-spacing: -0.5px; }           /* 조회바 타이틀 "GS SHOP 편성표" Pretendard Bold 20 #1D1D1D (1:24203) — 1차 "18 유지" 판정 정정 */
+.filter-row > .lbl { font-size: 16px; color: var(--black); }            /* 목록 라벨 "채널사 목록" Regular 16 #1D1D1D (1:23918) */
+.chip--all { color: var(--gray-600); }                                  /* 전체선택 #353A41 (1:23921) */
+.tl__blk .t { color: var(--gray-500); }                                 /* 블록 제목 14 SemiBold #58606A (1:2070) */
+.tl__blk .h, .tl__blk .h .vw, .tl__blk .h .st { font-size: 13px; }      /* 블록 시간·캡션 13 Regular (1:2078, 상세보기 1:2080) */
+.tl__axis span:not(.tl__date):not(.tl__now-cap), .tl__axis > div { color: var(--gray-600); } /* 시간축 14 Regular #353A41 (1:24070) — 날짜 배지·NOW 배지 제외 (26-08-30 NOW 추가 — 원래: span:not(.tl__date)) */
+.tl__hour { font-size: 14px; }                                               /* 시간축 시각 14 (1:24070) — 축 높이 44 는 레일 밀도 때문에 유지(피그마 60) */
+.tl__in, .tl__onair { font-weight: 600; }                               /* 배지 12 SemiBold (1:24196) */
+
+/* 12. 자간 — 편성표 화면 TEXT 노드 78개 중 64개가 0. −0.5 는 버튼·radio tab·GNB 시각·푸터 링크에만 (1:50233, 1:49815, 1:49623, 1:23904) */
+body, .gnb__nav a, .gnb__nav span, .chip, .tabs > button, .tl__ch .name, .tl__blk, .tl__date, .tl__in, .tl__onair, .tl__axis, .card__head h2, .page-head h1, .filter-row > .lbl, .pill, .kt-footer__body p { letter-spacing: 0; }
+.btn, .tabs .seg button, .gnb__right, .kt-footer__links a { letter-spacing: -0.5px; }
+
+/* 13. 상태 — 버튼 disable 은 색으로(#D6DDE9 / #A7B1BF, 불투명도 X) (1:50221) */
+.btn[disabled], .btn.is-disabled { background: var(--gray-200); color: var(--gray-300); opacity: 1; }
+
+/* 14. 태블릿 — 아이패드 가로(1024)까지.
+   이 스킨이 GNB 메뉴를 18px 로 키워 두어(2번 항) 한 줄 최소폭이 1359px 이다.
+   좁아지는 순서: 기준일시·계정명 → 글자·간격. 본문은 이미 접히므로 손대지 않는다 */
+@media (max-width: 1360px) {
+  /* 아이패드 가로(1024) */
+  .gnb__nav { gap: 4px; }
+  .gnb__nav a, .gnb__nav span { font-size: 15px; padding: 0 8px; }
+}

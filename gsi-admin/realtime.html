@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23E60012'/%3E%3Ctext x='16' y='23' font-size='19' font-family='Helvetica,Arial' font-weight='700' fill='%23fff' text-anchor='middle'%3EG%3C/text%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>실시간 현황 — G Shopping Insight 사용자웹</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/ui.css">
+</head>
+<body>
+
+<header class="gnb">
+  <a class="gnb__logo" href="schedule.html"><img src="assets/gsi-logo.svg" alt="G Shopping Insight"></a>
+  <nav class="gnb__nav">
+    <span class="is-active">실시간 현황</span>
+    <a href="schedule.html">시청행태 분석</a>
+    
+    
+    <span>시청반응 분석</span>
+    <span>고객군 분석</span>
+    <span>편성</span>
+    <span>공지사항</span>
+  </nav>
+  <div class="gnb__right">
+    <span class="gnb__stamp">06.12(금) 10:44:00AM</span>
+    <span class="vline"></span>
+    <span class="gnb__tools">
+      <span class="ico"><img src="assets/gsi-ic-statusboard.svg" alt="현황판"></span>
+      <span class="ico"><img src="assets/gsi-ic-broadcastchart.svg" alt="방송차트"></span>
+      <span class="ico"><img src="assets/gsi-ic-edit.svg" alt="위젯 편집"></span>
+    </span>
+    <span class="vline"></span>
+    <span class="gnb__account"><span class="avatar">G</span><b class="gnb__who">GS샵</b></span>
+  </div>
+</header>
+
+<!-- 스크롤 축약바 (히어로 이탈 시 노출, 마진 카드형) -->
+<div class="rt-bar" id="rtBar" aria-hidden="true">
+  <div class="rt-bar__wrap">
+    <div class="rt-bar__inner">
+      <span class="rt-bar__item"><em>시청률</em><b>2.65%</b><i class="rt-bar__up">&#9650;0.17%p</i></span>
+      <span class="rt-bar__vl"></span>
+      <span class="rt-bar__item"><em>선택 채널 시청 가구</em><b>31,240</b><i class="rt-bar__up">&#9650;6.0%</i></span>
+      <span class="rt-bar__vl"></span>
+      <span class="rt-bar__item"><em>현재 접속 가구<small>전국</small></em><b>1,178,980</b><i class="rt-bar__down">&#9660;0.6%</i></span>
+      <span class="rt-bar__vl"></span>
+      <span class="rt-bar__item"><em>실시간 유입 Top3</em>
+        <span class="rt-bar__rank"><span class="rt-bar__no">1</span>SBS</span>
+        <span class="rt-bar__rank"><span class="rt-bar__no">2</span>KBS1</span>
+        <span class="rt-bar__rank"><span class="rt-bar__no">3</span>MBC</span>
+      </span>
+      <span class="rt-bar__spacer"></span>
+      <span class="rt-bar__onair">On Air</span>
+      <span class="rt-bar__remain">~11:00 (16분)</span>
+      <span class="rt-bar__chname">ch.8</span>
+      <span class="rt-bar__vl rt-bar__vl--dark"></span>
+      <span class="rt-bar__chname">GS SHOP</span>
+      <span class="rt-bar__prog"><b>원피스 썸머 특집</b> 10:00~11:00</span>
+    </div>
+  </div>
+</div>
+
+<!-- 풀블리드 히어로 (h380) -->
+<section class="rt-hero">
+  <div class="rt-hero__inner">
+
+    <!-- 패널 1 · 10분전 대비 -->
+    <div class="rt-panel rt-panel--kpi">
+      <div class="rt-phead">
+        <span class="rt-phead__title">10분전 대비</span>
+      </div>
+      <!-- 자사 성적(시청률)이 먼저, 전국 모수(접속 가구)가 마지막 -->
+      <div class="rt-kpis">
+        <div class="rt-kpi rt-kpi--lead">
+          <span class="rt-kpi__label">시청률</span>
+          <span class="rt-kpi__value">2.65<span class="rt-kpi__unit">%</span></span>
+          <span class="rt-kpi__delta rt-up"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 6l6 10H6z"/></svg>0.17%p</span>
+        </div>
+        <div class="rt-kpi">
+          <span class="rt-kpi__label">선택 채널 시청 가구</span>
+          <span class="rt-kpi__value"><span data-count="31240">0</span></span>
+          <span class="rt-kpi__delta rt-up"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 6l6 10H6z"/></svg>6.0%</span>
+        </div>
+        <div class="rt-kpi rt-kpi--sub">
+          <span class="rt-kpi__label">현재 접속 가구<small>전국</small></span>
+          <span class="rt-kpi__value"><span data-count="1178980">0</span></span>
+          <span class="rt-kpi__delta rt-down"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 18l6-10H6z"/></svg>0.6%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 패널 2 · 홈쇼핑 Top3 (시청률순) — 축약바 "실시간 유입 Top3"(지상파 유입원)와 다른 지표 -->
+    <div class="rt-panel rt-panel--rank">
+      <div class="rt-phead">
+        <span class="rt-phead__title">홈쇼핑 Top3 · 시청률순</span>
+      </div>
+      <ul class="rt-rank">
+        <li class="rt-rank__item">
+          <span class="rt-rank__no">1</span>
+          <span class="rt-rank__name">GS SHOP</span>
+          <span class="rt-rank__ch">ch.8</span>
+          <span class="rt-rank__vl"></span>
+          <span class="rt-rank__prog">
+            <span class="rt-rank__pname">원피스 썸머 특집</span>
+            <span class="rt-rank__ptime">10:00~11:00</span>
+          </span>
+        </li>
+        <li class="rt-rank__item">
+          <span class="rt-rank__no">2</span>
+          <span class="rt-rank__name">롯데홈쇼핑</span>
+          <span class="rt-rank__ch">ch.2</span>
+          <span class="rt-rank__vl"></span>
+          <span class="rt-rank__prog">
+            <span class="rt-rank__pname">리클라이너 특가</span>
+            <span class="rt-rank__ptime">10:00~11:00</span>
+          </span>
+        </li>
+        <li class="rt-rank__item">
+          <span class="rt-rank__no">3</span>
+          <span class="rt-rank__name">현대홈쇼핑</span>
+          <span class="rt-rank__ch">ch.14</span>
+          <span class="rt-rank__vl"></span>
+          <span class="rt-rank__prog">
+            <span class="rt-rank__pname">클링 원피스</span>
+            <span class="rt-rank__ptime">10:00~11:00</span>
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 패널 3 · 가구정보 스트립 + 편성정보 -->
+    <div class="rt-panel rt-panel--right">
+      <div class="rt-strip">
+        <div class="rt-strip__item" data-pop="age" role="button" tabindex="0" aria-expanded="false" aria-label="연령대 분포 보기">
+          <span class="rt-strip__ic rt-strip__ic--age"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="7.5" r="3.7"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0z"/></svg></span>
+          <span class="rt-strip__label">연령대</span><span class="rt-strip__value">40대</span><span class="rt-strip__caret" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </div>
+        <span class="rt-strip__vl"></span>
+        <div class="rt-strip__item" data-pop="sex" role="button" tabindex="0" aria-expanded="false" aria-label="성별 분포 보기">
+          <span class="rt-strip__ic rt-strip__ic--sex"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="3"/><path d="M12 9c-2.6 0-4.2 2.1-4.7 5.2L6 20h12l-1.3-5.8C16.2 11.1 14.6 9 12 9z"/></svg></span>
+          <span class="rt-strip__label">성별</span><span class="rt-strip__value">여자</span><span class="rt-strip__caret" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </div>
+        <span class="rt-strip__vl"></span>
+        <div class="rt-strip__item" data-pop="home" role="button" tabindex="0" aria-expanded="false" aria-label="가구형태 분포 보기">
+          <span class="rt-strip__ic rt-strip__ic--home"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3 3 11h2v9h5v-6h4v6h5v-9h2z"/></svg></span>
+          <span class="rt-strip__label">가구형태</span><span class="rt-strip__value">초등가구</span><span class="rt-strip__caret" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </div>
+      </div>
+      <!-- 인접 편성 + 재핑 유입 (08 B안 표기 문법 이식 · 최근 10분) -->
+      <div class="rt-sched">
+        <div class="rt-sched__row">
+          <span class="rt-sched__ch">ch.7</span><span class="rt-sched__vl"></span><span class="rt-sched__name">TV조선</span>
+          <span class="rt-sched__prog"><span class="rt-sched__pname">보도본부 핫라인</span><span class="rt-sched__ptime">09:30~11:00</span></span>
+          <span class="rt-sched__metric">
+            <span class="rt-sched__val"><small>유입</small>760</span>
+            <span class="rt-sched__delta"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 6l6 10H6z"/></svg>60</span>
+          </span>
+        </div>
+        <div class="rt-sched__row rt-sched__row--onair">
+          <span class="rt-onair">On Air</span>
+          <span class="rt-sched__ch">ch.8</span><span class="rt-sched__vl"></span><span class="rt-sched__name">GS SHOP</span>
+          <span class="rt-sched__prog"><span class="rt-sched__pname">원피스 썸머 특집</span><span class="rt-sched__ptime">10:00~11:00</span></span>
+          <span class="rt-sched__metric">
+            <span class="rt-sched__val"><small>인접 합</small>1,700</span>
+            <span class="rt-sched__delta"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 6l6 10H6z"/></svg>100 (6.3%)</span>
+          </span>
+        </div>
+        <div class="rt-sched__row">
+          <span class="rt-sched__ch">ch.9</span><span class="rt-sched__vl"></span><span class="rt-sched__name">KBS2</span>
+          <span class="rt-sched__prog"><span class="rt-sched__pname">생생정보</span><span class="rt-sched__ptime rt-sched__soon">~10:50 (6분)</span></span>
+          <span class="rt-sched__metric">
+            <span class="rt-sched__val"><small>유입</small>940</span>
+            <span class="rt-sched__delta"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 6l6 10H6z"/></svg>40</span>
+          </span>
+        </div>
+      </div>
+      <p class="rt-sched__cap">인접 채널 재핑 · ch.7 · ch.9 → ch.8 · 최근 10분 유입 가구</p>
+    </div>
+
+  </div>
+</section>
+<span class="rt-sentinel" id="rtSentinel"></span>
+
+<!-- 라이트 영역 · 차트 6장 -->
+<main class="rt-wrap">
+  <div class="rt-charts" data-reveal-group>
+
+    <section class="card">
+      <div class="card__head"><h2>채널 시청가구 변화추이<img class="rt-hint" src="assets/gsi-ic-info.svg" alt="" title="선택 채널(GS SHOP)의 분당 시청가구를 오늘·어제·전주 동시간과 비교"></h2></div>
+      <div class="card__body">
+        <div id="ch-1"></div>
+        <div class="rt-cardlg" id="lg-1"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h2>실시간 시청률 Top6 변화 추이<img class="rt-hint" src="assets/gsi-ic-info.svg" alt="" title="상위 6개 채널의 분당 시청률(%) 추이"></h2></div>
+      <div class="card__body">
+        <div id="ch-2"></div>
+        <div class="rt-cardlg" id="lg-2"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h2>누적 유입/유출 현황 (최근 1시간)<img class="rt-hint" src="assets/gsi-ic-info.svg" alt="" title="최근 1시간 유입원 → 체류 → 결과 흐름"></h2></div>
+      <div class="card__body">
+        <div id="ch-3"></div>
+        <div class="rt-cardlg" id="lg-3"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h2>지속 시청가구 변화 추이<img class="rt-hint" src="assets/gsi-ic-info.svg" alt="" title="1·3·5·10분 이상 지속 시청한 가구수 추이"></h2></div>
+      <div class="card__body">
+        <div id="ch-4"></div>
+        <div class="rt-cardlg" id="lg-4"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h2>유입가구 채널 Top6 변화 추이<img class="rt-hint" src="assets/gsi-ic-info.svg" alt="" title="최근 10분간 선택 채널로 유입된 가구의 직전 채널 Top6"></h2></div>
+      <div class="card__body">
+        <div id="ch-5"></div>
+        <div class="rt-cardlg" id="lg-5"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h2>홈쇼핑사 시청가구 변화추이<img class="rt-hint" src="assets/gsi-ic-info.svg" alt="" title="주요 홈쇼핑 6사의 시청가구 변화 추이"></h2></div>
+      <div class="card__body">
+        <div id="ch-6"></div>
+        <div class="rt-cardlg" id="lg-6"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- 전체보기 확장 7장 (더보기 클릭 시 노출) -->
+  <div class="rt-charts rt-charts--more" id="rtMore" data-reveal-group hidden>
+
+    <section class="card">
+      <div class="card__head"><h2>지상파 유입가구 변화추이<img class="rt-hint" src="assets/gsi-ic-info.svg" alt="" title="지상파 4개 채널에서 유입된 가구수 추이"></h2></div>
+      <div class="card__body"><div id="ch-7"></div><div class="rt-cardlg" id="lg-7"></div></div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h2>종합편성+tvN 유입가구 변화추이<img class="rt-hint" src="assets/gsi-ic-info.svg" alt="" title="종편 4사·연합뉴스TV·tvN에서 유입된 가구수 추이"></h2></div>
+      <div class="card__body"><div id="ch-8"></div><div class="rt-cardlg" id="lg-8"></div></div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h2>반복시청가구 변화추이<img class="rt-hint" src="assets/gsi-ic-info.svg" alt="" title="방송 중 2·3·4회 이상 재유입한 가구수 추이"></h2></div>
+      <div class="card__body"><div id="ch-9"></div><div class="rt-cardlg" id="lg-9"></div></div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h2>가구형태 변화추이<img class="rt-hint" src="assets/gsi-ic-info.svg" alt="" title="시청 가구의 가구형태별 구성 변화 추이"></h2></div>
+      <div class="card__body"><div id="ch-10"></div><div class="rt-cardlg" id="lg-10"></div></div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h2>연령대 변화추이<img class="rt-hint" src="assets/gsi-ic-info.svg" alt="" title="시청 가구주의 연령대별 구성 변화 추이"></h2></div>
+      <div class="card__body"><div id="ch-11"></div><div class="rt-cardlg" id="lg-11"></div></div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h2>남녀구성 변화추이<img class="rt-hint" src="assets/gsi-ic-info.svg" alt="" title="시청 가구주의 성별 구성 변화 추이"></h2></div>
+      <div class="card__body"><div id="ch-12"></div><div class="rt-cardlg" id="lg-12"></div></div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h2>모바일 관심사 변화추이<img class="rt-hint" src="assets/gsi-ic-info.svg" alt="" title="시청 가구의 모바일 관심 카테고리 변화 추이"></h2></div>
+      <div class="card__body"><div id="ch-13"></div><div class="rt-cardlg" id="lg-13"></div></div>
+    </section>
+
+  </div>
+
+  <div class="rt-more">
+    <button class="rt-more__btn" id="rtMoreBtn" type="button" aria-expanded="false" aria-controls="rtMore">
+      <span class="rt-more__label">더보기</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+  </div>
+</main>
+
+<button class="rt-gotop" id="rtGotop" type="button" aria-label="맨 위로">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<footer class="kt-footer">
+  <img class="kt-logo" src="assets/kt-logo.png" alt="kt">
+  <div class="kt-footer__body">
+    <nav class="kt-footer__links">
+      <a href="https://corp.kt.com/" target="_blank" rel="noopener">회사소개</a><a>이용약관</a><a>법적고지</a><a class="em">개인정보 처리방침</a><a>오픈소스 사용고지</a>
+    </nav>
+    <p>대표이사 김영섭 사업자등록번호 102-81-42945 (주)케이티 (13606) 경기도 성남시 분당구 불정로 90(정자동 206번지)</p>
+    <p>Tel 031-712-0922 Email ccubeadmin@kt.com</p>
+    <p>Copyright© KT Corp. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- 축약바 + gotop 인터랙션: 히어로 sentinel IntersectionObserver -->
+<script>
+(function () {
+  'use strict';
+  var sentinel = document.getElementById('rtSentinel');
+  if (sentinel) {
+    var io = new IntersectionObserver(function (entries) {
+      // sentinel(히어로 하단)이 GNB(60px) 아래를 지나 위로 사라지면 축약바·gotop 노출
+      document.body.classList.toggle('rt-condensed', entries[0].boundingClientRect.top < 60);
+    }, { threshold: [0], rootMargin: '-60px 0px 0px 0px' });
+    io.observe(sentinel);
+  }
+  var gotop = document.getElementById('rtGotop');
+  if (gotop) {
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    gotop.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    });
+  }
+
+  /* 카드 헤더 우측 도구 아이콘 3종 (TV / 그리드 / 확장) — 피그마 카드 크롬 */
+  var TOOLS =
+    '<img src="assets/gsi-ic-broadcastchart2.svg" width="24" height="24" alt="">' +
+    '<img src="assets/gsi-ic-layout.svg" width="24" height="24" alt="">' +
+    '<img src="assets/gsi-ic-expand.svg" width="24" height="24" alt="">';
+  document.querySelectorAll('.rt-charts .card__head').forEach(function (h) {
+    var s = document.createElement('span');
+    s.className = 'rt-tools'; s.setAttribute('aria-hidden', 'true');
+    s.innerHTML = TOOLS; h.appendChild(s);
+  });
+})();
+</script>
+
+<script src="assets/charts.js"></script>
+<script src="assets/motion.js"></script>
+<script>
+(function () {
+  'use strict';
+  var S1 = 'var(--series-1)', S2 = 'var(--series-2)', S3 = 'var(--series-3)',
+      S4 = 'var(--series-4)', S5 = 'var(--series-5)', S6 = 'var(--series-6)',
+      DEEMPH = 'var(--series-deemph)';
+
+  /* 시드 고정 PRNG (리로드 안정) */
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  var rnd = mulberry32(20260612);
+
+  /* 앵커([idx,값]) → n포인트 smoothstep 보간 + 시드 지터 (float) */
+  function curveF(anchors, n, jit) {
+    var out = [];
+    for (var i = 0; i < n; i++) {
+      var a = anchors[0], b = anchors[anchors.length - 1];
+      for (var k = 0; k < anchors.length - 1; k++) {
+        if (i >= anchors[k][0] && i <= anchors[k + 1][0]) { a = anchors[k]; b = anchors[k + 1]; break; }
+      }
+      var t = (b[0] === a[0]) ? 0 : (i - a[0]) / (b[0] - a[0]);
+      var s = t * t * (3 - 2 * t);
+      var v = a[1] + (b[1] - a[1]) * s;
+      if (jit) v += (rnd() * 2 - 1) * jit;
+      out.push(v);
+    }
+    return out;
+  }
+  function curve(anchors, n, jit) { return curveF(anchors, n, jit).map(Math.round); }
+
+  /* 최근 90분 라벨 (09:15 → 10:44, 기준 10:44) */
+  var N = 90;
+  var T = [];
+  for (var m = 0; m < N; m++) {
+    var tot = 9 * 60 + 15 + m;
+    T.push(String(Math.floor(tot / 60)).padStart(2, '0') + ':' + String(tot % 60).padStart(2, '0'));
+  }
+  var pctFmt = function (v) { return v.toFixed(1) + '%'; };
+  var pct2 = function (v) { return v.toFixed(2) + '%'; };
+  var last = function (arr) { return arr[arr.length - 1]; };
+
+  /* 칩 레전드 (틴트 pill + 체크 도트 + 라벨 + 수치Bold) — 색은 validator 팔레트 유지 */
+  var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
+  function chipLegend(elId, items) {
+    var c = document.getElementById(elId);
+    if (!c) return;
+    c.classList.add('rt-lg');
+    c.textContent = '';
+    items.forEach(function (it) {
+      var chip = document.createElement('span');
+      chip.className = 'rt-lg__chip';
+      chip.style.background = 'color-mix(in srgb, ' + it.color + ' 10%, transparent)';
+      chip.style.color = it.color; /* 피그마: 칩 라벨·수치 = 시리즈색 */
+      var dot = document.createElement('span');
+      dot.className = 'rt-lg__dot'; dot.style.background = it.color; dot.innerHTML = CHECK;
+      var lab = document.createElement('span');
+      lab.className = 'rt-lg__label'; lab.textContent = it.name;
+      chip.appendChild(dot); chip.appendChild(lab);
+      if (it.value != null) {
+        var val = document.createElement('span');
+        val.className = 'rt-lg__val'; val.textContent = it.value;
+        chip.appendChild(val);
+      }
+      c.appendChild(chip);
+    });
+  }
+
+  /* ── 1. 채널 시청가구 변화추이 (오늘/어제/전주) ── */
+  var today = curve([[0, 29200], [15, 30100], [30, 29500], [45, 30700], [60, 31600], [75, 31000], [89, 31240]], N, 260);
+  today[89] = 31240;
+  var yest = curve([[0, 27000], [15, 27800], [30, 27300], [45, 28400], [60, 29200], [75, 28600], [89, 28900]], N, 240);
+  var week = curve([[0, 24800], [15, 25400], [30, 25000], [45, 26000], [60, 26700], [75, 26200], [89, 26400]], N, 220);
+  KTC.lineChart(document.getElementById('ch-1'), {
+    xLabels: T,
+    series: [
+      { name: '오늘', color: S1, values: today, area: true },
+      { name: '어제', color: S2, values: yest },
+      { name: '전주', color: S3, values: week }
+    ],
+    height: 300, xEvery: 15, yFmt: KTC.fmtCompact
+  });
+  chipLegend('lg-1', [
+    { name: '오늘', color: S1, value: KTC.fmtCompact(last(today)) },
+    { name: '어제', color: S2, value: KTC.fmtCompact(last(yest)) },
+    { name: '전주', color: S3, value: KTC.fmtCompact(last(week)) }
+  ]);
+
+  /* ── 2. 실시간 시청률 Top6 변화 추이 (6채널, %) ── */
+  var kt = curveF([[0, 2.40], [30, 2.55], [60, 2.62], [89, 2.65]], N, 0.05);   kt[89] = 2.65;
+  var gs = curveF([[0, 2.10], [30, 2.22], [60, 2.28], [89, 2.31]], N, 0.05);   gs[89] = 2.31;
+  var hd = curveF([[0, 1.80], [30, 1.88], [60, 1.92], [89, 1.94]], N, 0.045);  hd[89] = 1.94;
+  var cj = curveF([[0, 1.55], [30, 1.60], [60, 1.61], [89, 1.62]], N, 0.04);   cj[89] = 1.62;
+  var tvc = curveF([[0, 1.20], [30, 1.25], [60, 1.27], [89, 1.28]], N, 0.04);  tvc[89] = 1.28;
+  var kbs1r = curveF([[0, 0.90], [30, 0.93], [60, 0.94], [89, 0.95]], N, 0.03); kbs1r[89] = 0.95;
+  KTC.lineChart(document.getElementById('ch-2'), {
+    xLabels: T,
+    series: [
+      { name: 'GS SHOP', color: S1, values: kt },
+      { name: '롯데홈쇼핑', color: S2, values: gs },
+      { name: '현대홈쇼핑', color: S3, values: hd },
+      { name: 'CJ온스타일', color: S4, values: cj },
+      { name: 'TV조선', color: S5, values: tvc },
+      { name: 'KBS1', color: S6, values: kbs1r }
+    ],
+    height: 300, xEvery: 15, yFmt: pctFmt, ttFmt: pctFmt
+  });
+  chipLegend('lg-2', [
+    { name: 'GS SHOP', color: S1, value: pct2(last(kt)) },
+    { name: '롯데홈쇼핑', color: S2, value: pct2(last(gs)) },
+    { name: '현대홈쇼핑', color: S3, value: pct2(last(hd)) },
+    { name: 'CJ온스타일', color: S4, value: pct2(last(cj)) },
+    { name: 'TV조선', color: S5, value: pct2(last(tvc)) },
+    { name: 'KBS1', color: S6, value: pct2(last(kbs1r)) }
+  ]);
+
+  /* ── 3. 누적 유입/유출 변화 추이 (최근 1시간 산키) ── */
+  (function () {
+    var SOURCES = [
+      { name: '지상파', color: S1, stay: [3600, 2900, 1900] },
+      { name: '종편', color: S2, stay: [1700, 1200, 620] },
+      { name: '타 홈쇼핑', color: S3, stay: [1450, 1100, 560] },
+      { name: '재핑·직접', color: S5, stay: [2600, 1050, 500] }
+    ];
+    var STAYS = ['1분 미만', '1–5분', '5분 이상'];
+    var OUTS = ['타 채널 이탈', '방송 종료까지 시청', '콜 반응'];
+    var OUTCOME_RATE = [
+      [0.897, 0.103, 0],
+      [0.515, 0.397, 0.088],
+      [0.190, 0.543, 0.267]
+    ];
+    var flows = [];
+    SOURCES.forEach(function (src) {
+      src.stay.forEach(function (v, mi) {
+        /* flow 별 반올림 잔차(±1)가 쌓이면 산키 노드 합이 범례 칩(stay 합)과 어긋난다.
+           잔차를 마지막 양수 항에 흡수해 두 값을 같은 기준으로 묶는다 */
+        var acc = 0;
+        var vals = OUTS.map(function (out, o) {
+          var val = Math.round(v * OUTCOME_RATE[mi][o]); acc += val; return val;
+        });
+        if (acc !== v) {
+          for (var k = vals.length - 1; k >= 0; k--) { if (vals[k] > 0) { vals[k] += v - acc; break; } }
+        }
+        vals.forEach(function (val, o) {
+          if (val > 0) flows.push({ path: [src.name, STAYS[mi], OUTS[o]], value: val });
+        });
+      });
+    });
+    var colors = {};
+    SOURCES.forEach(function (s) { colors[s.name] = s.color; });
+    KTC.sankey(document.getElementById('ch-3'), {
+      stages: ['유입 채널', '체류', '결과'],
+      order: [SOURCES.map(function (s) { return s.name; }), STAYS, OUTS],
+      colors: colors, flows: flows, height: 300
+    });
+    chipLegend('lg-3', SOURCES.map(function (s) {
+      return { name: s.name, color: s.color, value: KTC.fmtComma(s.stay.reduce(function (a, b) { return a + b; }, 0)) };
+    }));
+  })();
+
+  /* ── 4. 지속 시청가구 변화 추이 (1/3/5/10분+) ── */
+  var d1 = curve([[0, 16500], [30, 18000], [50, 19200], [70, 18600], [89, 19000]], N, 180);
+  var d3 = curve([[0, 9000], [30, 9800], [50, 10400], [70, 10200], [89, 10500]], N, 120);
+  var d5 = curve([[0, 5600], [30, 6100], [50, 6600], [70, 6500], [89, 6800]], N, 90);
+  var d10 = curve([[0, 2400], [30, 2650], [50, 2900], [70, 2850], [89, 3000]], N, 60);
+  KTC.lineChart(document.getElementById('ch-4'), {
+    xLabels: T,
+    series: [
+      { name: '1분 이상', color: S1, values: d1 },
+      { name: '3분 이상', color: S2, values: d3 },
+      { name: '5분 이상', color: S3, values: d5 },
+      { name: '10분 이상', color: S4, values: d10 }
+    ],
+    height: 300, xEvery: 15, yFmt: KTC.fmtCompact
+  });
+  chipLegend('lg-4', [
+    { name: '1분 이상', color: S1, value: KTC.fmtCompact(last(d1)) },
+    { name: '3분 이상', color: S2, value: KTC.fmtCompact(last(d3)) },
+    { name: '5분 이상', color: S3, value: KTC.fmtCompact(last(d5)) },
+    { name: '10분 이상', color: S4, value: KTC.fmtCompact(last(d10)) }
+  ]);
+
+  /* ── 5. 유입가구 채널 Top6 변화 추이 (단일 지표 + 1위 강조) ── */
+  var inChX = ['SBS', 'KBS1', 'MBC', 'KBS2', 'TV조선', 'YTN'];
+  KTC.columnChart(document.getElementById('ch-5'), {
+    xLabels: inChX, stacked: true, height: 300, maxBar: 38,
+    series: [
+      { name: '유입 1위', color: S1, values: [1550, 0, 0, 0, 0, 0] },
+      { name: '그 외', color: DEEMPH, values: [0, 1420, 1180, 940, 760, 540] }
+    ],
+    yFmt: KTC.fmtComma
+  });
+  chipLegend('lg-5', [
+    { name: '유입 1위', color: S1, value: KTC.fmtComma(1550) },
+    { name: '그 외', color: DEEMPH }
+  ]);
+
+  /* ── 6. 홈쇼핑사 시청가구 변화추이 (6사, 팔레트 6색)
+     GS 곡선 = 채널 시청가구 '오늘'과 동일 대역 29~32.5K (정합 요구) ── */
+  var h1 = curve([[0, 29200], [15, 30100], [30, 29500], [45, 30700], [60, 31600], [75, 31000], [89, 31240]], N, 260);
+  h1[89] = 31240;
+  var h2 = curve([[0, 22800], [30, 23600], [60, 24100], [89, 24300]], N, 200);
+  var h3 = curve([[0, 19800], [30, 20500], [60, 21000], [89, 21200]], N, 180);
+  var h4 = curve([[0, 16800], [30, 17400], [60, 17900], [89, 18100]], N, 160);
+  var h5 = curve([[0, 12200], [30, 12700], [60, 13000], [89, 13100]], N, 130);
+  var h6 = curve([[0, 8600], [30, 8950], [60, 9150], [89, 9200]], N, 100);
+  KTC.lineChart(document.getElementById('ch-6'), {
+    xLabels: T,
+    series: [
+      { name: 'GS SHOP', color: S1, values: h1 },
+      { name: '롯데홈쇼핑', color: S2, values: h2 },
+      { name: '현대홈쇼핑', color: S3, values: h3 },
+      { name: 'CJ온스타일', color: S4, values: h4 },
+      { name: 'NS홈쇼핑', color: S5, values: h5 },
+      { name: '공영쇼핑', color: S6, values: h6 }
+    ],
+    height: 300, xEvery: 15, yFmt: KTC.fmtCompact
+  });
+  chipLegend('lg-6', [
+    { name: 'GS SHOP', color: S1, value: KTC.fmtCompact(last(h1)) },
+    { name: '롯데홈쇼핑', color: S2, value: KTC.fmtCompact(last(h2)) },
+    { name: '현대홈쇼핑', color: S3, value: KTC.fmtCompact(last(h3)) },
+    { name: 'CJ온스타일', color: S4, value: KTC.fmtCompact(last(h4)) },
+    { name: 'NS홈쇼핑', color: S5, value: KTC.fmtCompact(last(h5)) },
+    { name: '공영쇼핑', color: S6, value: KTC.fmtCompact(last(h6)) }
+  ]);
+
+  /* ── 전체보기 확장 7장 (더보기 클릭 시 1회 렌더) — 전부 KTC.line, 레전드 하단 ── */
+  function lineCard(chId, lgId, series, opts) {
+    KTC.lineChart(document.getElementById(chId), Object.assign({
+      xLabels: T, height: 300, xEvery: 15, yFmt: KTC.fmtCompact,
+      series: series.map(function (s) { return { name: s.name, color: s.color, values: s.values }; })
+    }, opts || {}));
+    chipLegend(lgId, series.map(function (s) { return { name: s.name, color: s.color, value: KTC.fmtCompact(last(s.values)) }; }));
+  }
+
+  function renderMore() {
+    /* 3-1 지상파 유입가구 (KBS1/KBS2/MBC/SBS) — card5 유입 Top6 수치와 정합 */
+    lineCard('ch-7', 'lg-7', [
+      { name: 'KBS1', color: S1, values: curve([[0, 1150], [30, 1280], [60, 1360], [89, 1420]], N, 90) },
+      { name: 'KBS2', color: S2, values: curve([[0, 760], [30, 850], [60, 910], [89, 940]], N, 70) },
+      { name: 'MBC', color: S3, values: curve([[0, 980], [30, 1080], [60, 1140], [89, 1180]], N, 80) },
+      { name: 'SBS', color: S4, values: curve([[0, 1250], [30, 1400], [60, 1500], [89, 1550]], N, 95) }
+    ]);
+
+    /* 3-2 종합편성+tvN 유입가구 (TV조선/JTBC/채널A/MBN/연합뉴스TV/tvN) */
+    lineCard('ch-8', 'lg-8', [
+      { name: 'TV조선', color: S1, values: curve([[0, 400], [30, 450], [60, 470], [89, 480]], N, 40) },
+      { name: 'JTBC', color: S2, values: curve([[0, 340], [30, 385], [60, 402], [89, 410]], N, 38) },
+      { name: '채널A', color: S3, values: curve([[0, 300], [30, 340], [60, 352], [89, 360]], N, 34) },
+      { name: 'MBN', color: S4, values: curve([[0, 190], [30, 225], [60, 236], [89, 240]], N, 26) },
+      { name: '연합뉴스TV', color: S5, values: curve([[0, 140], [30, 168], [60, 176], [89, 180]], N, 22) },
+      { name: 'tvN', color: S6, values: curve([[0, 510], [30, 580], [60, 606], [89, 620]], N, 48) }
+    ]);
+
+    /* 3-3 반복시청가구 (2회/3회/4회+) */
+    lineCard('ch-9', 'lg-9', [
+      { name: '2회', color: S1, values: curve([[0, 6000], [30, 6500], [60, 6720], [89, 6800]], N, 120) },
+      { name: '3회', color: S2, values: curve([[0, 3400], [30, 3750], [60, 3860], [89, 3900]], N, 90) },
+      { name: '4회 이상', color: S3, values: curve([[0, 1150], [30, 1320], [60, 1380], [89, 1400]], N, 55) }
+    ]);
+
+    /* 4-1 가구형태 (키즈/초등/성인자녀/1인/기타) */
+    lineCard('ch-10', 'lg-10', [
+      { name: '키즈가구', color: S1, values: curve([[0, 1050], [30, 1160], [60, 1200], [89, 1200]], N, 70) },
+      { name: '초등가구', color: S2, values: curve([[0, 1500], [30, 1660], [60, 1710], [89, 1730]], N, 90) },
+      { name: '성인자녀가구', color: S3, values: curve([[0, 1480], [30, 1620], [60, 1665], [89, 1680]], N, 88) },
+      { name: '1인가구', color: S4, values: curve([[0, 4000], [30, 4380], [60, 4500], [89, 4550]], N, 130) },
+      { name: '기타', color: S5, values: curve([[0, 5600], [30, 6100], [60, 6250], [89, 6300]], N, 150) }
+    ]);
+
+    /* 4-2 연령대 (10대~60대+) */
+    lineCard('ch-11', 'lg-11', [
+      { name: '10대', color: S1, values: curve([[0, 420], [30, 460], [60, 475], [89, 480]], N, 35) },
+      { name: '20대', color: S2, values: curve([[0, 1150], [30, 1280], [60, 1320], [89, 1330]], N, 70) },
+      { name: '30대', color: S3, values: curve([[0, 1780], [30, 1950], [60, 2000], [89, 2010]], N, 90) },
+      { name: '40대', color: S4, values: curve([[0, 2800], [30, 3050], [60, 3120], [89, 3150]], N, 110) },
+      { name: '50대', color: S5, values: curve([[0, 2300], [30, 2520], [60, 2580], [89, 2600]], N, 100) },
+      { name: '60대+', color: S6, values: curve([[0, 1550], [30, 1700], [60, 1740], [89, 1750]], N, 80) }
+    ]);
+
+    /* 4-3 남녀구성 (남/여) — 성별 전용 토큰 --male/--female */
+    lineCard('ch-12', 'lg-12', [
+      { name: '남', color: 'var(--male)', values: curve([[0, 8600], [30, 9100], [60, 9300], [89, 9360]], N, 150) },
+      { name: '여', color: 'var(--female)', values: curve([[0, 7400], [30, 7850], [60, 7980], [89, 8030]], N, 140) }
+    ]);
+
+    /* 5-1 모바일 관심사 (뷰티/건강식품/리빙/패션) */
+    lineCard('ch-13', 'lg-13', [
+      { name: '뷰티', color: S1, values: curve([[0, 2900], [30, 3120], [60, 3180], [89, 3200]], N, 110) },
+      { name: '건강식품', color: S2, values: curve([[0, 2350], [30, 2540], [60, 2585], [89, 2600]], N, 95) },
+      { name: '리빙', color: S3, values: curve([[0, 1900], [30, 2050], [60, 2090], [89, 2100]], N, 80) },
+      { name: '패션', color: S4, values: curve([[0, 1620], [30, 1750], [60, 1790], [89, 1800]], N, 70) }
+    ]);
+  }
+
+  var moreBtn = document.getElementById('rtMoreBtn');
+  var moreGrid = document.getElementById('rtMore');
+  var moreLabel = moreBtn && moreBtn.querySelector('.rt-more__label');
+  var moreRendered = false;
+  if (moreBtn && moreGrid) {
+    moreBtn.addEventListener('click', function () {
+      if (moreGrid.hasAttribute('hidden')) {
+        moreGrid.removeAttribute('hidden');
+        moreBtn.setAttribute('aria-expanded', 'true');
+        if (moreLabel) moreLabel.textContent = '접기';
+        if (!moreRendered) { renderMore(); moreRendered = true; }
+        // 노출 시 reveal 스태거 직접 발동 (display:none→grid 전환은 IO가 놓칠 수 있음, --d는 motion.js가 세팅)
+        moreGrid.querySelectorAll('[data-reveal]').forEach(function (el) { el.classList.add('is-in'); });
+      } else {
+        moreGrid.setAttribute('hidden', '');
+        moreBtn.setAttribute('aria-expanded', 'false');
+        if (moreLabel) moreLabel.textContent = '더보기';
+      }
+    });
+  }
+})();
+</script>
+
+<script>
+/* 가구정보 분포 팝오버 — 스트립 값은 최다층 요약, 클릭 시 전체 분포 */
+(function () {
+  'use strict';
+  var DIST = {
+    age:  { title: '시청 가구주 연령대 분포', rows: [['20대', 6], ['30대', 14], ['40대', 34], ['50대', 28], ['60대+', 18]] },
+    sex:  { title: '시청 가구주 성별 분포', rows: [['여자', 62], ['남자', 38]], colors: { '여자': 'var(--female)', '남자': 'var(--male)' } },
+    home: { title: '시청 가구형태 분포', rows: [['초등가구', 31], ['성인자녀', 24], ['1인가구', 22], ['키즈가구', 12], ['기타', 11]] }
+  };
+  var items = document.querySelectorAll('.rt-strip__item[data-pop]');
+  function close() {
+    items.forEach(function (it) {
+      it.classList.remove('is-open'); it.setAttribute('aria-expanded', 'false');
+      var p = it.querySelector('.rt-pop'); if (p) p.remove();
+    });
+  }
+  function build(it) {
+    var d = DIST[it.dataset.pop], max = Math.max.apply(null, d.rows.map(function (r) { return r[1]; }));
+    var pop = document.createElement('div');
+    pop.className = 'rt-pop' + (it.dataset.pop === 'home' ? ' rt-pop--right' : '');
+    var h = '<div class="rt-pop__title">' + d.title + '</div>';
+    d.rows.forEach(function (r) {
+      var top = r[1] === max, color = d.colors ? d.colors[r[0]] : null;
+      h += '<div class="rt-pop__row' + (top ? ' is-top' : '') + '">'
+         + '<span>' + (top ? '<b>' + r[0] + '</b>' : r[0]) + '</span>'
+         + '<span class="rt-pop__track"><span class="rt-pop__fill" style="width:' + r[1] + '%' + (color ? ';background:' + color : '') + '"></span></span>'
+         + '<span class="rt-pop__val">' + (top ? '<b>' + r[1] + '%</b>' : r[1] + '%') + '</span></div>';
+    });
+    pop.innerHTML = h;
+    pop.addEventListener('click', function (e) { e.stopPropagation(); });
+    it.appendChild(pop);
+  }
+  items.forEach(function (it) {
+    it.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = it.classList.contains('is-open');
+      close();
+      if (!open) { it.classList.add('is-open'); it.setAttribute('aria-expanded', 'true'); build(it); }
+    });
+    it.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); it.click(); }
+    });
+  });
+  document.addEventListener('click', close);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+})();
+</script>
+</body>
+</html>

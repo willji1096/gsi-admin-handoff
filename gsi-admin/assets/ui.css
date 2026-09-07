@@ -1,0 +1,543 @@
+/* ============================================================
+   KT 홈쇼핑 어드민 — 공용 UI (셸 · 카드 · 컨트롤 · 테이블 · 차트 크롬)
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  background: var(--page);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: -0.5px;
+  -webkit-font-smoothing: antialiased;
+}
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+
+/* ── 셸 A · 사용자웹 GNB — Figma GNB 컴포넌트(1920×60) 실측 ── */
+.gnb {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; gap: 40px;
+  height: 60px; padding: 0 24px 0 48px;
+  background: var(--gsi-grad);
+  border-bottom: 1px solid rgba(255, 255, 255, .3);
+}
+.gnb__logo { display: flex; align-items: center; flex: none; height: 44px; }
+.gnb__logo img { width: 120px; height: 44px; display: block; }
+.gnb__nav { display: flex; gap: 8px; height: 100%; }
+.gnb__nav a, .gnb__nav span {
+  display: inline-flex; align-items: center; padding: 0 22px;
+  position: relative; height: 100%;
+  font-size: 18px; font-weight: 400; color: #fff;
+  white-space: nowrap;
+}
+@media (max-width: 1980px) {
+  .gnb { gap: 20px; padding: 0 20px 0 28px; }
+  .gnb__nav { gap: 0; }
+  .gnb__nav a, .gnb__nav span { padding: 0 13px; font-size: 16px; }
+  .gnb__right { gap: 14px; font-size: 14px; }
+}
+
+.gnb__right, .gnb__right > span, .gnb__account { white-space: nowrap; }
+@media (max-width: 1400px) {
+  .gnb__nav a, .gnb__nav span { padding: 0 9px; font-size: 14px; }
+  .gnb__right { gap: 10px; font-size: 13px; }
+  .gnb__tools { gap: 10px; }
+}
+
+.gnb__nav a:hover { color: var(--gsi-mint); }
+.gnb__nav .is-active { color: var(--gsi-mint); font-weight: 700; letter-spacing: 0; }
+.gnb__nav .is-active::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0;
+  height: 2px; background: var(--gsi-mint);
+}
+.gnb__right {
+  margin-left: auto; display: flex; align-items: center; gap: 22px;
+  color: #fff; font-size: 16px; font-variant-numeric: tabular-nums;
+}
+.gnb__right .vline { width: 1px; height: 12px; background: rgba(255, 255, 255, .5); }
+.gnb__tools { display: inline-flex; align-items: center; gap: 16px; }
+.gnb__tools .ico { display: inline-flex; width: 24px; height: 24px; }
+.gnb__tools .ico img, .gnb__tools .ico svg { width: 100%; height: 100%; }
+.gnb__account { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; letter-spacing: 0; color: #fff; }
+.gnb__account .avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: #fff; color: var(--kt-red);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+}
+.gnb__account .caret { display: inline-flex; width: 24px; height: 24px; opacity: .9; }
+.gnb__account .caret img { width: 100%; height: 100%; }
+.gnb__who { font: inherit; }
+@media (max-width: 1360px) {
+  .gnb { gap: 12px; padding: 0 16px 0 20px; }
+  .gnb__stamp, .gnb__who { display: none; }
+  .gnb__nav a, .gnb__nav span { padding: 0 8px; font-size: 15px; }
+  .gnb__right { gap: 12px; }
+  .gnb__tools { gap: 10px; }
+}
+
+
+/* KT 푸터 (사용자웹) — bg grayscale/gray200 */
+.kt-footer {
+  margin-top: 56px; min-height: 220px; padding: 40px 48px 40px 48px; /* 피그마 1:11383: 콘텐츠 left 43 · bottom 40 */
+  background: var(--gsi-gray200);
+  display: flex; gap: 40px; align-items: flex-end;
+}
+/* 실물 로고(피그마 img-logo-kt). 원본은 로고 하단이 카피라이트 줄보다 약 10px 위 — 바닥 정렬이 아니다 */
+.kt-footer .kt-logo { width: 74px; height: 74px; display: block; flex: none; margin-bottom: 10px; }
+.kt-footer__links { display: flex; flex-wrap: wrap; gap: 6px 0; font-size: 14px; font-weight: 400; color: var(--gsi-gray600); }
+.kt-footer__links a + a::before { content: "|"; margin: 0 10px; color: var(--gsi-gray300); }
+.kt-footer__links .em { font-weight: 600; }
+.kt-footer__body p { margin: 4px 0 0; font-size: 13px; color: var(--gsi-gray400); }
+.kt-footer__body p:first-of-type { margin-top: 8px; }
+.kt-footer__body p:last-of-type { margin-top: 9px; }
+
+/* ── 카드 ───────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  /* 26-08-23 — 피그마 원본(현황판뷰 1:18287)은 보더 없이 은은한 그림자다. 헌장 3(26-08-13 정정) 미반영분 정정 */
+  border-radius: var(--r-card);
+  box-shadow: 10px 20px 30px rgba(0, 0, 0, .04);
+}
+/* chart_title (원본 1:50898) — pl24 pr16 py16 · 16 Bold gray600 · 우측 도구 gap12.
+   높이 56은 도구 아이콘이 있을 때만 자연스럽게 나오므로 min-height 를 강제하지 않는다 */
+.card__head {
+  display: flex; align-items: center; gap: 8px;
+  padding: 16px 24px 0;
+}
+.card__head h2 { margin: 0; font-size: 16px; font-weight: 700; color: var(--gsi-gray600); }
+.card__head .sub { color: var(--ink-3); font-size: 13px; }
+.card__head .right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+/* 3-3 plot 좌우 인셋 16 (원본 카드 592 안 plot 560, x=16) */
+.card__body { padding: 16px 24px 24px; }
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-card);
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.kpi__label { font-size: 12px; color: var(--ink-2); display: flex; align-items: center; gap: 6px; }
+.kpi__label .ico { color: var(--brand); display: inline-flex; }
+.kpi__value { font-size: 22px; font-weight: 700; }
+.kpi__value small { font-size: 13px; font-weight: 600; color: var(--ink-3); margin-left: 2px; }
+.kpi__delta { font-size: 12px; font-weight: 700; }
+.kpi__delta.up { color: var(--up); }
+.kpi__delta.down { color: var(--down); }
+@keyframes livePulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+
+/* 채널칩 (원본 1:48586) — 선택은 채움이 아니라 10% 틴트 + 보라 보더.
+   hover 는 색이 아니라 opacity(원본 스펙시트 주석) → 선택 여부와 무관하게 같은 피드백 */
+.chip {
+  display: inline-flex; align-items: center; gap: 2px;
+  height: 32px; padding: 0 16px 0 8px; border-radius: 20px;
+  border: 1px solid var(--hairline);
+  background: none;
+  font-size: 14px; font-weight: 600; color: var(--gsi-gray600);
+  transition: background .15s ease, border-color .15s ease, color .15s ease, opacity .15s ease;
+  user-select: none;
+}
+.chip .ico { width: 24px; height: 24px; flex: none; display: inline-flex; color: var(--gsi-gray400); }
+.chip .ico svg { width: 100%; height: 100%; }
+.chip:hover { opacity: .7; }
+.chip.is-on {
+  border-color: var(--brand);
+  background: color-mix(in srgb, var(--gsi-blue) 10%, transparent);
+  color: var(--brand);
+}
+.chip.is-on .ico { color: var(--brand); }
+
+/* ── 버튼 · 토글 그룹 ───────────────────────────── */
+/* button (원본 1:50230) — 보더 없음, 면으로 읽힌다. hover 는 opacity .6 (칩 .7과 다름) */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 34px; padding: 0 16px; border: 0; border-radius: 6px;
+  background: var(--page); color: var(--gsi-gray500);
+  font-size: 14px; font-weight: 400;
+  transition: opacity .15s ease;
+}
+.btn:hover { opacity: .6; }
+.btn[disabled], .btn.is-disabled {
+  background: var(--hairline); color: var(--gsi-gray300); opacity: .5; pointer-events: none; }
+
+/* ── 차트 크롬 ──────────────────────────────────── */
+.chart-box { position: relative; }
+.chart-box svg { display: block; width: 100%; height: auto; }
+/* 차트 축 텍스트 — GSI 공식 사다리 바닥 12px (charts.js 무수정, 프레젠테이션 속성만 오버라이드) */
+svg text[font-size="11"] { font-size: 12px; } /* 03 동결 보존 */
+
+/* 3-1 button_badge (원본) 문법으로 통일 — 04 .rt-lg 와 같은 물건이 되게.
+   KTC.legend 가 뱉는 .key/.swatch 마크업 그대로에 칩 셸만 CSS 로 씌운다(charts.js 무수정).
+   시리즈 10% 틴트 배경은 엔진이 색을 부모에 안 넘겨줘 불가 → 원본 미선택 배경(#F8F9FF)으로 통일 */
+.chart-legend {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  padding: 0;                               /* 본문 24 승격(6-A2)으로 보정분 제거 — 원본 chart_tag 24 일치 */
+  font-size: 13px; color: var(--gsi-gray600);
+}
+.chart-legend .key {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 28px; padding: 4px 10px 4px 4px; border-radius: 20px;
+  background: var(--page); font-weight: 400; line-height: 1.4;
+}
+.chart-legend .swatch { width: 20px; height: 20px; border-radius: 50%; flex: none; }
+.chart-legend .line-key { width: 20px; height: 3px; border-radius: 2px; flex: none; }
+
+.viz-tooltip {
+  position: fixed; z-index: 200; pointer-events: none;
+  background: var(--surface);
+  color: var(--gsi-gray600);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-card); padding: 8px;
+  font-size: 12px; line-height: 1.4;
+  filter: drop-shadow(5px 10px 10px rgba(0, 0, 0, .06));
+  opacity: 0; transform: translateY(4px);
+  transition: opacity .12s ease, transform .12s ease;
+  min-width: 130px;
+}
+[data-theme="dark"] .viz-tooltip { background: #232D45; color: #F2F4FA; border: 1px solid rgba(255,255,255,.1); filter: none; box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+.viz-tooltip.is-on { opacity: 1; transform: translateY(0); }
+.viz-tooltip .tt-title { font-weight: 600; margin-bottom: 8px; font-size: 12px; color: var(--gsi-gray600); }
+.viz-tooltip .tt-row { display: flex; align-items: center; gap: 8px; }
+.viz-tooltip .tt-row .k { width: 12px; height: 2.5px; border-radius: 2px; flex: none; }
+.viz-tooltip .tt-row .v { font-weight: 600; font-variant-numeric: tabular-nums; margin-left: auto; padding-left: 14px; }
+
+/* ── 모션 (reveal 스태거) ───────────────────────── */
+/* 데이터 리포트 — 등장 모션은 짧게(.55s는 스크롤 속도를 못 따라와 "느리다"로 읽힘) */
+[data-reveal] {
+  opacity: 0; transform: translateY(8px);
+  transition: opacity .25s ease-out, transform .25s ease-out;
+  transition-delay: var(--d, 0ms);
+}
+[data-reveal].is-in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
+}
+
+
+/* ============================================================
+   04 실시간 현황 (rt-) — 피그마 네이티브 1920 스케일 (GSI_Customer .fig 실측)
+   신규 전용 섹션. 기존 셀렉터·.page-wrap 무수정.
+   콘텐츠 1824 · 좌우 마진 48 · 폰트/간격 피그마 절대값 1:1 (반응형 아님).
+   ============================================================ */
+
+/* rt- 전용 컨테이너 (.page-wrap 1440 과 분리)
+   1920에서 콘텐츠 1824(마진48) 픽셀정확, 이하 유동 축소 (가로 스크롤 강제 안 함) */
+.rt-wrap { width: 100%; max-width: none; margin: -30px auto 0;   /* 26-08-30 — KT 라이브처럼 가로 무제한(좌우 48 고정, 콘텐츠는 계속 늘어남). (이전) max-width: 1920px */ padding: 0 48px 64px; position: relative; z-index: 1; }
+
+/* ── 비례 줌: 1920 미만에선 피그마 레이아웃(1920) 전체를 균등 축소.
+   레이아웃은 항상 1920 기준으로 계산되므로 어떤 창 폭에서도
+   computed 값(폰트 34px·패널 598px 등) = 피그마 원값 그대로. ── */
+.rt-hero__inner, .rt-bar__wrap, .rt-wrap { zoom: min(1, calc(100vw / 1920px)); }
+/* zoom<1이면 1px 헤어라인이 서브픽셀(≈0.5px)로 렌더돼 v2 화면과 보더 무게가 달라진다 — 역보정 */
+.rt-wrap .card, .rt-wrap .kpi, .rt-wrap .rt-more__btn,
+.rt-bar__wrap .rt-bar__inner { border-width: calc(1px / min(1, calc(100vw / 1920px))); }
+@media (max-width: 1280px) {
+  .rt-hero__inner, .rt-bar__wrap, .rt-wrap { zoom: 1; } /* 스택 레이아웃으로 전환 */
+  .rt-wrap .card, .rt-wrap .kpi, .rt-wrap .rt-more__btn,
+  .rt-bar__wrap .rt-bar__inner { border-width: 1px; }
+}
+
+
+/* ── 풀블리드 보라 히어로 (h380) ─────────────────── */
+.rt-hero { position: relative; background: var(--gsi-hero-grad); overflow: hidden; }
+.rt-hero__inner {
+  position: relative; z-index: 1;
+  max-width: none; margin: 0 auto; padding: 33px 48px 34px;   /* 26-08-30 — KT 라이브처럼 가로 무제한(좌우 48 고정, 콘텐츠는 계속 늘어남). (이전) max-width: 1920px */
+  min-height: 423px; /* 380 히어로 + 43 보라 연장(피그마 y379~423) — 단일 요소로 합쳐 줌 이음새 제거 */
+  /* 피그마 비율 유동 그리드: 598 / (18) / 552 / (64) / 592 = 1824. 스페이서=빈 트랙 */
+  display: grid; grid-template-columns: 598fr 18fr 552fr 64fr 592fr; align-items: start;
+}
+/* 피그마 실물 장식 곡선 (Vector 1:30425 export, x903) — 하단 페이드로 380px 컷 엣지 제거 */
+.rt-hero__inner::after {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  left: 903px; top: 0; width: 859px; height: 380px;
+  background: url(gsi-hero-curve.svg) no-repeat 0 0 / 859px 380px;
+  -webkit-mask-image: linear-gradient(180deg, #000 62%, transparent 97%);
+  mask-image: linear-gradient(180deg, #000 62%, transparent 97%);
+}
+.rt-panel { min-width: 0; }
+.rt-panel--kpi   { grid-column: 1; }
+.rt-panel--rank  { grid-column: 3; }
+.rt-panel--right { grid-column: 5; display: flex; flex-direction: column; }
+
+/* 공통 패널 헤더 — 타이틀 22 Medium + 이중 구분선(전폭 1px + 좌 184px 2px) */
+.rt-phead { position: relative; display: flex; align-items: center; gap: 8px; padding-bottom: 14px; }
+.rt-phead__title { font-size: 22px; font-weight: 500; color: #fff; line-height: 1.4; }
+.rt-phead::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: rgba(255, 255, 255, .28); }
+.rt-phead::after  { content: ""; position: absolute; left: 0; bottom: 0; width: 184px; height: 2px; background: #fff; }
+
+/* 패널 1 · 10분전 대비 KPI (라벨18 / 값34 / 셀 세로선 h44) */
+.rt-kpis { display: flex; margin-top: 34px; }
+.rt-kpi { position: relative; display: flex; flex-direction: column; padding: 0 20px; min-width: 0; }
+.rt-kpi:first-child { padding-left: 0; }
+.rt-kpi + .rt-kpi::before { content: ""; position: absolute; left: 0; top: 6px; width: 1px; height: 44px; background: rgba(255, 255, 255, .28); }
+.rt-kpi__label { font-size: 18px; font-weight: 400; color: #fff; line-height: 1.4; white-space: nowrap; }
+.rt-kpi__value {
+  margin-top: 12px; font-size: 34px; font-weight: 700; color: #fff;
+  line-height: 1.25; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.rt-kpi__unit { font-size: 22px; font-weight: 700; margin-left: 1px; }
+.rt-kpi__delta {
+  margin-top: 8px; display: inline-flex; align-items: center; gap: 4px;
+  font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.rt-kpi__delta svg { width: 16px; height: 16px; }
+.rt-up { color: var(--gsi-up-mint); }
+
+/* 패널 2 · 유입채널 Top3 (오렌지 뱃지24 / 채널명22 / ch뱃지w60 / % 없음 / 2줄) */
+.rt-rank { display: flex; flex-direction: column; gap: 10px; margin: 20px 0 0; padding: 0; list-style: none; } /* ul UA 기본(pl 40) 리셋 — 피그마 들여쓰기는 행 pl 12뿐 */
+.rt-rank__item { display: flex; align-items: center; padding-left: 0; }
+.rt-rank__no {
+  width: 24px; height: 24px; border-radius: 50%; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--gsi-orange); color: #fff; font-size: 16px; font-weight: 700;
+}
+.rt-rank__name { margin-left: 10px; font-size: 22px; font-weight: 700; color: #fff; white-space: nowrap; }
+.rt-rank__ch {
+  margin-left: 6px; min-width: 60px; text-align: center; flex: none;
+  font-size: 16px; font-weight: 400; color: #fff;
+  background: rgba(255, 255, 255, .1); border-radius: 4px; padding: 2px 7px;
+}
+.rt-rank__vl { width: 1px; height: 11px; background: rgba(255, 255, 255, .4); margin: 0 16px; flex: none; }
+.rt-rank__prog { display: flex; flex-direction: column; min-width: 0; }
+.rt-rank__pname { font-size: 20px; font-weight: 500; color: #fff; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rt-rank__ptime { font-size: 20px; font-weight: 400; color: rgba(255, 255, 255, .75); line-height: 1.35; font-variant-numeric: tabular-nums; }
+
+/* 신규 · 가구정보 스트립 (아이콘40 원형 틴트 + 라벨16 + 값20) */
+/* 패널 1·2의 rt-phead 언더라인 문법을 패널 3에도 적용해 3패널 형제성 확보 (높이 불변 — 라인은 기존 박스 하단에 pseudo로).
+   2px 화이트 액센트는 패널 1·2에선 "타이틀 밑줄"인데 패널 3엔 타이틀이 없어 특정 항목이 선택된 듯 오독됨 → 전폭 헤어라인만 */
+.rt-strip { position: relative; display: flex; align-items: center; height: 40px; margin-bottom: 18px; } /* 피그마: 가구정보(93+40=133) → 편성정보(151) = 18 */
+.rt-strip::before { content: ""; position: absolute; left: 0; right: 0; bottom: -4.8px; height: 1px; background: rgba(255, 255, 255, .28); }
+/* -4.8px = 패널 1·2 라인(rt-phead 22px*1.4 + pb14 = 44.8) − 스트립 높이 40. CDP 실측 137.8 vs 133 보정 */
+.rt-strip__item { display: flex; align-items: center; gap: 10px; padding: 0 14px; white-space: nowrap; cursor: pointer; } /* 17→14: 캐럿 추가분 폭 흡수 */
+.rt-strip__item:first-child { padding-left: 0; }
+/* 패널 1·2 헤더(타이틀 ▾)와 같은 필터 컨트롤 문법 — 캐럿으로 "바꿀 수 있는 조건"임을 표시 */
+.rt-strip__caret { width: 14px; height: 14px; flex: none; display: inline-flex; color: rgba(255, 255, 255, .75); margin-left: -4px; transition: transform .15s ease; }
+.rt-strip__caret svg { width: 14px; height: 14px; }
+.rt-strip__item { position: relative; }
+.rt-strip__item.is-open .rt-strip__caret { transform: rotate(180deg); }
+/* 분포 팝오버 — 값("40대")은 최다층 요약이므로, 클릭 시 전체 분포를 보여준다 */
+.rt-pop { position: absolute; top: calc(100% + 14px); left: 0; z-index: 20; min-width: 236px; background: var(--surface); border-radius: var(--r-card); padding: 16px; box-shadow: var(--shadow-tip); cursor: default; }
+.rt-pop--right { left: auto; right: 0; }
+.rt-pop__title { font-size: 12px; font-weight: 600; color: var(--gsi-gray600); margin-bottom: 10px; }
+.rt-pop__row { display: grid; grid-template-columns: 58px 1fr 40px; align-items: center; gap: 8px; padding: 3px 0; font-size: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.rt-pop__row b { color: var(--ink); font-weight: 700; }
+.rt-pop__track { height: 6px; border-radius: 3px; background: var(--hairline-2); overflow: hidden; }
+.rt-pop__fill { display: block; height: 100%; border-radius: 3px; background: var(--series-1); }
+.rt-pop__row.is-top .rt-pop__fill { background: var(--brand); }
+.rt-pop__val { text-align: right; }
+.rt-strip__ic { width: 40px; height: 40px; border-radius: 24px; flex: none; display: inline-flex; align-items: center; justify-content: center; }
+.rt-strip__ic svg { width: 22px; height: 22px; }
+.rt-strip__ic--age  { background: color-mix(in srgb, var(--gsi-gold) 16%, transparent);   color: var(--gsi-gold); }
+.rt-strip__ic--sex  { background: color-mix(in srgb, var(--gsi-orange) 22%, transparent);  color: var(--gsi-orange); }
+.rt-strip__ic--home { background: color-mix(in srgb, var(--gsi-up-mint) 22%, transparent); color: var(--gsi-up-mint); }
+.rt-strip__label { font-size: 16px; font-weight: 400; color: rgba(255, 255, 255, .85); }
+.rt-strip__value { font-size: 20px; font-weight: 700; color: #fff; }
+.rt-strip__vl { width: 1px; height: 12px; background: rgba(255, 255, 255, .28); flex: none; }
+
+/* 패널 3 · 편성정보 (타이틀 없음 / bg rgba0,0,0,.05 / 행 h65 / On Air rgba0,0,0,.2) */
+.rt-sched { flex: 1; background: rgba(0, 0, 0, .05); border-radius: var(--r-card); overflow: hidden; }
+.rt-sched__row {
+  position: relative; display: flex; align-items: center; height: 65px;
+  padding: 0 16px 0 101px; color: var(--gsi-gray200);
+}
+.rt-sched__row--onair { background: rgba(0, 0, 0, .2); color: #fff; }
+.rt-onair {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  font-size: 16px; font-weight: 700; color: var(--gsi-mint);
+  background: color-mix(in srgb, var(--gsi-up-mint) 10%, transparent);
+  border-radius: var(--r-pill); padding: 6px 12px;
+}
+.rt-sched__ch { font-size: 20px; font-weight: 500; width: 64px; flex: none; font-variant-numeric: tabular-nums; }
+.rt-sched__vl { width: 1px; height: 11px; background: currentColor; opacity: .5; margin: 0 10px; flex: none; }
+.rt-sched__name { font-size: 20px; font-weight: 500; width: 84px; flex: none; }
+.rt-sched__prog { margin-left: 14px; display: flex; flex-direction: column; min-width: 0; }
+.rt-sched__pname { font-size: 20px; font-weight: 700; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rt-sched__ptime { font-size: 16px; font-weight: 400; line-height: 1.3; font-variant-numeric: tabular-nums; }
+
+/* ── 스크롤 축약바 (GNB 아래 12px 띄운 마진 카드형 h60) ── */
+.rt-sentinel { display: block; width: 100%; height: 1px; }
+.rt-bar {
+  position: fixed; top: 72px; left: 0; right: 0; z-index: 40;
+  transform: translateY(-12px); opacity: 0; pointer-events: none;
+  transition: transform .16s ease-in, opacity .16s ease-in;
+}
+.rt-condensed .rt-bar {
+  transform: none; opacity: 1; pointer-events: auto;
+  transition: transform .22s cubic-bezier(.22, .8, .36, 1), opacity .22s cubic-bezier(.22, .8, .36, 1);
+}
+.rt-bar__wrap { max-width: none; margin: 0 auto; padding: 0 48px; }   /* 26-08-30 — KT 라이브처럼 가로 무제한(좌우 48 고정, 콘텐츠는 계속 늘어남). (이전) max-width: 1920px */
+.rt-bar__inner {
+  height: 60px; padding: 0 24px; display: flex; align-items: center; gap: 16px;
+  background: var(--surface);
+  border-radius: 8px; box-shadow: var(--shadow-pop);
+  font-size: 13px; white-space: nowrap; overflow: hidden;
+}
+.rt-bar__item { display: inline-flex; align-items: center; gap: 8px; }
+.rt-bar__item em { font-style: normal; font-weight: 400; color: var(--ink); }
+.rt-bar__item b { font-size: 16px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.rt-bar__up { font-style: normal; font-size: 16px; font-weight: 700; color: var(--up); font-variant-numeric: tabular-nums; }
+.rt-bar__vl { width: 1px; height: 12px; background: var(--hairline); flex: none; }
+.rt-bar__vl--dark { height: 11px; background: var(--ink-3); }
+.rt-bar__rank { display: inline-flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 400; color: var(--ink); }
+.rt-bar__no {
+  width: 16px; height: 16px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--gsi-orange); color: #fff; font-size: 12px; font-weight: 600;
+}
+.rt-bar__spacer { flex: 1; min-width: 12px; }
+.rt-bar__onair {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  /* 축약바는 흰 면. 상태색은 틴트 배경이 전달하고 텍스트는 잉크로 AA 확보(8차 검토 MD1) */
+  font-size: 12px; font-weight: 600; color: var(--ink);
+  background: color-mix(in srgb, var(--good) 10%, transparent);
+  border-radius: var(--r-pill); padding: 5px 8px;
+}
+.rt-bar__chname { font-size: 14px; font-weight: 600; color: var(--ink); flex: none; }
+.rt-bar__prog { overflow: hidden; text-overflow: ellipsis; min-width: 0; color: var(--ink); font-size: 16px; font-weight: 400; }
+.rt-bar__prog b { font-weight: 700; margin-right: 6px; }
+
+/* ── 라이트 영역 차트 그리드 (거터 24, 레전드 카드 하단) ── */
+.rt-charts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.rt-charts--more[hidden] { display: none; }  /* display:grid 가 UA [hidden] 오버라이드하는 것 차단 */
+.rt-cardlg { margin-top: 12px; }
+/* 피그마 chart_title 스펙은 전역 .card__head/.card__body 로 승격됨(§3-2) */
+.rt-hint {
+  display: inline-block; width: 24px; height: 24px; margin-left: 4px;
+  vertical-align: middle; cursor: default;
+}
+
+/* 더보기 버튼 (272×48 아웃라인 센터) */
+.rt-more { display: flex; justify-content: center; margin-top: 24px; }
+.rt-more__btn {
+  width: 272px; height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 0; border-radius: 8px; background: var(--surface); box-shadow: 10px 20px 30px rgba(0, 0, 0, .04);
+  color: var(--ink-2); font-size: 16px; font-weight: 700;
+  transition: background .15s ease, color .15s ease;
+}
+.rt-more__btn:hover { border-color: var(--ink-3); color: var(--ink); }
+.rt-more__btn svg { width: 16px; height: 16px; transition: transform .2s ease; }
+.rt-more__btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+.rt-charts--more { margin-top: 24px; }
+@media (prefers-reduced-motion: reduce) { .rt-more__btn svg { transition: none; } }
+
+
+/* ic_gotop 플로팅 (48×48 우하단, 스크롤 시 노출) */
+.rt-gotop {
+  position: fixed; right: 26px; bottom: 26px; z-index: 40;
+  width: 48px; height: 48px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--surface); border: 0; box-shadow: var(--shadow-sm);
+  color: var(--ink-2);
+  opacity: 0; pointer-events: none; transform: translateY(8px);
+  transition: opacity .2s ease, transform .2s ease, border-color .15s ease, color .15s ease;
+}
+.rt-condensed .rt-gotop { opacity: 1; pointer-events: auto; transform: none; }
+.rt-gotop:hover { border-color: var(--ink-3); color: var(--ink); }
+.rt-gotop svg { width: 20px; height: 20px; }
+@media (prefers-reduced-motion: reduce) {
+  .rt-bar, .rt-condensed .rt-bar, .rt-gotop { transition: none; }
+}
+
+
+/* ── 칩 레전드 (틴트 pill + 체크 도트 + 라벨 + 수치Bold) — 색은 validator 팔레트 ── */
+.rt-lg { display: flex; flex-wrap: wrap; gap: 8px; }
+.rt-lg__chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px 4px 4px; border-radius: 20px;
+  font-size: 13px; line-height: 1.4;
+} /* 피그마 button_badge: pl4 pr10 py4 r20, 라벨·수치 = 시리즈색 (색 자체는 JS에서 주입) */
+.rt-lg__dot {
+  width: 20px; height: 20px; border-radius: 50%; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.rt-lg__dot svg { width: 11px; height: 11px; }
+.rt-lg__label { color: inherit; font-weight: 400; }
+.rt-lg__val { font-weight: 600; color: inherit; font-variant-numeric: tabular-nums; }
+
+/* ── 카드 헤더 우측 도구 아이콘 3종 (TV / 그리드 / 확장) ── */
+.rt-tools { margin-left: auto; display: inline-flex; align-items: center; gap: 12px; }
+.rt-tools img { width: 24px; height: 24px; display: block; }
+
+/* ── 히어로 KPI 하락 오렌지 (상승=민트 .rt-up) ── */
+.rt-down { color: var(--gsi-orange); }
+/* 축약바 하락(화이트 배경) = 기존 관례 --down blue */
+.rt-bar__down { font-style: normal; font-size: 16px; font-weight: 700; color: var(--down); font-variant-numeric: tabular-nums; }
+@media (max-width: 1280px) {
+  .rt-hero__inner { display: flex; flex-direction: column; gap: 22px; }
+  .rt-panel--kpi, .rt-panel--rank, .rt-panel--right { grid-column: auto; width: 100%; }
+  .rt-charts { grid-template-columns: repeat(2, 1fr); }
+  .rt-phead::after { width: 30%; }
+}
+@media (max-width: 820px) {
+  .rt-charts { grid-template-columns: 1fr; }
+  .rt-wrap { padding-left: 20px; padding-right: 20px; }
+  .rt-hero__inner { padding-left: 20px; padding-right: 20px; }
+  .rt-bar__wrap { padding-left: 20px; padding-right: 20px; }
+}
+
+
+/* 라인 툴팁 델타 (KTC opts.tooltipDelta 게이트, 추가만) */
+.viz-tooltip .tt-d { margin-left: 6px; font-size: 12px; font-weight: 600; }
+.viz-tooltip .tt-d.up { color: var(--up); }
+.viz-tooltip .tt-d.down { color: var(--down); }
+
+@keyframes bh-shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+@keyframes bh-slidein { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+@media print {
+  /* 러닝 헤드·페이지 번호는 @page 마진 박스로. 마진 박스는 문서 트리 밖이라 CSS 변수 대신 리터럴 색 */
+  @page {
+    size: A4 portrait; margin: 16mm 10mm 14mm;
+    @top-left { content: "원피스 썸머 특집 · 2026-06-12 10:00~11:00 · ch.8 GS SHOP"; font-size: 8.5pt; color: #1A1B26; }
+    @top-right { content: "11:30 집계 · 4시간마다 갱신"; font-size: 8.5pt; color: #565873; }
+    @bottom-right { content: counter(page) " / " counter(pages); font-size: 8.5pt; color: #565873; }
+  }
+  html, body { background: #fff; }
+  /* 스크롤 리빌은 뷰포트 밖에서 opacity 0 으로 남는다 — 인쇄에선 전부 펴야 빈 페이지가 안 생긴다 */
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
+  .gnb, .kt-footer, .subtabs, .pv-back, .sv-jump, .pv-hero__save { display: none !important; }
+  .card { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+  .card__head { break-after: avoid; page-break-after: avoid; }
+  /* 차트 fill·틴트·밴드가 인쇄에서 날아가지 않게 (SVG 포함이라 전역) */
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  /* charts.js 드로우인은 뷰포트 진입에만 반응한다(무수정 대상). 인쇄에선 인라인 초기값을 풀어야
+     막대(scaleY 0)·선(dashoffset)·면(opacity 0)이 백지로 남지 않는다. */
+  svg path { transform: none !important; }
+  svg path[stroke] { stroke-dashoffset: 0 !important; opacity: 1 !important; }
+  svg path[fill]:not([fill="none"]):not([opacity]) { opacity: 1 !important; }
+}
+
+
+/* ============================================================
+   06·04·05 V5-PERSONA — 페르소나 테스트 반영
+   ============================================================ */
+/* 패널1 위계 — 자사 성적(시청률) 선두, 전국 모수는 한 단 낮게 */
+.rt-kpi--lead .rt-kpi__value { font-size: 38px; }
+.rt-kpi--sub .rt-kpi__value { font-size: 28px; color: rgba(255, 255, 255, .82); }
+.rt-kpi--sub .rt-kpi__label small { font-size: 12px; font-weight: 400; opacity: .72; margin-left: 4px; }
+/* 인접 편성 3행 우측 재핑 수치 (08 B안 표기 이식) */
+.rt-sched__metric { margin-left: auto; flex: none; display: flex; flex-direction: column;
+  align-items: flex-end; text-align: right; padding-left: 12px; }
+.rt-sched__val { font-size: 20px; font-weight: 700; line-height: 1.2; color: #fff; font-variant-numeric: tabular-nums; }
+.rt-sched__val small { font-size: 12px; font-weight: 400; color: rgba(255, 255, 255, .7); margin-right: 5px; }
+.rt-sched__delta { display: inline-flex; align-items: center; gap: 2px; font-size: 13px; font-weight: 700;
+  color: var(--gsi-up-mint); font-variant-numeric: tabular-nums; }
+.rt-sched__delta svg { width: 12px; height: 12px; }
+.rt-sched__soon { color: var(--gsi-up-mint); }
+.rt-sched__cap { margin: 8px 0 0; font-size: 12px; color: rgba(255, 255, 255, .68); }
+/* C4-④ 가구정보 팝오버 — 스트립 바로 아래에 열면 인접 편성 3행(재핑 수치)을 덮는다.
+   실제 기준은 .rt-strip__item(455행 position:relative) 이므로 그것을 static 으로 풀고
+   패널을 기준으로 삼아 편성표 아래 여백에서 열리게 한다(열림 방향은 아래 그대로) */
+.rt-strip { position: static; }
+.rt-strip__item { position: static; }
+.rt-panel--right { position: relative; }
+.rt-pop { top: calc(100% + 14px); left: 0; right: auto; }
+.rt-pop--right { left: 0; right: auto; }
+/* C4-③ 축약바 자사 남은 시간 */
+.rt-bar__remain { flex: none; font-size: 13px; font-weight: 600; color: var(--good); font-variant-numeric: tabular-nums; }
+/* C4-② 축약바 전국 첨자 */
+.rt-bar__item em small { font-size: 12px; font-weight: 400; opacity: .7; margin-left: 3px; }
+

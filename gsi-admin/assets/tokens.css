@@ -1,0 +1,129 @@
+/* ============================================================
+   KT 홈쇼핑 어드민 — 디자인 토큰
+   라이트(기본) + 다크(시뮬레이터, [data-theme="dark"])
+   차트 팔레트는 dataviz validator 통과본 (light/dark 각각)
+   ============================================================ */
+
+:root {
+  /* Brand — GSI 공식 primary/genie purple (Figma 변수 실측, 26-07-08) */
+  --brand:        #6941FF;
+  --brand-strong: #5832E9;
+  --brand-tint:   #F1EEFF;
+  --brand-tint-2: #E4DFFF;
+
+  /* Surfaces & ink */
+  --page:      #F8F9FF;  /* grayscale/gray100 = blue100 (공식) */
+  --surface:   #FFFFFF;
+  --surface-2: #F8F9FF;
+  --ink:       #1D1D1D;
+  --ink-2:     #58606A;
+  --ink-3:     #7A8490;
+  --hairline:  #D6DDE9;
+  --hairline-2:#E1E6EF;
+
+  /* Status (semantic only — 시리즈로 재사용 금지) */
+  --good:     #0CA30C;
+  --warning:  #D98E00;
+  --critical: #D03B3B;
+
+  /* 증감 (국내 방송·커머스 관례: 상승 red / 하락 blue) */
+  --up:   #E5484D;
+  --up-tint: #FEECEC;
+  --down: #2A78D6;
+  --down-tint: #E9F2FC;
+
+  /* Chart series — validated (light, surface #ffffff) */
+  --series-1: #6E5BFF;  /* violet — 주 시리즈 */
+  --series-2: #EDA100;  /* yellow/orange */
+  --series-3: #1BAF7A;  /* aqua */
+  --series-4: #E34948;  /* red */
+  --series-5: #2A78D6;  /* blue */
+  --series-6: #E87BA4;  /* magenta */
+  --series-deemph: #C9CAD8; /* 강조형 차트의 배경 시리즈 */
+
+  /* Chart chrome */
+  --grid: var(--hairline-2);
+  --axis: var(--hairline);
+  --tick: var(--ink-3);
+
+  /* Gender pair (나이대/성별 분포 전용) */
+  --male:   #5598E7;
+  --female: #F08BAD;
+
+  /* Elevation & radius
+     원본은 그림자를 "떠 있는 두 레이어"에만 쓴다(x=5·y=10 비대칭). 카드 depth 는 1px 보더가 담당.
+     --shadow-sm 은 원본에 대응 없는 우리 확장(hover 리프트) 전용으로 축소 유지 */
+  --shadow-pop: 5px 10px 20px rgba(0, 0, 0, .06);   /* 드롭다운·플로팅 바 */
+  --shadow-tip: 5px 10px 10px rgba(0, 0, 0, .06);   /* 툴팁·팝오버 */
+  --shadow-sm: 0 1px 2px rgba(20, 20, 43, .05), 0 4px 12px rgba(20, 20, 43, .05);
+  --r-card: 12px;
+  --r-ctl:  8px;
+  --r-pill: 999px;
+
+  --font: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+          "Apple SD Gothic Neo", "Segoe UI", "Malgun Gothic", sans-serif;
+
+  /* GSI 셸 토큰 — Figma 원본(GSI_Customer/GSI_admin.fig) 변수 + 실측 (26-07-08)
+     셸 크롬 전용. 차트 팔레트는 validator 통과본 유지 */
+  --gsi-purple:   #6941FF;  /* primary/genie purple (공식 변수) */
+  --gsi-blue:     #5A64FF;  /* Genieblue (공식 변수) */
+  --gsi-grad:     linear-gradient(90deg, #6941FF 0%, #5B35ED 50%, #5832E9 70%, #6941FF 100%); /* primary/gradient 실측 */
+  --gsi-grad-a:   #6840FD;  /* 어드민 사이드바 그라데이션 시작 (pptx 실측) */
+  --gsi-grad-b:   #5A34EA;  /* 그라데이션 끝 */
+  --gsi-active:   #714BFD;  /* 어드민 활성 메뉴 bg (pptx 실측) */
+  --gsi-mint:     #00EEAE;  /* secondary/green (공식 변수) — GNB 활성 탭 */
+  --gsi-mint-2:   #1AC8C0;  /* 어드민 활성 메뉴 우측 액센트 바 (pptx 실측) */
+  --gsi-lav:      #CBBFFF;  /* 사이드바 비활성 메뉴 텍스트(라벤더) */
+  --gsi-gray200:  #D6DDE9;  /* grayscale/gray200 — 푸터 bg */
+  --gsi-gray300: #A7B1BF;  /* grayscale/gray300 */
+  --gsi-gray400:  #7A8490;  /* grayscale/gray400 */
+  --gsi-gray500:  #58606A;  /* grayscale/gray500 */
+  --gsi-gray600:  #353A41;  /* grayscale/gray600 */
+  --kt-red:       #EC1B23;  /* kt 워드마크 */
+
+  /* 04 실시간 현황 (rt-) 히어로 전용 — 피그마 GSI_Customer 실측 */
+  --gsi-hero-grad: var(--gsi-grad);  /* 피그마 재실측(26-07-08): 히어로 베이스 = GNB primary/gradient와 동일한 가로 그라데이션 (y 무관 x축 변화 실측) */
+  --gsi-up-mint:   #12DB91;  /* 히어로 상승 캐럿 (그린) — 피그마 스캔 #12DB91×587 확정 */
+  --gsi-orange:    #FF8F6B;  /* 히어로 하락 캐럿 · 유입랭킹 뱃지 · 스트립 틴트 — 스캔 확정 */
+  --gsi-gold:      #FFD232;  /* 스트립 연령대 틴트 — 피그마 글리프 스캔 #FFD232×116 (구 #FFCF5A 교정) */
+}
+
+/* ── 다크 (03 시뮬레이터 전용) — 차트 팔레트 validated (surface #111827) ── */
+[data-theme="dark"] {
+  --page:      #0B101E;
+  --surface:   #111827;
+  --surface-2: #172136;
+  --ink:       #F2F4FA;
+  --ink-2:     #A8B0C6;
+  --ink-3:     #6B7590;
+  --hairline:  rgba(255, 255, 255, .09);
+  --hairline-2:rgba(255, 255, 255, .05);
+
+  --brand:        #8B7BFF;
+  --brand-strong: #A093FF;
+  --brand-tint:   rgba(110, 91, 255, .16);
+  --brand-tint-2: rgba(110, 91, 255, .28);
+
+  --good:     #35C46A;
+  --warning:  #FAB219;
+  --critical: #E5636A;
+
+  --up:   #FF5D64;
+  --up-tint: rgba(255, 93, 100, .13);
+  --down: #4D9DF5;
+  --down-tint: rgba(77, 157, 245, .13);
+
+  --series-1: #9085E9;
+  --series-2: #C98500;
+  --series-3: #199E70;
+  --series-4: #E66767;
+  --series-5: #3987E5;
+  --series-6: #D55181;
+  --series-deemph: #3A4257;
+
+  --grid:   rgba(255, 255, 255, .06);
+  --axis:   rgba(255, 255, 255, .14);
+  --tick: var(--ink-3);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .35), 0 6px 18px rgba(0, 0, 0, .30);
+}
