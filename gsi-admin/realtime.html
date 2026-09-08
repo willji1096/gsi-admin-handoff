@@ -8,6 +8,219 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="assets/tokens.css">
 <link rel="stylesheet" href="assets/ui.css">
+<style id="ktZapCss">
+/* KT 제공 「인접채널 편성표 축소형」(26-09-08 수령, _docs/client/) 스타일 — 원본 그대로, .kt-host 범위로만 한정.
+   변수는 --kz-* 로 접두(우리 tokens.css 의 --ink 등과 분리). 시연 툴바는 hidden — KT 로직이 참조하므로 마크업만 유지(실제 구현 시 제거). */
+.kt-host{
+--kz-purple:#5039eb;--kz-mint:#83f3d4;--kz-ink:#292638;--kz-muted:#777383;--kz-line:#e7e4ed;--kz-orange:#ffd298;color:var(--kz-ink);font-synthesis:none;
+button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #28c49d;outline-offset:3px}button{border:0}button:disabled{cursor:not-allowed;opacity:.45}[hidden]{display:none!important}svg{display:block}button svg{width:16px;height:16px}button,select,input{-webkit-tap-highlight-color:transparent}.tnum,time{font-variant-numeric:tabular-nums}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.zapping-widget{width:100%;height:267px;min-width:0;position:relative;color:#fff;isolation:isolate}.widget-head{height:41px;border-bottom:1px solid #ffffff42;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;position:relative;padding-top:3px}.widget-head:after{content:"";position:absolute;left:0;bottom:-1px;width:172px;height:2px;background:#e5deff}.widget-head h1{font-size:18px;line-height:25px;letter-spacing:-.4px;margin:0;font-weight:700}.widget-head-actions{display:flex;align-items:center;gap:9px}.source-label{color:#e4ddff;font-size:10px;line-height:24px;white-space:nowrap}.icon-button{height:26px;width:26px;border:1px solid #ffffff39;border-radius:6px;background:#ffffff09;color:white;display:grid;place-items:center}.icon-button:hover{background:#ffffff20}.live-strip{height:34px;margin-top:6px;padding:0 10px;display:flex;align-items:center;gap:9px;border:1px solid #ffffff22;background:#31229245;border-radius:5px;position:relative;overflow:hidden;font-size:11px}.live-label{display:flex;align-items:center;gap:5px;color:#e6dfff;font-weight:650;white-space:nowrap}.live-label svg{width:12px;height:12px}.live-divider{width:1px;height:12px;background:#ffffff2e}.live-message{flex:1;min-width:0;display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#e2dcf8}.live-message strong{font-size:12px;color:white}.live-message .ch{font-size:10px;color:inherit;opacity:.8}.live-hint{color:#c7bfea;font-size:10px;white-space:nowrap}.live-strip.detected{color:#6b320a;border-color:#ffcd91;background:#ffecd5}.live-strip.detected .live-label,.live-strip.detected .live-message,.live-strip.detected .live-message strong{color:#723705}.live-strip.detected .live-divider{background:#bd814c55}.live-strip.detected .live-hint{color:#7b471a}.live-strip.detected .progress{height:2px;position:absolute;bottom:0;left:0;background:#e98c36}.more-alerts{font-size:10px;color:#713604;background:transparent;padding:3px;white-space:nowrap;border-bottom:1px solid #bd884f}.live-rate{font-weight:750}.live-received{font-size:10px}.columns{height:22px;display:grid;grid-template-columns:109px minmax(0,1fr) 113px;align-items:center;padding:0 10px;color:#e1d9ff;font-size:10px;letter-spacing:.1px}.columns span:last-child{text-align:right}.adjacent-rows{height:144px}.neighbor-row{height:36px;display:grid;grid-template-columns:109px minmax(0,1fr) 113px;align-items:center;padding:0 10px;background:#ffffff05;border-bottom:1px solid #ffffff16;position:relative}.neighbor-row:nth-child(even){background:#ffffff09}.neighbor-row:first-child{border-radius:4px 4px 0 0}.neighbor-row:last-child{border-radius:0 0 4px 4px}.neighbor-row.nearest{background:#ffffff16}.neighbor-row.nearest:before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:2px;border-radius:2px;background:var(--kz-mint)}.channel-cell{display:flex;gap:9px;align-items:center;min-width:0}.channel-no{font-size:10px;color:#d7cff7;min-width:31px;font-variant-numeric:tabular-nums}.channel-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.program-cell{color:white;background:transparent;padding:0;text-align:left;display:block;min-width:0;position:relative}.program-cell:hover .program-name{text-decoration:underline;text-underline-offset:3px}.program-name{display:block;font-size:12px;line-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;padding-right:7px}.program-time{display:block;font-size:10px;line-height:12px;letter-spacing:.15px;color:#dbd5f9}.prediction-cell{display:flex;flex-direction:column;align-items:flex-end;gap:0;position:relative}.prediction-time{font-size:18px;letter-spacing:.1px;font-weight:720;line-height:20px;color:#fff}.prediction-status{font-size:9px;line-height:10px;color:#dad3f8;min-height:10px}.nearest .prediction-time,.nearest .prediction-status{color:var(--kz-mint)}.now .prediction-status{font-weight:700}.prediction-empty{font-size:10px;color:#dfd8fa;line-height:28px}.neighbor-row.detected{background:#ffe8cb;color:#6d3508;border-color:#efc597}.neighbor-row.detected:before{background:#ed963d}.neighbor-row.detected .channel-no,.neighbor-row.detected .program-time,.neighbor-row.detected .prediction-status{color:#814d20}.neighbor-row.detected .program-cell,.neighbor-row.detected .prediction-time{color:#683307}.actual-caption{font-size:9px;line-height:10px;color:#874405;font-weight:750}.widget-foot{height:20px;display:flex;align-items:center;justify-content:space-between;font-size:9px;color:#ddd5fa;gap:6px;white-space:nowrap}.widget-foot .foot-clock{display:flex;gap:4px;align-items:center}.status-dot{width:4px;height:4px;border-radius:50%;background:var(--kz-mint);display:inline-block}.demo-clock{font-size:10px;color:#eee8ff}.widget-tools-hint{display:none}
+.source-label,.columns{font-size:11px}.channel-name{font-size:14px}.channel-no{font-size:11px}.program-name{font-size:13px}.program-time{font-size:11px;line-height:13px}.prediction-status,.actual-caption{font-size:10px;line-height:11px}.widget-foot{font-size:10px}
+.demo-toolbar{margin:18px auto 0;max-width:1310px;display:flex;align-items:center;gap:9px;justify-content:center;flex-wrap:wrap;padding:0 20px}.demo-toolbar .demo-caption{font-size:12px;color:#777080;margin-right:6px}.demo-clock-large{font-size:15px;font-weight:700;color:#4d3f65;min-width:80px}.demo-button{border:1px solid #ddd8e7;border-radius:7px;background:white;font-size:12px;color:#544b66;padding:9px 12px;display:flex;gap:5px;align-items:center;white-space:nowrap}.demo-button:hover{border-color:#a297cc;background:#f9f7ff}.demo-button.primary{color:#5137dd;border-color:#c9bff7;background:#f0ecff}.demo-button.alert{color:#915921;background:#fff8ee;border-color:#ecd1ae}.demo-button.play{width:33px;padding:9px;justify-content:center}.toolbar-divider{height:22px;border-left:1px solid #dcd6e6;margin:0 3px}.standalone-label{display:none}.dashboard.solo{width:649px;max-width:calc(100% - 32px);margin-top:40px;overflow:visible;box-shadow:0 16px 50px #3c2d9520}.solo .gsi-nav,.solo .context-block,.solo .charts,.solo .context-note{display:none}.solo .dashboard-top{display:block;padding:28px 31px 26px}.solo:before{display:none}.solo .standalone-label{display:block;position:absolute;top:-24px;right:0;font-size:10px;letter-spacing:.5px;color:#857894}.solo + .demo-toolbar{margin-top:28px}.solo ~ .design-notes{max-width:820px}
+dialog{border:1px solid #e5dfed;border-radius:15px;padding:0;box-shadow:0 22px 95px #21124240;max-width:calc(100% - 30px);width:490px;color:var(--kz-ink);max-height:calc(100vh - 40px)}dialog::backdrop{background:#21134266;backdrop-filter:blur(3px)}.dialog-head{display:flex;align-items:center;justify-content:space-between;padding:22px 24px 17px;border-bottom:1px solid var(--kz-line)}.dialog-head h2{font-size:17px;margin:0}.dialog-close{color:#71677f;border:1px solid #e8e1ee;border-radius:6px;background:white;width:27px;height:27px;display:grid;place-items:center}.dialog-body{padding:22px 24px}.dialog-body p{font-size:12px;line-height:1.75;color:#7a7086;margin:0 0 18px}.dialog-tabs{display:flex;border-bottom:1px solid var(--kz-line);padding:0 24px;gap:22px}.dialog-tabs button{padding:15px 0 12px;background:transparent;color:#8b8198;font-size:12px;border-bottom:2px solid transparent}.dialog-tabs button[aria-selected=true]{color:#5c43d7;border-color:#6d51df;font-weight:700}.channel-choice{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}.channel-choice label{position:relative;display:flex;gap:9px;align-items:center;padding:11px;border:1px solid #e8e1ef;border-radius:7px;font-size:12px;cursor:pointer}.channel-choice label:has(input:checked){border-color:#b5a2f6;background:#f5f1ff}.channel-choice small{font-size:10px;margin-left:auto;color:#8b7f97}.channel-choice input{accent-color:#694fe4}.setting-field{display:block;margin:0 0 20px}.setting-field strong{font-size:12px;font-weight:650;display:block;margin-bottom:8px}.setting-input{display:flex;align-items:center;gap:9px;font-size:12px}.setting-input input{width:90px;border:1px solid #d8d0e2;border-radius:6px;padding:10px;color:#513f69}.setting-field small{display:block;color:#84788d;font-size:11px;line-height:1.65;margin-top:6px}.dialog-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 24px;border-top:1px solid var(--kz-line);background:#fcfbfd}.dialog-foot .actions{display:flex;gap:7px}.dialog-foot button{padding:9px 14px;border-radius:6px;font-size:12px;background:#f0ecf7;color:#736184}.dialog-foot .save{background:#6246df;color:white}.dialog-foot .reset{padding-left:0;background:none;color:#85758f;font-size:11px}.validation{font-size:11px;color:#9f4434;line-height:1.6;min-height:18px}.selection-count{color:#79618f;font-size:11px;margin-bottom:12px}.detail-channel{font-size:12px;color:#7a6991;margin-bottom:8px}.detail-title{font-size:20px;line-height:1.4;font-weight:650}.detail-time{margin-top:8px;color:#8a7a9c;font-size:12px}.candidate-list{margin-top:20px;border-top:1px solid var(--kz-line);padding-top:18px}.candidate-list h3{font-size:12px;margin:0 0 12px}.candidate-tags{display:flex;gap:7px;flex-wrap:wrap}.candidate-tags span{border:1px solid #e5ddf2;padding:8px 10px;border-radius:6px;font-size:12px;color:#716384}.candidate-tags .next{background:#eaf9f4;color:#2e7667;border-color:#a7e5d2;font-weight:700}.candidate-tags .past{text-decoration:line-through;color:#afa5ba;background:#f8f6fb}.detail-explain{font-size:11px!important;margin-top:15px!important}.alert-history-item{border-bottom:1px solid var(--kz-line);padding:11px 0;font-size:12px;display:flex;align-items:center;gap:9px}.alert-history-item strong{min-width:66px}.alert-history-item span{font-size:11px;color:#867591}.alert-history-item b{margin-left:auto;color:#ab6926}.toast{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:#362a4b;color:#fff;font-size:12px;line-height:1.5;padding:12px 18px;border-radius:8px;box-shadow:0 6px 28px #30203a28;z-index:10;max-width:calc(100% - 32px);width:max-content}
+.zapping-widget .columns,.zapping-widget .neighbor-row{grid-template-columns:70px minmax(0,1fr) 164px 98px;column-gap:8px;padding-left:8px;padding-right:8px}
+.zapping-widget .columns{font-size:10px;letter-spacing:0}
+.zapping-widget .columns span:nth-child(3){padding-left:7px}
+.zapping-widget .columns span:last-child{text-align:center}
+.zapping-widget .channel-cell{flex-direction:column;align-items:flex-start;gap:0;line-height:16px}
+.zapping-widget .channel-name{font-size:13px;line-height:16px}
+.zapping-widget .channel-no{font-size:10px;line-height:12px;min-width:0}
+.zapping-widget .program-name{font-size:12px;line-height:16px;padding-right:0}
+.zapping-widget .program-time{font-size:10px;line-height:12px}
+.zapping-widget .prediction-cell{align-items:flex-start;padding-left:7px;border-left:1px solid #ffffff1c;min-width:0;gap:0}
+.prediction-main{display:flex;align-items:center;gap:7px;line-height:20px;white-space:nowrap}
+.zapping-widget .prediction-time{font-size:18px;line-height:20px;letter-spacing:0}
+.zapping-widget .prediction-status{font-size:9px;line-height:12px;white-space:nowrap;color:#e3dcfc}
+.zapping-widget .nearest .prediction-status,.zapping-widget .nearest .prediction-time{color:var(--kz-mint)}
+.prediction-following{display:flex;align-items:center;gap:4px;line-height:12px;min-height:12px;font-size:10px;color:#e0d8fa;white-space:nowrap}
+.after-label{font-size:9px;color:#cfc5f5}
+.prediction-list{display:flex;gap:4px;list-style:none;margin:0;padding:0;font-size:10px;letter-spacing:-.15px}
+.prediction-list li+li:before{content:'·';color:#bdb0eb;margin-right:4px}
+.no-following{font-size:9px;color:#cfc5f5}
+.realtime-cell{height:32px;display:flex;align-items:center;justify-content:center;min-width:0}
+.realtime-idle{display:inline-flex;align-items:center;justify-content:center;border:1px solid #ffffff20;border-radius:4px;background:#ffffff05;color:#d2c9f3;font-size:10px;height:23px;min-width:72px;padding:0 6px;white-space:nowrap}
+.realtime-idle.off{color:#c5bfdc;border-style:dashed;background:#27195026}
+.realtime-event{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;color:#794011;background:#ffebce;width:98px;height:31px;overflow:hidden;border:1px solid #ffd095;box-shadow:0 0 0 1px #ffe3b215}
+.realtime-event strong{font-size:12px;line-height:16px;display:flex;gap:5px;align-items:center;font-weight:750}
+.realtime-event strong small{font-size:9px;font-weight:650}
+.realtime-event .realtime-meta{font-size:9px;line-height:11px;white-space:nowrap;color:#85572e}
+.realtime-event .event-progress{position:absolute;height:2px;bottom:0;left:0;background:#e79943;pointer-events:none}
+.zapping-widget .neighbor-row.detected{background:#ffffff10;border-bottom-color:#ffffff16;color:white}
+.zapping-widget .neighbor-row.detected.nearest{background:#ffffff16}
+.zapping-widget .neighbor-row.detected:before{background:var(--kz-mint)}
+.zapping-widget .neighbor-row.detected .channel-no,.zapping-widget .neighbor-row.detected .program-time{color:#dbd5f9}
+.zapping-widget .neighbor-row.detected .program-cell,.zapping-widget .neighbor-row.detected .prediction-time{color:white}
+.zapping-widget .neighbor-row.detected .prediction-status{color:#e3dcfc}
+.zapping-widget .neighbor-row.detected.nearest .prediction-time,.zapping-widget .neighbor-row.detected.nearest .prediction-status{color:var(--kz-mint)}
+.alarm-state{display:flex;align-items:center;gap:4px;border:1px solid #89ebd345;border-radius:5px;padding:4px 6px;background:#78e6c60d;color:#9affdf;font-size:10px;line-height:15px;white-space:nowrap}
+.alarm-state svg{width:11px;height:11px}
+.alarm-state.off{color:#d1c9e9;background:#ffffff08;border-color:#ffffff28}
+.live-strip.alarm-off{background:#2f245340;border-style:dashed}
+.live-strip.alarm-off .live-label,.live-strip.alarm-off .live-message{color:#d4cbe9}
+.widget-foot #criteria{font-size:9px}
+.interest-panel-tools{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px}
+.interest-panel-tools .selection-count{margin:0}
+.interest-tools{display:flex;gap:5px}
+.interest-tools button{font-size:10px;color:#795ca0;background:#f6f2fb;border:1px solid #e5ddec;padding:5px 7px;border-radius:5px}
+.interest-empty-note{padding:10px 12px;border:1px solid #ecd6b5;background:#fffaf0;border-radius:6px;font-size:11px;line-height:1.65;color:#926833;margin-top:10px}
+.settings-notice{border:1px solid #ddd4ef;background:#f7f4fd;border-radius:7px;padding:10px 12px;margin-bottom:18px;font-size:11px;line-height:1.7;color:#7e6d95}
+.settings-switch-row{display:flex;align-items:center;gap:18px;justify-content:space-between;padding:16px;border-radius:9px;background:#f5f1fd;border:1px solid #e6def4;margin-bottom:13px}
+.settings-switch-copy strong{font-size:13px;display:block;margin-bottom:5px}
+.settings-switch-copy small{font-size:11px;color:#8b789e;line-height:1.6;display:block}
+.alarm-switch{position:relative;display:block;width:64px;height:30px;flex:none;cursor:pointer}
+.alarm-switch input{position:absolute;inset:0;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:2}
+.switch-track{display:flex;align-items:center;justify-content:flex-end;width:64px;height:30px;border-radius:18px;background:#b9b1c8;color:white;font-size:10px;font-weight:650;padding:0 9px;box-shadow:inset 0 1px 2px #5042600d}
+.switch-track:before{content:'';position:absolute;left:4px;top:4px;width:22px;height:22px;border-radius:50%;background:white;box-shadow:0 1px 4px #28173225;transition:transform .15s ease}
+.alarm-switch input:checked+.switch-track{background:#7051de;justify-content:flex-start}
+.alarm-switch input:checked+.switch-track:before{transform:translateX(34px)}
+.alarm-switch input:focus-visible+.switch-track{outline:3px solid #28c49d;outline-offset:4px}
+.switch-off-label{display:block}.switch-on-label{display:none}
+.alarm-switch input:checked+.switch-track .switch-off-label{display:none}
+.alarm-switch input:checked+.switch-track .switch-on-label{display:block}
+.alarm-setting-summary{font-size:11px;color:#897997;line-height:1.7;margin:0 0 20px}
+.dialog-body .setting-field strong{font-size:12px}
+.dialog-body .setting-field small{font-size:10px}
+.choice-meta{margin-left:auto;display:flex;gap:5px;align-items:center}
+.choice-meta .neighbor-tag{font-size:8px;color:#7356ba;border:1px solid #dacfef;border-radius:3px;padding:1px 3px;white-space:nowrap}
+#interest-choices label{padding:10px 9px;gap:7px}
+#interest-choices small{margin-left:0}
+@media(max-width:640px){
+  .zapping-widget{overflow-x:auto;overflow-y:hidden}
+  .zapping-widget .widget-head,.zapping-widget .live-strip,.zapping-widget .columns,.zapping-widget .adjacent-rows,.zapping-widget .widget-foot{min-width:540px}
+  .zapping-widget .columns,.zapping-widget .neighbor-row{grid-template-columns:66px minmax(0,1fr) 160px 96px;column-gap:6px;padding-left:6px;padding-right:6px}
+  .zapping-widget .widget-head{padding-right:1px}
+  .zapping-widget .widget-foot{height:20px}
+  .zapping-widget .live-strip{font-size:11px;gap:9px;padding:0 10px}
+  .zapping-widget .widget-head h1{font-size:18px}
+  .zapping-widget .source-label{font-size:10px}
+  .zapping-widget .channel-name{font-size:13px}
+  .zapping-widget .program-name{font-size:12px}
+  .zapping-widget .prediction-status{font-size:9px}
+  .zapping-widget .program-time,.zapping-widget .channel-no{font-size:10px}
+  .realtime-event{width:96px}
+  .dialog-tabs{gap:20px}.dialog-tabs button{font-size:11px}
+}
+/* ── 우리 룩 맞춤 (디자이너 요구 26-09-08: 디자인 스타일은 KT 그대로 말고 기존 패널 스케일에 맞출 것)
+   기준 = 패널1·2 실측: 제목 22/500 + 밑줄(헤어라인 .28 + 184px 흰 2px), 랭크 이름 22/700, ch 배지 16, 프로그램 20/500·시간 20(.75).
+   KT 원본 규칙은 위에 그대로 두고 여기서만 덮는다(특이성은 #compact-widget 으로 한 단 위). 옛 값은 각 줄 주석 */
+#compact-widget{height:auto}                                                             /* 267 */
+#compact-widget .widget-head{height:auto;padding:0 0 14px;align-items:center;border-bottom-color:rgba(255,255,255,.28)}  /* h41 pt3 */
+#compact-widget .widget-head:after{width:184px;background:#fff}                                          /* 172 #e5deff */
+#compact-widget .widget-head h1{font-size:22px;line-height:1.4;font-weight:500;letter-spacing:-.5px}     /* 18/700 */
+#compact-widget .widget-head-actions{gap:10px}
+#compact-widget .source-label{font-size:13px;line-height:28px;color:rgba(255,255,255,.75)}               /* 10 #e4ddff */
+#compact-widget .alarm-state{font-size:13px;height:28px;padding:0 10px;border-radius:6px;gap:6px}
+#compact-widget .alarm-state svg{width:14px;height:14px}
+#compact-widget .icon-button{width:28px;height:28px}                                                     /* 26 */
+#compact-widget .icon-button svg{width:18px;height:18px}
+#compact-widget .live-strip{height:40px;margin-top:12px;padding:0 12px;font-size:14px;border-radius:6px} /* h34 mt6 fs11 */
+#compact-widget .live-label svg{width:14px;height:14px}
+#compact-widget .live-message strong{font-size:16px}                                                     /* 12 → 15 → 16 (DS T2, 아스트라 DS 검토 26-09-08) */
+#compact-widget .live-message .ch,#compact-widget .live-received,#compact-widget .live-hint,#compact-widget .more-alerts{font-size:13px} /* 10 */
+#compact-widget .live-strip.detected .progress{height:3px}
+#compact-widget .columns{height:28px;font-size:13px;letter-spacing:0;margin-top:4px;color:rgba(255,255,255,.7)}  /* h22 fs10 */
+#compact-widget .columns,#compact-widget .neighbor-row{grid-template-columns:96px minmax(0,1fr) 200px 120px;column-gap:12px;padding:0 12px} /* 70/1fr/164/98 */
+#compact-widget .columns span:nth-child(3){padding-left:0}
+#compact-widget .adjacent-rows{height:auto}                                                              /* 144 */
+#compact-widget .neighbor-row{height:52px}                                                               /* 36 → 48 → 52 (아스트라 비율 검토 26-09-08: 두 줄 정보에 상하 3px 여유) */
+#compact-widget .neighbor-row.nearest:before{top:8px;bottom:8px;width:3px}
+#compact-widget .channel-cell{line-height:20px}
+#compact-widget .channel-name{font-size:18px;line-height:22px}                           /* 13/16 */
+#compact-widget .channel-no{font-size:14px;line-height:18px}                             /* 10/12 → 13/16 → 14/18 (보조 정보 한 벌 14/18) */
+#compact-widget .program-name{font-size:16px;line-height:20px;font-weight:500}           /* 12/16 */
+#compact-widget .program-time{font-size:14px;line-height:18px;color:rgba(255,255,255,.75)} /* 10/12 */
+#compact-widget .prediction-cell{padding-left:0;border-left:0}
+#compact-widget .prediction-main{gap:8px;line-height:28px}
+#compact-widget .prediction-time{font-size:22px;line-height:28px;font-weight:700}        /* 18/20 → 24 → 22 (DS H3 스케일, 아스트라 DS 검토) */
+#compact-widget .prediction-status{font-size:13px;line-height:16px}                      /* 9/12 */
+#compact-widget .prediction-following,#compact-widget .prediction-list{font-size:14px;line-height:18px;gap:6px} /* 10 → 13/16 → 14/18 */
+#compact-widget .after-label,#compact-widget .no-following{font-size:13px}                              /* 9 → 12 → 13 */
+#compact-widget .prediction-list li+li:before{margin-right:6px}
+#compact-widget .prediction-empty{font-size:14px;line-height:46px}                                       /* 10/28 */
+#compact-widget .realtime-cell{height:44px}                                                              /* 32 */
+#compact-widget .realtime-idle{font-size:13px;height:30px;padding:0 12px;border-radius:6px}
+#compact-widget .realtime-event{width:112px;height:44px;border-radius:6px}
+#compact-widget .realtime-event strong{font-size:16px;line-height:18px}                                  /* 12/16 → 15 → 16 (DS T2) */
+#compact-widget .realtime-event strong small{font-size:12px}                                             /* 11 → 12 (DS B3 최소) */
+#compact-widget .realtime-event .realtime-meta{font-size:12px;line-height:14px}                          /* 11 → 12 */
+#compact-widget .widget-foot{height:auto;padding-top:12px;font-size:12px;color:rgba(255,255,255,.68)}     /* h20 fs9 → pt8 → pt12(푸터 28) */
+#compact-widget .widget-foot #criteria{font-size:12px}                                                   /* 9 */
+#compact-widget .demo-clock{font-size:12px}
+#compact-widget .status-dot{width:6px;height:6px}
+
+/* ── 팝업 3종 · 토스트 — KT 원본(12px·r15·보라회색 hex)을 피그마 DS 규격으로 (아스트라 DS 검토 26-09-08 재판정, components.css 의 .dpopup/.dbtn/.dtabs/.dcheck/.dtoggle/.dfield/.dbadge 값)
+   DS 팝업 514·r26·pad 36/40 적용. 바탕은 DS 의 gray100 대신 흰색 — 입력·xsmall 버튼이 gray100 이라 같은 색 위에 얹히면 사라진다.
+   이 화면은 assets/tokens.css(--brand·--ink)를 쓰므로 DS 변수명은 주석으로만: gray100 #F8F9FF · gray200 #D6DDE9 · gray300 #A7B1BF · gray400 #7A8490 · gray500 #58606A · gray600 #353A41 · black #1D1D1D · purple #6941FF · blue #5A64FF · sub-blue #E5EAFF · skyblue #5AACF5 · orange #FF8F6E */
+dialog{width:514px;border:0;border-radius:26px;background:#fff;color:#1D1D1D;box-shadow:0 20px 60px rgba(0,0,0,.18);letter-spacing:-.5px}   /* 490 r15 #e5dfed 보라 그림자 */
+dialog::backdrop{background:rgba(29,29,29,.4);backdrop-filter:blur(3px)}                                             /* #21134266 */
+.dialog-head{padding:36px 40px 20px;border-bottom:1px solid #D6DDE9}                                                 /* 22 24 17 · #e7e4ed */
+.dialog-head h2{font-size:22px;line-height:1.4;font-weight:700;color:#353A41}                                          /* 17 */
+.dialog-close{width:34px;height:34px;border:0;border-radius:6px;background:#F8F9FF;color:#58606A}                    /* 27 #71677f */
+.dialog-close svg{width:20px;height:20px}
+.dialog-body{padding:24px 40px}                                                                                        /* 22 24 */
+.dialog-body p{font-size:14px;line-height:1.4;color:#58606A;margin:0 0 16px}                                          /* 12/1.75 #7a7086 */
+.dialog-tabs{height:54px;padding:0 40px;gap:30px;border-bottom-color:#D6DDE9}                                          /* pad 24 gap 22 */
+.dialog-tabs button{padding:0;font-size:16px;line-height:1.4;color:#7A8490;border-bottom:0;position:relative}          /* 12 #8b8198 */
+.dialog-tabs button[aria-selected=true]{color:#1D1D1D;font-weight:700;border-color:transparent}                        /* #5c43d7 */
+.dialog-tabs button[aria-selected=true]:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:#1D1D1D}
+.selection-count{font-size:13px;color:#58606A;margin-bottom:12px}                                                     /* 11 #79618f */
+.channel-choice{gap:8px;margin-bottom:12px}
+.channel-choice label{padding:12px 14px;border:1px solid #D6DDE9;border-radius:12px;font-size:14px;font-weight:600;color:#353A41;gap:10px}  /* 11 r7 12/400 #e8e1ef */
+.channel-choice label:has(input:checked){border-color:#5A64FF;background:color-mix(in srgb,#5A64FF 10%,#fff)}          /* #b5a2f6 #f5f1ff */
+.channel-choice small{font-size:12px;font-weight:400;color:#7A8490}                                                    /* 10 #8b7f97 */
+.channel-choice input{appearance:none;width:20px;height:20px;margin:0;border-radius:4px;background:#D6DDE9;flex:none;cursor:pointer}  /* 네이티브 체크 → DS ic_check 20 r4 */
+.channel-choice input:checked{background:#5AACF5 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 10.5l3.2 3.2L15 7'/%3E%3C/svg%3E") center/16px no-repeat}
+.channel-choice input:focus-visible{outline:2px solid #6941FF;outline-offset:2px}
+#interest-choices label{padding:12px 14px;gap:10px}
+.choice-meta .neighbor-tag{font-size:12px;font-weight:600;height:21px;line-height:21px;padding:0 7px;border:0;border-radius:6px;background:#6941FF;color:#fff}  /* 8 r3 #7356ba */
+.interest-tools{gap:6px}
+.interest-tools button{height:34px;padding:0 16px;border:0;border-radius:6px;background:#F8F9FF;color:#58606A;font-size:14px;line-height:1.4}  /* 10 r5 #795ca0 */
+.interest-empty-note{padding:12px 16px;border:1px solid #FF8F6E;background:color-mix(in srgb,#FF8F6E 10%,#fff);border-radius:12px;font-size:13px;line-height:1.4;color:#353A41;margin-top:12px}  /* 11 r6 갈색 */
+.settings-notice{padding:12px 16px;border:1px solid #D6DDE9;background:#F1F3FF;border-radius:12px;font-size:13px;line-height:1.4;color:#58606A;margin-bottom:16px}  /* 11 r7 보라회색 */
+.settings-switch-row{padding:16px;border-radius:12px;background:#fff;border:1px solid #D6DDE9;margin-bottom:12px}    /* r9 #f5f1fd */
+.settings-switch-copy strong{font-size:16px;font-weight:700;color:#353A41;margin-bottom:4px}                          /* 13 */
+.settings-switch-copy small{font-size:12px;line-height:1.4;color:#58606A}                                              /* 11 #8b789e */
+.alarm-switch{width:34px;height:20px}                                                                                  /* 64×30 → DS ic_toggle 34×20 (ON/OFF 글자는 아래 요약문이 대신) */
+.switch-track{width:34px;height:16px;margin-top:2px;border-radius:14px;background:#D6DDE9;font-size:0;padding:0;box-shadow:none}
+.switch-track:before{left:0;top:-2px;width:20px;height:20px;box-shadow:0 1px 2px rgba(0,0,0,.08),0 0 1px rgba(0,0,0,.24)}
+.alarm-switch input:checked+.switch-track{background:#6941FF}                                                          /* #7051de */
+.alarm-switch input:checked+.switch-track:before{transform:translateX(14px)}                                           /* 34 */
+.alarm-switch input:focus-visible+.switch-track{outline-color:#6941FF}
+.alarm-setting-summary{font-size:13px;line-height:1.4;color:#58606A;margin:0 0 20px}                                  /* 11 #897997 */
+.setting-field{margin:0 0 20px}
+.dialog-body .setting-field strong{font-size:16px;font-weight:700;color:#1D1D1D;margin-bottom:8px}                    /* 12/650 */
+.setting-input{font-size:14px;color:#1D1D1D;gap:8px}                                                                   /* 12 */
+.setting-input input{width:90px;height:48px;padding:0 16px;border:1px solid transparent;border-radius:8px;background:#F8F9FF;color:#1D1D1D;font-size:14px}  /* r6 pad10 #d8d0e2 */
+.setting-input input:hover{border-color:#A7B1BF}
+.setting-input input:focus-visible{outline:0;border-color:#6941FF}
+.dialog-body .setting-field small{font-size:12px;line-height:1.4;color:#58606A;margin-top:6px}                        /* 10 #84788d */
+.validation{font-size:12px;font-weight:600;line-height:1.4;color:#FF8F6E}                                              /* 11 #9f4434 */
+.dialog-foot{padding:20px 40px 36px;border-top:1px solid #D6DDE9;background:#fff}                                      /* 16 24 #fcfbfd */
+.dialog-foot .actions{gap:8px}
+.dialog-foot button{height:48px;padding:0 24px;border-radius:8px;font-size:16px;line-height:1.4;background:#E5EAFF;color:#58606A}  /* 12 r6 pad9/14 #f0ecf7 */
+.dialog-foot .save{background:#6941FF;color:#fff;font-weight:700}                                                      /* #6246df */
+.dialog-foot .save:hover{opacity:.6}
+.dialog-foot .reset{height:34px;padding:0 16px;border-radius:6px;background:#F8F9FF;color:#58606A;font-size:14px}     /* 11 투명 */
+.detail-channel{font-size:13px;color:#7A8490;margin-bottom:8px}                                                        /* 12 #7a6991 */
+.detail-title{font-size:20px;line-height:1.4;font-weight:700;color:#353A41}                                            /* 650 */
+.detail-time{font-size:14px;color:#58606A;margin-top:8px}                                                              /* 12 #8a7a9c */
+.candidate-list{border-top-color:#D6DDE9;margin-top:20px;padding-top:20px}
+.candidate-list h3{font-size:14px;font-weight:700;color:#353A41;margin:0 0 12px}                                       /* 12 */
+.candidate-tags{gap:6px}
+.candidate-tags span{height:21px;line-height:19px;padding:0 7px;border:1px solid #D6DDE9;border-radius:6px;font-size:12px;font-weight:600;color:#353A41;background:#fff}  /* pad8/10 400 #716384 #e5ddf2 */
+.candidate-tags .next{background:#6941FF;border-color:#6941FF;color:#fff}                                              /* 초록 #eaf9f4 */
+.candidate-tags .past{background:#F8F9FF;border-color:#D6DDE9;color:#7A8490}                                           /* #afa5ba */
+.dialog-body .detail-explain{font-size:12px!important;line-height:1.4;color:#58606A;margin-top:16px!important}        /* 11 !important */
+.alert-history-item{padding:12px 0;border-bottom-color:#D6DDE9;font-size:14px;color:#353A41;gap:10px}                 /* 11/12 */
+.alert-history-item strong{min-width:72px}
+.alert-history-item span{font-size:13px;color:#7A8490}                                                                 /* 11 #867591 */
+.alert-history-item b{font-size:14px;color:#353A41}                                                                    /* 12 #ab6926 */
+.toast{background:#1D1D1D;font-size:12px;line-height:1.4;letter-spacing:-.5px;padding:12px 16px;border-radius:8px;box-shadow:0 6px 28px rgba(0,0,0,.16)}  /* #362a4b 12/18 (DS Tooltip 문법) */
+dialog :focus-visible{outline-color:#6941FF}                                                                          /* #28c49d 민트 포커스 → 브랜드 보라 */
+dialog:not(:has(.dialog-foot)) .dialog-body{padding-bottom:36px}                                                       /* 푸터 없는 상세·알림 팝업은 아래 여백을 위(36)와 맞춤 */
+.demo-toolbar{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);margin:0;z-index:20;background:#fff;border:1px solid #ddd8e7;border-radius:12px;padding:10px 16px;box-shadow:0 8px 32px #21124226;color:var(--kz-ink)}
+}
+</style>
 </head>
 <body>
 
@@ -130,53 +343,48 @@
       </ul>
     </div>
 
-    <!-- 패널 3 · 가구정보 스트립 + 편성정보 -->
+    <!-- 패널 3 · 인접채널 편성표 — KT 제공 축소형(26-09-08) 그대로 이식. 가구정보 스트립·옛 3행 편성은 KT안에 없어 제외 -->
     <div class="rt-panel rt-panel--right">
-      <div class="rt-strip">
-        <div class="rt-strip__item" data-pop="age" role="button" tabindex="0" aria-expanded="false" aria-label="연령대 분포 보기">
-          <span class="rt-strip__ic rt-strip__ic--age"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="7.5" r="3.7"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0z"/></svg></span>
-          <span class="rt-strip__label">연령대</span><span class="rt-strip__value">40대</span><span class="rt-strip__caret" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
-        </div>
-        <span class="rt-strip__vl"></span>
-        <div class="rt-strip__item" data-pop="sex" role="button" tabindex="0" aria-expanded="false" aria-label="성별 분포 보기">
-          <span class="rt-strip__ic rt-strip__ic--sex"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="3"/><path d="M12 9c-2.6 0-4.2 2.1-4.7 5.2L6 20h12l-1.3-5.8C16.2 11.1 14.6 9 12 9z"/></svg></span>
-          <span class="rt-strip__label">성별</span><span class="rt-strip__value">여자</span><span class="rt-strip__caret" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
-        </div>
-        <span class="rt-strip__vl"></span>
-        <div class="rt-strip__item" data-pop="home" role="button" tabindex="0" aria-expanded="false" aria-label="가구형태 분포 보기">
-          <span class="rt-strip__ic rt-strip__ic--home"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3 3 11h2v9h5v-6h4v6h5v-9h2z"/></svg></span>
-          <span class="rt-strip__label">가구형태</span><span class="rt-strip__value">초등가구</span><span class="rt-strip__caret" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
-        </div>
-      </div>
-      <!-- 인접 편성 + 재핑 유입 (08 B안 표기 문법 이식 · 최근 10분) -->
-      <div class="rt-sched">
-        <div class="rt-sched__row">
-          <span class="rt-sched__ch">ch.7</span><span class="rt-sched__vl"></span><span class="rt-sched__name">TV조선</span>
-          <span class="rt-sched__prog"><span class="rt-sched__pname">보도본부 핫라인</span><span class="rt-sched__ptime">09:30~11:00</span></span>
-          <span class="rt-sched__metric">
-            <span class="rt-sched__val"><small>유입</small>760</span>
-            <span class="rt-sched__delta"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 6l6 10H6z"/></svg>60</span>
-          </span>
-        </div>
-        <div class="rt-sched__row rt-sched__row--onair">
-          <span class="rt-onair">On Air</span>
-          <span class="rt-sched__ch">ch.8</span><span class="rt-sched__vl"></span><span class="rt-sched__name">GS SHOP</span>
-          <span class="rt-sched__prog"><span class="rt-sched__pname">원피스 썸머 특집</span><span class="rt-sched__ptime">10:00~11:00</span></span>
-          <span class="rt-sched__metric">
-            <span class="rt-sched__val"><small>인접 합</small>1,700</span>
-            <span class="rt-sched__delta"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 6l6 10H6z"/></svg>100 (6.3%)</span>
-          </span>
-        </div>
-        <div class="rt-sched__row">
-          <span class="rt-sched__ch">ch.9</span><span class="rt-sched__vl"></span><span class="rt-sched__name">KBS2</span>
-          <span class="rt-sched__prog"><span class="rt-sched__pname">생생정보</span><span class="rt-sched__ptime rt-sched__soon">~10:50 (6분)</span></span>
-          <span class="rt-sched__metric">
-            <span class="rt-sched__val"><small>유입</small>940</span>
-            <span class="rt-sched__delta"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 6l6 10H6z"/></svg>40</span>
-          </span>
-        </div>
-      </div>
-      <p class="rt-sched__cap">인접 채널 재핑 · ch.7 · ch.9 → ch.8 · 최근 10분 유입 가구</p>
+    <div class="kt-host">
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs>
+<symbol id="gear" viewBox="0 0 24 24"><path d="m9 3-.6 2.3-2 .9-2.1-.7-2 3.4 1.7 1.7v2.8l-1.7 1.7 2 3.4 2.2-.6 2 .9L9 21h4l.6-2.2 2-.9 2.2.6 2-3.4-1.8-1.7v-2.8l1.8-1.7-2-3.4-2.2.7-2-.9L13 3Z" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="11" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+<symbol id="bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0v6l2 3H4l2-3Zm4 12h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></symbol>
+<symbol id="chevron" viewBox="0 0 24 24"><path d="m8 10 4 4 4-4" stroke="currentColor" stroke-width="1.8" fill="none"/></symbol>
+<symbol id="play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z" fill="currentColor"/></symbol>
+<symbol id="pause" viewBox="0 0 24 24"><path d="M7 5h3v14H7zm7 0h3v14h-3z" fill="currentColor"/></symbol>
+<symbol id="reset" viewBox="0 0 24 24"><path d="M4 10a8 8 0 1 1 1 7M4 4v6h6" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs></svg>
+<section class="zapping-widget" id="compact-widget" aria-labelledby="widget-title">
+<header class="widget-head"><h1 id="widget-title">인접채널 편성표</h1><div class="widget-head-actions"><span class="source-label">1주 전 기록 기반</span><button class="alarm-state" id="open-alarm-settings" aria-label="재핑 알람 설정"><svg aria-hidden="true"><use href="#bell"/></svg><span id="alarm-state-label">알람 ON</span></button><button class="icon-button" id="open-settings" aria-label="인접채널 편성표 커스터마이징" title="커스터마이징"><svg><use href="#gear"/></svg></button></div></header>
+<div class="live-strip" id="live-strip" data-channel-row="other"></div>
+<div class="columns" aria-hidden="true"><span>채널</span><span>프로그램 · 방송시간</span><span>예상 재핑시간</span><span>실시간 재핑</span></div>
+<div class="adjacent-rows" id="adjacent-rows"></div>
+<footer class="widget-foot"><span id="criteria">06.05(금) 기록 · −5% 이하 · 알림 10초</span><span class="foot-clock"><i class="status-dot"></i>시연 <time class="demo-clock" data-clock>10:44:00</time></span></footer>
+</section>
+<dialog id="settings-dialog" aria-labelledby="settings-title">
+<div class="dialog-head"><h2 id="settings-title">커스터마이징</h2><button class="dialog-close" data-close="settings-dialog" aria-label="설정 닫기"><svg><use href="#close"/></svg></button></div>
+<div class="dialog-tabs" role="tablist" aria-label="편성표 설정">
+<button role="tab" id="channels-tab" aria-controls="channels-panel" aria-selected="true">인접채널</button>
+<button role="tab" id="interest-tab" aria-controls="interest-panel" aria-selected="false" tabindex="-1">관심 채널</button>
+<button role="tab" id="alerts-tab" aria-controls="alerts-panel" aria-selected="false" tabindex="-1">알람 설정</button>
+</div>
+<div class="dialog-body">
+<section id="channels-panel" role="tabpanel" aria-labelledby="channels-tab"><p>편성표에 표시할 인접채널 4개를 선택하세요.<br>실시간 알람을 받을 채널은 ‘관심 채널’에서 별도로 설정합니다.</p><div class="selection-count" id="selection-count">4 / 4개 선택</div><div class="channel-choice" id="channel-choices"></div></section>
+<section id="interest-panel" role="tabpanel" aria-labelledby="interest-tab" hidden><p>실시간 재핑 알람을 받을 채널을 선택하세요.<br>인접채널은 해당 컬럼에, 그 외 관심 채널은 최상단에 표시됩니다.</p><div class="interest-panel-tools"><div class="selection-count" id="interest-count">10개 채널 선택</div><div class="interest-tools"><button id="interest-all">전체 선택</button><button id="interest-clear">전체 해제</button></div></div><div class="channel-choice" id="interest-choices"></div><div class="interest-empty-note" id="interest-empty-note" hidden>관심 채널이 없어 실시간 알람을 받지 않습니다. 예상 재핑시간은 계속 표시됩니다.</div><div class="settings-notice" id="interest-alarm-notice" hidden>재핑 알람이 OFF입니다. 관심 채널은 저장되며, 알람을 켠 뒤 새로 감지된 재핑부터 알려드립니다.</div></section>
+<section id="alerts-panel" role="tabpanel" aria-labelledby="alerts-tab" hidden>
+<div class="settings-switch-row"><div class="settings-switch-copy"><strong id="alarm-switch-label">재핑 알람</strong><small>관심 채널의 실시간 재핑 알람을 켜거나 끕니다.</small></div><label class="alarm-switch"><input type="checkbox" role="switch" id="alerts-enabled" aria-labelledby="alarm-switch-label" checked><span class="switch-track" aria-hidden="true"><span class="switch-on-label">ON</span><span class="switch-off-label">OFF</span></span></label></div>
+<div class="alarm-setting-summary" id="alarm-setting-summary">알람 ON · 선택한 관심 채널에서 실시간 재핑을 받습니다.</div>
+<label class="setting-field"><strong>재핑 증감률</strong><span class="setting-input"><input type="number" id="threshold" aria-label="재핑 증감률" min="-50" max="-1" step="0.1" value="-5">% 이하</span><small>예상 시점과 실제 감지에 적용합니다. 기본 −5%<br>예: −8%는 포함, −3%는 제외</small></label>
+<label class="setting-field"><strong>실시간 재핑 노출 시간</strong><span class="setting-input"><input type="number" id="exposure" aria-label="실시간 재핑 노출 시간" min="1" max="60" step="1" value="10">초</span><small>기본 10초 · 1–60초 사이로 설정할 수 있습니다.<br>시연 시계가 멈춰 있어도 실제 경과 시간에 따라 알람이 종료됩니다.</small></label>
+</section>
+<div class="validation" id="settings-error" role="status"></div>
+</div>
+<div class="dialog-foot"><button class="reset" id="default-settings">기본값 불러오기</button><div class="actions"><button data-close="settings-dialog">취소</button><button class="save" id="save-settings">적용</button></div></div>
+</dialog>
+<dialog id="detail-dialog" aria-labelledby="detail-heading"><div class="dialog-head"><h2 id="detail-heading">프로그램 · 예상 재핑</h2><button class="dialog-close" data-close="detail-dialog" aria-label="상세 닫기"><svg><use href="#close"/></svg></button></div><div class="dialog-body" id="detail-body"></div></dialog>
+<dialog id="alerts-dialog" aria-labelledby="active-alerts-title"><div class="dialog-head"><h2 id="active-alerts-title">타 채널 실제 재핑</h2><button class="dialog-close" data-close="alerts-dialog" aria-label="알림 목록 닫기"><svg><use href="#close"/></svg></button></div><div class="dialog-body" id="active-alerts-body"></div></dialog>
+    </div>
     </div>
 
   </div>
@@ -660,52 +868,354 @@
 })();
 </script>
 
+<div class="kt-host">
+<div class="sr-only" role="status" aria-live="polite" id="live-announcement"></div><div class="toast" id="toast" role="status" hidden></div>
+<!-- 시연 조작 — 숨김(디자이너 결정 26-09-08). KT 원본 스크립트가 이 버튼들을 참조하므로 마크업만 유지. 실제 구현에서는 서버 이벤트로 대체하고 이 블록과 시연 시계 코드를 제거 -->
+<section class="demo-toolbar" hidden aria-label="재핑 시연 조작"><span class="demo-caption">시연 데이터</span><time class="demo-clock-large" data-clock>10:44:00</time><button class="demo-button play" id="toggle-play" aria-label="시연 시계 재생" title="시연 시계 재생"><svg><use href="#play"/></svg></button><button class="demo-button" id="plus-minute">+1분</button><button class="demo-button primary" id="next-prediction">다음 예상 시점</button><span class="toolbar-divider"></span><button class="demo-button alert" id="inject-other"><svg><use href="#bell"/></svg>타 채널 감지</button><button class="demo-button alert" id="inject-adjacent">인접채널 감지</button><button class="demo-button" id="reset-demo" title="시연 처음으로"><svg><use href="#reset"/></svg>초기화</button></section>
+</div>
 <script>
-/* 가구정보 분포 팝오버 — 스트립 값은 최다층 요약, 클릭 시 전체 분포 */
-(function () {
+/* KT 제공 인접채널 편성표 로직 — 원본 그대로(시연 시계 시작 10:44, 기록일 06.05 만 우리 화면에 맞춤). 보기 전환·차트 목업 코드는 제외 */
+/* Pure minute-based prediction and wall-clock alert rules. */
+const ZappingEngine = (() => {
   'use strict';
-  var DIST = {
-    age:  { title: '시청 가구주 연령대 분포', rows: [['20대', 6], ['30대', 14], ['40대', 34], ['50대', 28], ['60대+', 18]] },
-    sex:  { title: '시청 가구주 성별 분포', rows: [['여자', 62], ['남자', 38]], colors: { '여자': 'var(--female)', '남자': 'var(--male)' } },
-    home: { title: '시청 가구형태 분포', rows: [['초등가구', 31], ['성인자녀', 24], ['1인가구', 22], ['키즈가구', 12], ['기타', 11]] }
-  };
-  var items = document.querySelectorAll('.rt-strip__item[data-pop]');
-  function close() {
-    items.forEach(function (it) {
-      it.classList.remove('is-open'); it.setAttribute('aria-expanded', 'false');
-      var p = it.querySelector('.rt-pop'); if (p) p.remove();
+
+  const finite = value => typeof value === 'number' && Number.isFinite(value);
+  const minuteOfDay = value => Number.isInteger(value) && value >= 0 && value < 1440;
+  const secondOfDay = value => Number.isInteger(value) && value >= 0 && value < 86400;
+  const pad = value => String(value).padStart(2, '0');
+  const validId = value => (typeof value === 'string' && value.length > 0)
+    || (typeof value === 'number' && Number.isFinite(value));
+
+  function parseTime(value) {
+    if (typeof value !== 'string' || !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value)) return null;
+    const [hour, minute] = value.split(':').map(Number);
+    return hour * 60 + minute;
+  }
+
+  function formatTime(minutes) {
+    if (!minuteOfDay(minutes)) return '--:--';
+    return `${pad(Math.floor(minutes / 60))}:${pad(minutes % 60)}`;
+  }
+
+  function formatClock(seconds) {
+    if (!secondOfDay(seconds)) return '--:--:--';
+    return `${formatTime(Math.floor(seconds / 60))}:${pad(seconds % 60)}`;
+  }
+
+  function historicalDate(value) {
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+    const [year, month, day] = value.split('-').map(Number);
+    // setUTCFullYear avoids Date.UTC's special interpretation of years 00–99.
+    const date = new Date(0);
+    date.setUTCHours(0, 0, 0, 0);
+    date.setUTCFullYear(year, month - 1, day);
+    if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1
+      || date.getUTCDate() !== day) return null;
+    date.setUTCDate(date.getUTCDate() - 7);
+    if (date.getUTCFullYear() < 0) return null;
+    return `${String(date.getUTCFullYear()).padStart(4, '0')}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}`;
+  }
+
+  function qualifyingEvent(rate, threshold) {
+    return finite(rate) && finite(threshold) && rate <= threshold;
+  }
+
+  function eligibleCandidates(candidates, threshold, startMinute, endMinute) {
+    if (!Array.isArray(candidates) || !finite(threshold)
+      || !minuteOfDay(startMinute) || !Number.isInteger(endMinute)
+      || endMinute <= startMinute || endMinute > 1440) return [];
+    const unique = new Map();
+    for (const candidate of candidates) {
+      if (!candidate || !minuteOfDay(candidate.minute)
+        || candidate.minute < startMinute || candidate.minute >= endMinute
+        || !qualifyingEvent(candidate.rate, threshold)) continue;
+      const previous = unique.get(candidate.minute);
+      if (!previous || candidate.rate < previous.rate) {
+        unique.set(candidate.minute, { ...candidate });
+      }
+    }
+    return Array.from(unique.values()).sort((a, b) => a.minute - b.minute);
+  }
+
+  function nextCandidate(candidates, nowSeconds, threshold, startMinute, endMinute) {
+    if (!secondOfDay(nowSeconds)) return null;
+    const nowMinute = Math.floor(nowSeconds / 60);
+    return eligibleCandidates(candidates, threshold, startMinute, endMinute)
+      .find(candidate => candidate.minute >= nowMinute) || null;
+  }
+
+  function candidateStatus(minute, nowSeconds) {
+    if (!minuteOfDay(minute) || !secondOfDay(nowSeconds)) return null;
+    const nowMinute = Math.floor(nowSeconds / 60);
+    return minute < nowMinute ? 'past' : minute === nowMinute ? 'now' : 'future';
+  }
+
+  function visibleEvents(events, realNowMs, settings) {
+    if (!Array.isArray(events) || !finite(realNowMs)) return [];
+    // Settings apply when an event is received. Its exposure is snapshotted;
+    // changing settings must not restart, extend, or refilter an active alert.
+    void settings;
+    const visible = events.filter(event => event && validId(event.id)
+      && validId(event.channelId) && finite(event.receivedAt)
+      && finite(event.durationSeconds) && event.durationSeconds > 0
+      && !event.dismissed && event.receivedAt <= realNowMs
+      && realNowMs < event.receivedAt + event.durationSeconds * 1000)
+      .sort((a, b) => b.receivedAt - a.receivedAt);
+    const seen = new Set();
+    return visible.filter(event => {
+      if (seen.has(event.id)) return false;
+      seen.add(event.id);
+      return true;
     });
   }
-  function build(it) {
-    var d = DIST[it.dataset.pop], max = Math.max.apply(null, d.rows.map(function (r) { return r[1]; }));
-    var pop = document.createElement('div');
-    pop.className = 'rt-pop' + (it.dataset.pop === 'home' ? ' rt-pop--right' : '');
-    var h = '<div class="rt-pop__title">' + d.title + '</div>';
-    d.rows.forEach(function (r) {
-      var top = r[1] === max, color = d.colors ? d.colors[r[0]] : null;
-      h += '<div class="rt-pop__row' + (top ? ' is-top' : '') + '">'
-         + '<span>' + (top ? '<b>' + r[0] + '</b>' : r[0]) + '</span>'
-         + '<span class="rt-pop__track"><span class="rt-pop__fill" style="width:' + r[1] + '%' + (color ? ';background:' + color : '') + '"></span></span>'
-         + '<span class="rt-pop__val">' + (top ? '<b>' + r[1] + '%</b>' : r[1] + '%') + '</span></div>';
-    });
-    pop.innerHTML = h;
-    pop.addEventListener('click', function (e) { e.stopPropagation(); });
-    it.appendChild(pop);
+
+  function groupEvents(events, adjacentIds, ownChannelId) {
+    const selected = Array.isArray(adjacentIds)
+      ? [...new Set(adjacentIds.filter(id => validId(id) && id !== ownChannelId))] : [];
+    const adjacent = Object.fromEntries(selected.map(id => [id, []]));
+    const selectedSet = new Set(selected);
+    const other = [];
+    for (const event of Array.isArray(events) ? events : []) {
+      if (!event || !validId(event.channelId) || event.channelId === ownChannelId) continue;
+      if (selectedSet.has(event.channelId)) adjacent[event.channelId].push(event);
+      else other.push(event);
+    }
+    return { other, adjacent };
   }
-  items.forEach(function (it) {
-    it.addEventListener('click', function (e) {
-      e.stopPropagation();
-      var open = it.classList.contains('is-open');
-      close();
-      if (!open) { it.classList.add('is-open'); it.setAttribute('aria-expanded', 'true'); build(it); }
-    });
-    it.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); it.click(); }
-    });
+
+  function validateSettings(settings, availableIds, ownId) {
+    const errors = [];
+    const value = settings && typeof settings === 'object' ? settings : {};
+    const available = new Set(Array.isArray(availableIds) || availableIds instanceof Set ? availableIds : []);
+    const adjacent = Array.isArray(value.adjacent) ? value.adjacent : [];
+    if (adjacent.length !== 4) errors.push('인접채널은 정확히 4개를 선택해 주세요.');
+    if (new Set(adjacent).size !== adjacent.length) errors.push('인접채널은 중복해서 선택할 수 없습니다.');
+    if (adjacent.some(id => id === ownId)) errors.push('운영채널은 인접채널로 선택할 수 없습니다.');
+    if (adjacent.some(id => !validId(id) || !available.has(id))) errors.push('사용 가능한 채널만 선택해 주세요.');
+    if (!finite(value.threshold) || value.threshold < -50 || value.threshold > -1) {
+      errors.push('재핑 증감률은 -50%부터 -1% 사이의 숫자로 입력해 주세요.');
+    }
+    if (!Number.isInteger(value.exposure) || value.exposure < 1 || value.exposure > 60) {
+      errors.push('실시간 재핑 노출 시간은 1초부터 60초 사이의 정수로 입력해 주세요.');
+    }
+    return { valid: errors.length === 0, errors };
+  }
+
+  return Object.freeze({
+    parseTime, formatTime, formatClock, historicalDate, eligibleCandidates,
+    nextCandidate, candidateStatus, qualifyingEvent, visibleEvents, groupEvents,
+    validateSettings
   });
-  document.addEventListener('click', close);
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
 })();
+
+/* Alert subscriptions are independent from the four schedule neighbours. */
+const CompactPreferences = (() => {
+  'use strict';
+
+  const isRecord = value => !!value && typeof value === 'object' && !Array.isArray(value);
+  const owns = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
+  const validId = value => (typeof value === 'string' && value.length > 0)
+    || (typeof value === 'number' && Number.isFinite(value));
+
+  function validate(value, availableIds, ownId) {
+    const base = ZappingEngine.validateSettings(value, availableIds, ownId);
+    const errors = [...base.errors];
+    const settings = isRecord(value) ? value : {};
+    const available = new Set(Array.isArray(availableIds) || availableIds instanceof Set ? availableIds : []);
+    if (!Array.isArray(settings.interest)) {
+      errors.push('관심 채널 목록을 확인해 주세요.');
+    } else {
+      if (new Set(settings.interest).size !== settings.interest.length) {
+        errors.push('관심 채널은 중복해서 선택할 수 없습니다.');
+      }
+      if (settings.interest.some(id => !validId(id) || !available.has(id))) {
+        errors.push('관심 채널은 사용 가능한 채널만 선택해 주세요.');
+      }
+      if (settings.interest.some(id => id === ownId)) {
+        errors.push('운영채널은 관심 채널로 선택할 수 없습니다.');
+      }
+    }
+    if (typeof settings.alertsEnabled !== 'boolean') {
+      errors.push('재핑 알람 기능의 켜짐 또는 꺼짐 상태를 확인해 주세요.');
+    }
+    return { valid: errors.length === 0, errors };
+  }
+
+  function normalize(raw, defaults, availableIds) {
+    if (!isRecord(raw) || !isRecord(defaults)) return null;
+    const value = {
+      adjacent: Array.isArray(raw.adjacent) ? [...raw.adjacent] : raw.adjacent,
+      threshold: raw.threshold,
+      exposure: raw.exposure,
+      interest: owns(raw, 'interest') ? raw.interest : defaults.interest,
+      alertsEnabled: owns(raw, 'alertsEnabled') ? raw.alertsEnabled : true
+    };
+    if (Array.isArray(value.interest)) value.interest = [...value.interest];
+    return validate(value, availableIds).valid ? value : null;
+  }
+
+  function shouldReceive(channelId, settings, ownId) {
+    return validId(channelId) && channelId !== ownId
+      && settings?.alertsEnabled === true
+      && Array.isArray(settings.interest)
+      && settings.interest.includes(channelId);
+  }
+
+  function retainAfterChange(events, nextSettings, ownId) {
+    if (!Array.isArray(events)) return [];
+    return events.map(event => {
+      if (!isRecord(event)) return event;
+      // Retaining the dismissed marker prevents old alerts from reappearing
+      // when the feature is re-enabled or a channel is selected again.
+      return {
+        ...event,
+        dismissed: !!event.dismissed || !shouldReceive(event.channelId, nextSettings, ownId)
+      };
+    });
+  }
+
+  return Object.freeze({ normalize, validate, shouldReceive, retainAfterChange });
+})();
+
+(() => {
+  'use strict';
+  const E=ZappingEngine, P=CompactPreferences, $=id=>document.getElementById(id);
+  const DEFAULTS={adjacent:['kbs1','mbc','channela','tvchosun'],threshold:-5,exposure:10,interest:['kbs1','mbc','channela','tvchosun','kbs2','sbs','ebs','jtbc','ytn','mbn'],alertsEnabled:true};
+  const initialSecond=644*60, startMinute=630, endMinute=690;
+  const storageKey='gsi-compact-zapping-settings-v1';
+  const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const clone=value=>({adjacent:[...value.adjacent],threshold:value.threshold,exposure:value.exposure,interest:[...value.interest],alertsEnabled:value.alertsEnabled});
+  const pairs=value=>value.map(([time,rate])=>({minute:E.parseTime(time),rate}));
+  const pgm=(name,start,end)=>({name,start:E.parseTime(start),end:E.parseTime(end)});
+  // Illustrative programme and historical data; no connection to GSI's live feed.
+  const channels=[
+    {id:'kbs1',name:'KBS1',number:'09',programmes:[pgm('KBS 뉴스','10:00','11:00'),pgm('생활의 발견','11:00','11:30')],candidates:pairs([['10:40',-4.1],['10:50',-8.2],['10:52',-9.4],['10:53',-6.3],['10:54',-7.1]])},
+    {id:'mbc',name:'MBC',number:'11',programmes:[pgm('기분 좋은 날','10:00','10:45'),pgm('오늘의 건강','10:45','11:15'),pgm('MBC 생활 정보','11:15','12:00')],candidates:pairs([['10:43',-5.7],['10:55',-6.7],['10:58',-8.1],['11:10',-7.2]])},
+    {id:'channela',name:'채널A',number:'18',programmes:[pgm('김진의 돌직구 쇼','10:00','11:00'),pgm('채널A 뉴스','11:00','11:30')],candidates:pairs([['10:38',-6.1],['10:52',-7.6],['10:54',-9.2],['11:15',-6.1]])},
+    {id:'tvchosun',name:'TV조선',number:'20',programmes:[pgm('신통방통','10:20','11:05'),pgm('보도본부 핫라인','11:05','12:00')],candidates:pairs([['10:46',-4.7],['11:00',-8.1],['11:05',-6.3],['11:20',-5.9]])},
+    {id:'kbs2',name:'KBS2',number:'07',programmes:[pgm('생생정보 스페셜','10:30','11:10'),pgm('인간극장 스페셜','11:10','12:00')],candidates:pairs([['10:51',-6.2],['10:56',-10.2],['11:09',-7.2]])},
+    {id:'sbs',name:'SBS',number:'05',programmes:[pgm('모닝와이드','10:00','11:00'),pgm('생활의 달인','11:00','12:00')],candidates:pairs([['10:50',-6.3],['10:57',-11.5],['11:19',-7.5]])},
+    {id:'ebs',name:'EBS',number:'13',programmes:[pgm('한국기행 <슬기로운 강원 생활 4부 여보, 하고 싶은 거 다 해~>','10:00','11:00'),pgm('다큐프라임','11:00','12:00')],candidates:null},
+    {id:'jtbc',name:'JTBC',number:'15',programmes:[pgm('상암동 클라스','10:20','11:15'),pgm('사건반장','11:15','12:00')],candidates:pairs([['10:53',-7.8],['10:59',-12.1]])},
+    {id:'ytn',name:'YTN',number:'24',programmes:[pgm('뉴스퀘어 10AM','09:40','11:40')],candidates:pairs([['10:59',-6.7],['11:06',-7.8]])},
+    {id:'mbn',name:'MBN',number:'16',programmes:[pgm('프레스룸','10:20','11:10'),pgm('아침 & 매일경제','11:10','12:00')],candidates:pairs([['10:58',-8.7],['11:12',-6.6]])}
+  ];
+  const byId=new Map(channels.map(c=>[c.id,c]));
+  let settings=clone(DEFAULTS), events=[], nextId=0, otherIndex=0, adjacentIndex=0, toastTimer;
+  let clockBase=initialSecond, monoBase=performance.now(), playing=false, lastMinute=-1, lastSignature='';
+  let detailChannel=null, detailProgramme=null, triggerElement=null, triggerKey=null, settingsTab='channels', draftOrder=[...DEFAULTS.adjacent];
+  try{const value=P.normalize(JSON.parse(localStorage.getItem(storageKey)),DEFAULTS,channels.map(c=>c.id));if(value)settings=clone(value);}catch{}
+  const currentSecond=()=>Math.min(endMinute*60,Math.floor(clockBase+(playing?(performance.now()-monoBase)/1000:0)));
+  const candidateFor=(channel,second=currentSecond())=>E.nextCandidate(channel.candidates,second,settings.threshold,startMinute,endMinute);
+  const currentProgramme=(channel,second=currentSecond())=>channel.programmes.find(p=>p.start<=Math.floor(second/60)&&Math.floor(second/60)<p.end);
+  const activeEvents=()=>E.visibleEvents(events,Date.now(),settings).filter(event=>P.shouldReceive(event.channelId,settings,'gs-shop'));
+  const groupsFor=active=>E.groupEvents(active,settings.adjacent,'gs-shop');
+  const percent=value=>String(value).replace('-','−')+'%';
+  const svg=name=>`<svg aria-hidden="true"><use href="#${name}"/></svg>`;
+  function notify(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,3200);}
+  function countdown(minute,second){if(minute===Math.floor(second/60))return '지금 예상';const difference=minute*60-second;return difference<60?`${difference}초 후`:`${Math.ceil(difference/60)}분 후`;}
+  function timeRange(p){return p?`${E.formatTime(p.start)}–${E.formatTime(p.end)}`:'방송시간 정보 없음';}
+  function showDialog(id){triggerElement=document.activeElement;triggerKey=triggerElement?.id?{id:triggerElement.id}:triggerElement?.dataset?.detail?{detail:triggerElement.dataset.detail}:null;$(id).showModal();}
+  function closeDialog(id){$(id).close();}
+  document.querySelectorAll('[data-close]').forEach(button=>button.addEventListener('click',()=>closeDialog(button.dataset.close)));
+  document.querySelectorAll('dialog').forEach(dialog=>dialog.addEventListener('close',()=>{const target=triggerElement?.isConnected?triggerElement:triggerKey?.id?$(triggerKey.id):triggerKey?.detail?$('adjacent-rows').querySelector(`[data-detail="${triggerKey.detail}"]`):null;(target||$('open-settings')).focus({preventScroll:true});}));
+  function renderRows(groups,second){
+    const focused=document.activeElement?.dataset?.detail;
+    const nextTimes=settings.adjacent.map(id=>candidateFor(byId.get(id),second)?.minute).filter(Number.isFinite);
+    const first=nextTimes.length?Math.min(...nextTimes):null;
+    $('adjacent-rows').innerHTML=settings.adjacent.map(id=>{
+      const channel=byId.get(id),programme=currentProgramme(channel,second),next=candidateFor(channel,second),actual=groups.adjacent[id]?.[0];
+      const eligible=E.eligibleCandidates(channel.candidates,settings.threshold,startMinute,endMinute);
+      const isNow=next?.minute===Math.floor(second/60),isFirst=next&&next.minute===first;
+      const expiry=actual?actual.receivedAt+actual.durationSeconds*1000:0;
+      const emptyLabel=channel.candidates===null?'기록 없음':eligible.length?'남은 예상 없음':'기준 해당 없음';
+      const following=next?eligible.filter(c=>c.minute>next.minute).slice(0,3):[];
+      const followingList=following.length?`<span class="after-label">이후</span><ol class="prediction-list" aria-label="${esc(channel.name)} 이후 예상 시각">${following.map(c=>`<li><time>${E.formatTime(c.minute)}</time></li>`).join('')}</ol>`:'<span class="no-following">이후 예상 없음</span>';
+      const prediction=next?`<div class="prediction-main"><time class="prediction-time">${E.formatTime(next.minute)}</time><span class="prediction-status" data-countdown="${next.minute}">${countdown(next.minute,second)}</span></div><div class="prediction-following">${followingList}</div>`:`<span class="prediction-empty">${emptyLabel}</span>`;
+      const receiving=P.shouldReceive(id,settings,'gs-shop');
+      const realtime=actual?`<div class="realtime-event" aria-label="${esc(channel.name)} ${E.formatClock(actual.demoSecond)} 실제 감지, ${percent(actual.rate)}"><strong>${percent(actual.rate)}<small>감지</small></strong><span class="realtime-meta"><time>${E.formatClock(actual.demoSecond)}</time> · <span data-expiry="${expiry}">${actual.durationSeconds}</span>초</span><i class="event-progress" data-progress="${expiry}" data-duration="${actual.durationSeconds}" style="width:100%"></i></div>`:`<span class="realtime-idle ${receiving?'':'off'}">${!settings.alertsEnabled?'알람 OFF':receiving?'감지 대기':'수신 제외'}</span>`;
+      return `<div class="neighbor-row ${isFirst?'nearest':''} ${isNow?'now':''} ${actual?'detected':''}" data-channel-row="adjacent" data-channel-id="${id}"><div class="channel-cell"><strong class="channel-name">${esc(channel.name)}</strong><span class="channel-no">ch.${channel.number}</span></div><button class="program-cell" data-detail="${id}" aria-label="${esc(channel.name+' '+(programme?.name||'방송정보 없음')+' '+timeRange(programme)+', 예상 재핑 상세 보기')}"><span class="program-name">${esc(programme?.name||'방송정보 없음')}</span><span class="program-time">${timeRange(programme)}</span></button><div class="prediction-cell">${prediction}</div><div class="realtime-cell" aria-label="${esc(channel.name)} 실시간 재핑">${realtime}</div></div>`;
+    }).join('');
+    if(focused){$('adjacent-rows').querySelector(`[data-detail="${focused}"]`)?.focus({preventScroll:true});}
+  }
+  function renderOther(other){
+    const strip=$('live-strip'),event=other[0];strip.classList.toggle('detected',!!event);strip.classList.toggle('alarm-off',!settings.alertsEnabled);
+    const otherInterest=settings.interest.filter(id=>!settings.adjacent.includes(id));
+    if(!event){const message=!settings.alertsEnabled?'알람 OFF · 예상 재핑시간은 계속 표시됩니다':!settings.interest.length?'관심 채널을 선택하면 재핑 알람을 받습니다':!otherInterest.length?'타 채널 관심 설정 없음':'관심 채널 재핑 감지 대기';const hint=!settings.alertsEnabled?'설정에서 켜기':otherInterest.length?`인접 제외 ${otherInterest.length}개 채널`:'관심 채널 설정';strip.innerHTML=`<span class="live-label">${svg('bell')}타 채널 알람</span><i class="live-divider"></i><span class="live-message">${message}</span><span class="live-hint">${hint}</span>`;return;}
+    const channel=byId.get(event.channelId),expiry=event.receivedAt+event.durationSeconds*1000;
+    strip.innerHTML=`<span class="live-label">${svg('bell')}실제 감지</span><i class="live-divider"></i><span class="live-message"><strong>${esc(channel.name)}</strong><span class="ch">ch.${channel.number}</span><span class="live-rate">${percent(event.rate)}</span><time class="live-received">${E.formatClock(event.demoSecond)}</time></span>${other.length>1?`<button class="more-alerts" id="more-alerts">외 ${other.length-1}건</button>`:''}<span class="live-hint"><span data-expiry="${expiry}">${event.durationSeconds}</span>초 후 종료</span><i class="progress" data-progress="${expiry}" data-duration="${event.durationSeconds}" style="width:100%"></i>`;
+  }
+  function renderAlertsDialog(other){$('active-alerts-body').innerHTML=other.length?`<p>설정한 노출 시간이 지나면 각 알림이 종료됩니다.</p>`+other.map(event=>{const channel=byId.get(event.channelId);return `<div class="alert-history-item"><strong>${esc(channel.name)}</strong><span>ch.${channel.number}</span><span>${E.formatClock(event.demoSecond)}</span><b>${percent(event.rate)}</b></div>`;}).join(''):'<p>현재 표시 중인 타 채널 알림이 없습니다.</p>';}
+  function render(){
+    const active=activeEvents(),groups=groupsFor(active),second=currentSecond();
+    const moreFocused=document.activeElement?.id==='more-alerts';
+    renderOther(groups.other);renderRows(groups,second);
+    if(moreFocused){($('more-alerts')||$('inject-other')).focus({preventScroll:true});}
+    $('criteria').textContent=`06.05(금) 기록 · ${percent(settings.threshold)} 이하 · 알람 ${settings.exposure}초 · 관심 ${settings.interest.length}개`;
+    $('alarm-state-label').textContent=settings.alertsEnabled?'알람 ON':'알람 OFF';
+    $('open-alarm-settings').classList.toggle('off',!settings.alertsEnabled);
+    $('open-alarm-settings').setAttribute('aria-label',`재핑 알람 ${settings.alertsEnabled?'ON':'OFF'}, 알람 설정 열기`);
+    lastMinute=Math.floor(second/60);lastSignature=active.map(e=>e.id).join(',');
+    if($('detail-dialog').open)renderDetail();
+    if($('alerts-dialog').open)renderAlertsDialog(groups.other);
+    updateClock();
+  }
+  function updateClock(){
+    const second=currentSecond();document.querySelectorAll('[data-clock]').forEach(el=>el.textContent=E.formatClock(second));
+    document.querySelectorAll('[data-countdown]').forEach(el=>el.textContent=countdown(Number(el.dataset.countdown),second));
+    const wallNow=Date.now();document.querySelectorAll('[data-expiry]').forEach(el=>el.textContent=String(Math.max(0,Math.ceil((Number(el.dataset.expiry)-wallNow)/1000))));
+    document.querySelectorAll('[data-progress]').forEach(el=>el.style.width=`${Math.max(0,Math.min(100,(Number(el.dataset.progress)-wallNow)/(Number(el.dataset.duration)*1000)*100))}%`);
+    if(playing&&second>=endMinute*60){playing=false;setPlayButton();}
+  }
+  function setPlayButton(){$('toggle-play').innerHTML=svg(playing?'pause':'play');$('toggle-play').setAttribute('aria-label',playing?'시연 시계 일시정지':'시연 시계 재생');$('toggle-play').title=playing?'시연 시계 일시정지':'시연 시계 재생';}
+  function setSecond(second){clockBase=Math.min(endMinute*60,Math.max(startMinute*60,second));monoBase=performance.now();render();}
+  $('toggle-play').addEventListener('click',()=>{clockBase=currentSecond();monoBase=performance.now();playing=!playing;setPlayButton();});
+  $('plus-minute').addEventListener('click',()=>setSecond(currentSecond()+60));
+  $('next-prediction').addEventListener('click',()=>{
+    const minute=Math.floor(currentSecond()/60),next=settings.adjacent.flatMap(id=>E.eligibleCandidates(byId.get(id).candidates,settings.threshold,startMinute,endMinute)).filter(c=>c.minute>minute).sort((a,b)=>a.minute-b.minute)[0];
+    if(!next){notify('현재 방송 구간에 남은 예상 시점이 없습니다.');return;}setSecond(next.minute*60);
+  });
+  $('reset-demo').addEventListener('click',()=>{playing=false;events=[];otherIndex=0;adjacentIndex=0;setPlayButton();setSecond(initialSecond);notify('시연을 10:44:00부터 다시 시작합니다.');});
+  function inject(id){
+    if(!settings.alertsEnabled){notify('재핑 알람이 OFF입니다. 알람 설정에서 켜고 적용해 주세요.');return;}
+    if(!P.shouldReceive(id,settings,'gs-shop')){notify(`${byId.get(id).name}은 관심 채널에 포함되지 않아 실시간 알람을 받지 않습니다.`);return;}
+    const rate=-8.2;if(!E.qualifyingEvent(rate,settings.threshold)){notify(`시연 증감률 −8.2%는 현재 ${percent(settings.threshold)} 이하 기준에 해당하지 않습니다.`);return;}
+    const channel=byId.get(id);events.push({id:++nextId,channelId:id,rate,receivedAt:Date.now(),durationSeconds:settings.exposure,demoSecond:currentSecond()});
+    $('live-announcement').textContent=`${channel.name}, 채널 ${channel.number}, 실제 재핑 감지 시연. 증감률 ${percent(rate)}. ${settings.exposure}초간 표시됩니다.`;render();
+  }
+  function injectDemo(adjacent){
+    if(!settings.alertsEnabled){notify('재핑 알람이 OFF입니다. 알람 설정에서 켜고 적용해 주세요.');return;}
+    const ids=adjacent?settings.adjacent:['sbs','ytn','jtbc','mbn','kbs2','ebs','kbs1','mbc','channela','tvchosun'].filter(id=>!settings.adjacent.includes(id));
+    const pool=ids.filter(id=>P.shouldReceive(id,settings,'gs-shop'));
+    if(!pool.length){notify(adjacent?'알람을 받을 관심 인접채널이 없습니다. 관심 채널에서 선택해 주세요.':'인접채널 외 관심 채널이 없습니다. 관심 채널에서 선택해 주세요.');return;}
+    const index=adjacent?adjacentIndex++:otherIndex++;inject(pool[index%pool.length]);
+  }
+  $('inject-other').addEventListener('click',()=>injectDemo(false));
+  $('inject-adjacent').addEventListener('click',()=>injectDemo(true));
+  $('live-strip').addEventListener('click',event=>{if(event.target.closest('#more-alerts')){renderAlertsDialog(groupsFor(activeEvents()).other);showDialog('alerts-dialog');}});
+  $('adjacent-rows').addEventListener('click',event=>{const button=event.target.closest('[data-detail]');if(!button)return;detailChannel=byId.get(button.dataset.detail);detailProgramme=currentProgramme(detailChannel);renderDetail();showDialog('detail-dialog');});
+  function renderDetail(){
+    const channel=detailChannel,programme=detailProgramme,second=currentSecond(),next=candidateFor(channel,second);
+    const eligible=E.eligibleCandidates(channel.candidates,settings.threshold,startMinute,endMinute);
+    $('detail-body').innerHTML=`<div class="detail-channel">ch.${channel.number} · ${esc(channel.name)}</div><div class="detail-title">${esc(programme?.name||'방송정보 없음')}</div><div class="detail-time">방송시간 ${timeRange(programme)}</div><div class="candidate-list"><h3>현재 자사 방송 구간의 예상 재핑 · 10:30–11:30</h3><div class="candidate-tags">${eligible.length?eligible.map(c=>`<span class="${next?.minute===c.minute?'next':''} ${c.minute<Math.floor(second/60)?'past':''}">${E.formatTime(c.minute)}</span>`).join(''):`<span>${channel.candidates===null?'1주 전 기록 없음':'기준에 맞는 예상 없음'}</span>`}</div><p class="detail-explain">06.05(금)의 분 단위 기록 중 ${percent(settings.threshold)} 이하 시점을 표시합니다.<br>현재 분을 끝까지 표시하고 다음 분부터 다음 후보로 전환합니다.<br>예상 시점 도달은 실제 감지 알림을 발생시키지 않습니다.</p></div>`;
+  }
+  const settingsTabs=['channels','interest','alerts'];
+  function selectSettingsTab(name){settingsTab=name;for(const tab of settingsTabs){const selected=tab===name;$(tab+'-tab').setAttribute('aria-selected',String(selected));$(tab+'-tab').tabIndex=selected?0:-1;$(tab+'-panel').hidden=!selected;}}
+  for(const name of settingsTabs){$(name+'-tab').addEventListener('click',()=>selectSettingsTab(name));$(name+'-tab').addEventListener('keydown',event=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();const i=settingsTabs.indexOf(name),next=event.key==='Home'?settingsTabs[0]:event.key==='End'?settingsTabs[2]:settingsTabs[(i+(event.key==='ArrowRight'?1:2))%3];selectSettingsTab(next);$(next+'-tab').focus();}});}
+  function fillSettings(value){draftOrder=[...value.adjacent];$('channel-choices').innerHTML=channels.map(c=>`<label><input type="checkbox" value="${c.id}" ${value.adjacent.includes(c.id)?'checked':''}><span>${esc(c.name)}</span><small>ch.${c.number}</small></label>`).join('');$('interest-choices').innerHTML=channels.map(c=>`<label><input type="checkbox" value="${c.id}" aria-label="${esc(c.name)} 관심 채널" ${value.interest.includes(c.id)?'checked':''}><span>${esc(c.name)}</span><span class="choice-meta"><span class="neighbor-tag" data-interest-neighbor="${c.id}" ${value.adjacent.includes(c.id)?'':'hidden'}>인접</span><small>ch.${c.number}</small></span></label>`).join('');$('threshold').value=value.threshold;$('exposure').value=value.exposure;$('alerts-enabled').checked=value.alertsEnabled;validateDraft();}
+  function readDraft(){const checked=Array.from($('channel-choices').querySelectorAll('input:checked')).map(el=>el.value);const retained=draftOrder.filter(id=>checked.includes(id));return {adjacent:[...retained,...checked.filter(id=>!retained.includes(id))],threshold:$('threshold').value===''?NaN:Number($('threshold').value),exposure:$('exposure').value===''?NaN:Number($('exposure').value),interest:Array.from($('interest-choices').querySelectorAll('input:checked')).map(el=>el.value),alertsEnabled:$('alerts-enabled').checked};}
+  function validateDraft(){const draft=readDraft(),result=P.validate(draft,channels.map(c=>c.id),'gs-shop');$('selection-count').textContent=`${draft.adjacent.length} / 4개 선택`;$('interest-count').textContent=`${draft.interest.length}개 채널 선택`;$('interest-empty-note').hidden=draft.interest.length>0;$('interest-alarm-notice').hidden=draft.alertsEnabled;$('alarm-setting-summary').textContent=!draft.alertsEnabled?'적용하면 표시 중인 알람이 종료됩니다. 예상 시간은 계속 표시되며, 다시 켠 뒤 새로 감지된 재핑부터 알려드립니다.':draft.interest.length?`알람 ON · 선택한 관심 채널 ${draft.interest.length}개에서 실시간 재핑을 받습니다.`:'관심 채널이 없습니다. 관심 채널을 선택하면 실시간 재핑 알람을 받을 수 있습니다.';$('interest-choices').querySelectorAll('[data-interest-neighbor]').forEach(el=>el.hidden=!draft.adjacent.includes(el.dataset.interestNeighbor));$('settings-error').textContent=result.errors[0]||'';$('save-settings').disabled=!result.valid;return result.valid;}
+  function openSettings(tab){fillSettings(settings);selectSettingsTab(tab);showDialog('settings-dialog');}
+  $('open-settings').addEventListener('click',()=>openSettings('channels'));
+  $('open-alarm-settings').addEventListener('click',()=>openSettings('alerts'));
+  $('channel-choices').addEventListener('change',validateDraft);$('interest-choices').addEventListener('change',validateDraft);$('alerts-enabled').addEventListener('change',validateDraft);$('threshold').addEventListener('input',validateDraft);$('exposure').addEventListener('input',validateDraft);
+  $('interest-all').addEventListener('click',()=>{$('interest-choices').querySelectorAll('input').forEach(el=>el.checked=true);validateDraft();});
+  $('interest-clear').addEventListener('click',()=>{$('interest-choices').querySelectorAll('input').forEach(el=>el.checked=false);validateDraft();});
+  $('default-settings').addEventListener('click',()=>fillSettings(DEFAULTS));
+  $('save-settings').addEventListener('click',()=>{if(!validateDraft())return;const nextSettings=readDraft();events=P.retainAfterChange(events,nextSettings,'gs-shop');settings=nextSettings;$('live-announcement').textContent='';let persisted=true;try{localStorage.setItem(storageKey,JSON.stringify(settings));}catch{persisted=false;}closeDialog('settings-dialog');render();notify(persisted?'편성표 설정을 저장했습니다.':'설정을 적용했습니다. 이 브라우저에서는 새로고침 후 저장이 유지되지 않습니다.');});
+    render();setInterval(()=>{const active=activeEvents();if(Math.floor(currentSecond()/60)!==lastMinute||active.map(e=>e.id).join(',')!==lastSignature)render();else updateClock();},200);
+})();
+
 </script>
 </body>
 </html>
