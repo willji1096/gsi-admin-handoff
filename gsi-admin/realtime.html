@@ -153,18 +153,18 @@ dialog{border:1px solid #e5dfed;border-radius:15px;padding:0;box-shadow:0 22px 9
    이 화면은 assets/tokens.css(--brand·--ink)를 쓰므로 DS 변수명은 주석으로만: gray100 #F8F9FF · gray200 #D6DDE9 · gray300 #A7B1BF · gray400 #7A8490 · gray500 #58606A · gray600 #353A41 · black #1D1D1D · purple #6941FF · blue #5A64FF · sub-blue #E5EAFF · skyblue #5AACF5 · orange #FF8F6E */
 dialog{width:514px;border:0;border-radius:26px;background:#fff;color:#1D1D1D;box-shadow:0 20px 60px rgba(0,0,0,.18);letter-spacing:-.5px}   /* 490 r15 #e5dfed 보라 그림자 */
 dialog::backdrop{background:rgba(29,29,29,.4);backdrop-filter:blur(3px)}                                             /* #21134266 */
-.dialog-head{padding:36px 40px 20px;border-bottom:1px solid #D6DDE9}                                                 /* 22 24 17 · #e7e4ed */
+.dialog-head{padding:24px 24px 16px;border-bottom:1px solid #D6DDE9}                                                 /* 22 24 17 · #e7e4ed → 36/40(피그마 popup) → 24 (우리 카드 .card__head 24 · KT 원본 24. 40 은 확인창 규격이라 폼 팝업엔 과함) */
 .dialog-head h2{font-size:22px;line-height:1.4;font-weight:700;color:#353A41}                                          /* 17 */
 .dialog-close{width:34px;height:34px;border:0;border-radius:6px;background:#F8F9FF;color:#58606A}                    /* 27 #71677f */
 .dialog-close svg{width:20px;height:20px}
-.dialog-body{padding:24px 40px}                                                                                        /* 22 24 */
+.dialog-body{padding:24px}                                                                                             /* 22 24 → 24/40 → 24 (.card__body 24) */
 .dialog-body p{font-size:14px;line-height:1.4;color:#58606A;margin:0 0 16px}                                          /* 12/1.75 #7a7086 */
-.dialog-tabs{height:54px;padding:0 40px;gap:30px;border-bottom-color:#D6DDE9}                                          /* pad 24 gap 22 */
+.dialog-tabs{height:54px;padding:0 24px;gap:30px;border-bottom-color:#D6DDE9}                                          /* pad 24 gap 22 → .dtabs 24/gap30 */
 .dialog-tabs button{padding:0;font-size:16px;line-height:1.4;color:#7A8490;border-bottom:0;position:relative}          /* 12 #8b8198 */
 .dialog-tabs button[aria-selected=true]{color:#1D1D1D;font-weight:700;border-color:transparent}                        /* #5c43d7 */
 .dialog-tabs button[aria-selected=true]:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:#1D1D1D}
 .selection-count{font-size:13px;color:#58606A;margin-bottom:12px}                                                     /* 11 #79618f */
-.channel-choice{gap:8px;margin-bottom:12px}
+.channel-choice{gap:8px;margin-bottom:0}                                                                              /* mb14 → 12 → 0 (본문 패딩 24 와 중복) */
 .channel-choice label{padding:12px 14px;border:1px solid #D6DDE9;border-radius:12px;font-size:14px;font-weight:600;color:#353A41;gap:10px}  /* 11 r7 12/400 #e8e1ef */
 .channel-choice label:has(input:checked){border-color:#5A64FF;background:color-mix(in srgb,#5A64FF 10%,#fff)}          /* #b5a2f6 #f5f1ff */
 .channel-choice small{font-size:12px;font-weight:400;color:#7A8490}                                                    /* 10 #8b7f97 */
@@ -188,14 +188,16 @@ dialog::backdrop{background:rgba(29,29,29,.4);backdrop-filter:blur(3px)}        
 .alarm-switch input:focus-visible+.switch-track{outline-color:#6941FF}
 .alarm-setting-summary{font-size:13px;line-height:1.4;color:#58606A;margin:0 0 20px}                                  /* 11 #897997 */
 .setting-field{margin:0 0 20px}
+.setting-field:last-of-type{margin-bottom:0}                                                                          /* 마지막 필드 20 + 본문 패딩 24 중복 제거 */
 .dialog-body .setting-field strong{font-size:16px;font-weight:700;color:#1D1D1D;margin-bottom:8px}                    /* 12/650 */
 .setting-input{font-size:14px;color:#1D1D1D;gap:8px}                                                                   /* 12 */
 .setting-input input{width:90px;height:48px;padding:0 16px;border:1px solid transparent;border-radius:8px;background:#F8F9FF;color:#1D1D1D;font-size:14px}  /* r6 pad10 #d8d0e2 */
 .setting-input input:hover{border-color:#A7B1BF}
 .setting-input input:focus-visible{outline:0;border-color:#6941FF}
 .dialog-body .setting-field small{font-size:12px;line-height:1.4;color:#58606A;margin-top:6px}                        /* 10 #84788d */
-.validation{font-size:12px;font-weight:600;line-height:1.4;color:#FF8F6E}                                              /* 11 #9f4434 */
-.dialog-foot{padding:20px 40px 36px;border-top:1px solid #D6DDE9;background:#fff}                                      /* 16 24 #fcfbfd */
+.validation{font-size:12px;font-weight:600;line-height:1.4;color:#FF8F6E;min-height:0}                                 /* 11 #9f4434 · min-h18 → 0 (오류 있을 때만 자리) */
+.validation:not(:empty){margin-top:8px}
+.dialog-foot{padding:24px;border-top:1px solid #D6DDE9;background:#fff}                                      /* 16 24 #fcfbfd → 20/40/36 → 20/32/28 */
 .dialog-foot .actions{gap:8px}
 .dialog-foot button{height:48px;padding:0 24px;border-radius:8px;font-size:16px;line-height:1.4;background:#E5EAFF;color:#58606A}  /* 12 r6 pad9/14 #f0ecf7 */
 .dialog-foot .save{background:#6941FF;color:#fff;font-weight:700}                                                      /* #6246df */
@@ -217,7 +219,9 @@ dialog::backdrop{background:rgba(29,29,29,.4);backdrop-filter:blur(3px)}        
 .alert-history-item b{font-size:14px;color:#353A41}                                                                    /* 12 #ab6926 */
 .toast{background:#1D1D1D;font-size:12px;line-height:1.4;letter-spacing:-.5px;padding:12px 16px;border-radius:8px;box-shadow:0 6px 28px rgba(0,0,0,.16)}  /* #362a4b 12/18 (DS Tooltip 문법) */
 dialog :focus-visible{outline-color:#6941FF}                                                                          /* #28c49d 민트 포커스 → 브랜드 보라 */
-dialog:not(:has(.dialog-foot)) .dialog-body{padding-bottom:36px}                                                       /* 푸터 없는 상세·알림 팝업은 아래 여백을 위(36)와 맞춤 */
+dialog:not(:has(.dialog-foot)) .dialog-body{padding-bottom:24px}                                                       /* 푸터 없는 상세·알림 팝업은 아래 여백을 위(36)와 맞춤 */
+.dialog-body p:last-child{margin-bottom:0}                                                                             /* 상세 팝업 설명문 16 + 본문 패딩 28 중복 제거 */
+.alert-history-item:last-child{border-bottom:0;padding-bottom:0}                                                      /* 마지막 행 12 + 본문 패딩 28 중복 제거 */
 .demo-toolbar{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);margin:0;z-index:20;background:#fff;border:1px solid #ddd8e7;border-radius:12px;padding:10px 16px;box-shadow:0 8px 32px #21124226;color:var(--kz-ink)}
 }
 </style>
