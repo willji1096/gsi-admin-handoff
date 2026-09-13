@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%236941FF'/%3E%3Ctext x='16' y='23' font-size='19' font-family='Helvetica,Arial' font-weight='700' fill='%23fff' text-anchor='middle'%3EG%3C/text%3E%3C/svg%3E">
+<title>채널배치 시뮬레이터 — G Shopping Insight 어드민</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<!-- 색·글꼴 토큰 한 장만 gsi-admin 과 공유(부품 규격). 셸·화면 스타일은 이 사이트 전용 cp.css -->
+<link rel="stylesheet" href="../gsi-admin/tokens.css">
+<link rel="stylesheet" href="cp.css">
+</head>
+<body>
+
+<!-- ── 사이드바 — KT 내부 관리자 어드민 전용 셸(기획자 초안의 좌측 메뉴 구조 유지). 클라이언트 어드민(gsi-admin)과는 별개 사이트 ── -->
+<aside class="sidebar" aria-label="관리자 메뉴">
+  <div class="sidebar__logo"><span class="sidebar__mark">G</span><span class="sidebar__brand"><b>SHOPPING INSIGHT</b><small>관리자 ADMIN</small></span></div>
+  <nav class="sidebar__nav">
+    <a class="sidebar__item" href="#"><i data-ic="home"></i><span>실시간 현황</span></a>
+    <a class="sidebar__item" href="#"><i data-ic="activity"></i><span>시청행태 분석</span></a>
+    <a class="sidebar__item" href="#"><i data-ic="pulse"></i><span>시청반응 분석</span></a>
+    <a class="sidebar__item" href="#"><i data-ic="users"></i><span>고객군 분석</span></a>
+    <a class="sidebar__item" href="#"><i data-ic="calendar"></i><span>편성</span></a>
+    <a class="sidebar__item" href="#"><i data-ic="settings"></i><span>시스템 관리</span></a>
+    <a class="sidebar__item" href="#"><i data-ic="cpu"></i><span>AI모델 관리</span></a>
+    <a class="sidebar__item" href="#"><i data-ic="chart"></i><span>통계</span></a>
+    <a class="sidebar__item is-active" href="#"><i data-ic="swap"></i><span>채널배치</span></a>
+  </nav>
+  <div class="sidebar__foot">
+    <a class="sidebar__item" href="#"><i data-ic="book"></i><span>관리자 가이드</span></a>
+    <a class="sidebar__item" href="#"><i data-ic="logout"></i><span>로그아웃</span></a>
+  </div>
+</aside>
+
+<div class="shell">
+<!-- ── 상단 바 — 현재 메뉴 · 기준일자 · 데이터 상태 · 실행 이력 · 관리자 계정 ── -->
+<header class="topbar">
+  <div class="topbar__left"><b>채널배치</b><span class="topbar__crumb">채널 가치 평가 및 배치 시뮬레이션</span></div>
+  <div class="topbar__right">
+    <label class="pill pill--date" for="baseDate">
+      <i data-ic="calendar"></i>
+      <span class="pill__lbl">기준일자</span>
+      <input class="input input--date" id="baseDate" type="date" value="2026-08-19" aria-label="시뮬레이션 기준일자">
+    </label>
+    <span class="status" id="dataStatus"><i class="status__dot"></i>기준 데이터 정상</span>
+    <button class="btn btn--sm" id="historyBtn" type="button"><i data-ic="history"></i>실행 이력 <span class="badge" id="historyBadge">0</span></button>
+    <span class="topbar__user"><span class="avatar">A</span><span><b>시스템 관리자</b><small>Admin</small></span></span>
+  </div>
+</header>
+
+<!-- ── 페이지 헤더 — 타이틀 · 설명 · 3단계 스테퍼 ── -->
+<div class="page-top">
+  <div class="page-top__main">
+    <h1>채널배치 시뮬레이터</h1>
+    <p class="page-desc">현재 채널 배치의 가치를 확인하고, 채널 교환·신규 채널 추가 시나리오의 변경 전후 예상 성과를 비교합니다.</p>
+  </div>
+  <nav class="stepper" aria-label="시뮬레이션 단계">
+    <button class="step is-active" data-step="current" type="button"><span class="step__num">1</span><span class="step__txt"><b>현재 채널 가치</b><small>라인업 조회 · 채널 선택</small></span></button>
+    <i class="step__line"></i>
+    <button class="step" data-step="scenario" type="button"><span class="step__num">2</span><span class="step__txt"><b>배치 변경 설계</b><small>교환 · 신규 채널 추가</small></span></button>
+    <i class="step__line"></i>
+    <button class="step" data-step="results" type="button"><span class="step__num">3</span><span class="step__txt"><b>변경 전후 결과</b><small>Lift · 신뢰구간 · CSV</small></span></button>
+  </nav>
+</div>
+
+<main class="page-wrap">
+
+<!-- ════════ ① 현재 채널 가치 ════════ -->
+<section class="panel is-active" id="currentPanel">
+
+  <!-- 진입 안내 — 이전 실행 없음: 초기 안내 / 있음: 최근 완료 결과 -->
+  <div class="notice" id="entryNotice" hidden></div>
+
+  <div class="kpis" id="kpiRow"></div>
+
+  <div class="layout">
+    <section class="card">
+      <div class="card__head">
+        <h2>채널 라인업</h2>
+        <span class="sub" id="totalChannelLabel">전체 채널 불러오는 중</span>
+        <div class="right">
+          <button class="btn btn--sm btn--ghost" id="resetAllBtn" type="button"><i data-ic="reset"></i>초기화</button>
+          <button class="btn btn--sm btn--primary" id="startScenarioBtn" type="button">시나리오 만들기<i data-ic="arrow-right"></i></button>
+        </div>
+      </div>
+      <div class="toolbar">
+        <label class="search"><i data-ic="search"></i><input class="input" id="channelSearch" placeholder="채널명 · 번호 검색" aria-label="채널 검색"></label>
+        <select class="select" id="genreFilter" aria-label="장르 필터"><option value="all">전체 장르</option></select>
+        <select class="select" id="sortOrder" aria-label="채널 정렬">
+          <option value="channel">채널번호순</option>
+          <option value="scoreDesc">종합지수 최대값순</option>
+          <option value="scoreAsc">종합지수 최소값순</option>
+        </select>
+        <div class="toolbar__right">
+          <div class="pager" data-scope="current" aria-label="현재 채널 구간">
+            <button class="pager__btn" data-dir="-1" type="button" aria-label="이전 100개"><i data-ic="chev-left"></i></button>
+            <select class="select select--pager" aria-label="채널 구간 선택"></select>
+            <button class="pager__btn" data-dir="1" type="button" aria-label="다음 100개"><i data-ic="chev-right"></i></button>
+          </div>
+          <div class="seg" data-view-scope="current" role="tablist">
+            <button class="is-on" data-view="grid" type="button"><i data-ic="grid"></i>10×10</button>
+            <button data-view="table" type="button"><i data-ic="list"></i>테이블</button>
+          </div>
+        </div>
+      </div>
+      <div class="card__body card__body--list">
+        <div class="grid-wrap" data-view-panel="current:grid"><div class="channel-grid" id="channelGrid"></div></div>
+        <div class="table-wrap" data-view-panel="current:table" hidden><table class="table"><thead></thead><tbody id="channelTable"></tbody></table></div>
+      </div>
+    </section>
+    <aside class="card side" id="channelDetail"></aside>
+  </div>
+</section>
+
+<!-- ════════ ② 배치 변경 설계 ════════ -->
+<section class="panel" id="scenarioPanel">
+  <div class="scenario-layout">
+
+    <!-- 변경 조건 -->
+    <section class="card builder">
+      <div class="card__head">
+        <h2>변경 조건</h2>
+        <span class="tag" id="mixTag">교환 0 · 신규 0</span>
+      </div>
+      <div class="card__body">
+        <div class="mode-tabs" role="tablist">
+          <button class="mode-tab is-on" data-mode="swap" type="button"><i data-ic="swap"></i><b>채널 교환</b><small>최대 5건 누적</small></button>
+          <button class="mode-tab" data-mode="new" type="button"><i data-ic="plus"></i><b>신규 채널 추가</b><small>교환안과 함께 누적</small></button>
+        </div>
+        <p class="hint">교환과 신규 추가는 한 시나리오에 함께 반영됩니다. 교환을 적용한 뒤 신규 채널을 추가하거나, 그 반대도 가능합니다.</p>
+
+        <!-- 교환 -->
+        <div class="fields" id="swapFields">
+          <div class="flow" id="swapFlow">
+            <div class="flow__head"><span>교환 진행</span><b id="swapFlowCount">0/5건</b></div>
+            <ol class="flow__steps">
+              <li class="flow__step" id="flowTarget"><i>1</i><div><b>첫 채널</b><span id="flowTargetName">선택하세요</span></div></li>
+              <li class="flow__step" id="flowCounterpart"><i>2</i><div><b>맞바꿀 채널</b><span id="flowCounterpartName">대기</span></div></li>
+              <li class="flow__step" id="flowApply"><i>3</i><div><b>자동 반영</b><span id="flowApplyState">선택 즉시</span></div></li>
+            </ol>
+          </div>
+          <label class="field"><span>첫 채널</span><select class="select" id="targetChannelSelect"></select></label>
+          <label class="field"><span>맞바꿀 채널</span><select class="select" id="swapChannel"></select></label>
+          <p class="hint hint--em" id="selectionGuide">맞바꿀 채널을 선택하면 별도 버튼 없이 즉시 임시 라인업에 반영됩니다. 오른쪽 라인업에서 채널을 눌러도 됩니다.</p>
+        </div>
+
+        <!-- 신규 채널 -->
+        <div class="fields" id="newFields" hidden>
+          <label class="field"><span>신규 채널명</span><input class="input" id="newName" placeholder="예: ENA PLUS"></label>
+          <label class="field"><span>장르</span><select class="select" id="newGenre"></select></label>
+          <label class="field"><span>신규 채널 번호</span><input class="input" id="newPosition" type="number" min="0" max="999" placeholder="0 ~ 999"></label>
+          <label class="field"><span>가장 유사한 기준 채널</span><select class="select" id="similarChannel"></select></label>
+          <p class="hint">빈 번호는 그대로 추가되고, 이미 사용 중인 번호를 입력하면 그 위치부터 이후 채널이 한 칸씩 뒤로 이동합니다. 신규 채널의 지표는 기준 채널을 바탕으로 추정합니다.</p>
+          <button class="btn btn--primary btn--block" id="applyBtn" type="button"><i data-ic="plus"></i>신규 채널 추가</button>
+        </div>
+      </div>
+
+      <!-- 누적된 변경안 -->
+      <div class="card__head card__head--sub">
+        <h3>변경안</h3>
+        <span class="sub" id="changeMeta">아직 변경이 없습니다</span>
+      </div>
+      <div class="card__body">
+        <div class="changes" id="changeList"><div class="changes__empty">오른쪽 라인업에서 첫 채널을 선택하면 여기에 쌓입니다.</div></div>
+      </div>
+      <div class="card__foot">
+        <button class="btn btn--sm btn--ghost" id="clearScenarioBtn" type="button"><i data-ic="trash"></i>전체 변경 취소</button>
+        <button class="btn btn--sm btn--primary" id="runBtn" type="button" disabled><i data-ic="play"></i>시뮬레이션 실행</button>
+      </div>
+    </section>
+
+    <!-- 라인업 보드 -->
+    <section class="card board">
+      <div class="card__head">
+        <h2>현재 / 변경 후 라인업</h2>
+        <span class="sub" id="scenarioChannelCount">전체 채널</span>
+        <div class="right">
+          <button class="btn btn--sm btn--ghost" id="backToCurrentBtn" type="button"><i data-ic="arrow-left"></i>현재 배치</button>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="legend">
+          <span class="legend__item"><span class="pair-palette"><i></i><i></i><i></i><i></i><i></i></span>교환 1~5</span>
+          <span class="legend__item"><i class="legend__line"></i>첫 채널</span>
+          <span class="legend__item"><i class="legend__line legend__line--dash"></i>맞바꿀 채널</span>
+          <span class="legend__item"><i class="legend__swatch"></i>신규 · 이동</span>
+        </div>
+        <div class="toolbar__right">
+          <div class="pager" data-scope="scenario" aria-label="변경 후 채널 구간">
+            <button class="pager__btn" data-dir="-1" type="button" aria-label="이전 100개"><i data-ic="chev-left"></i></button>
+            <select class="select select--pager" aria-label="채널 구간 선택"></select>
+            <button class="pager__btn" data-dir="1" type="button" aria-label="다음 100개"><i data-ic="chev-right"></i></button>
+          </div>
+          <div class="seg" data-view-scope="scenario" role="tablist">
+            <button class="is-on" data-view="grid" type="button"><i data-ic="grid"></i>10×10</button>
+            <button data-view="table" type="button"><i data-ic="list"></i>테이블</button>
+          </div>
+        </div>
+      </div>
+      <div class="card__body card__body--list">
+        <div class="grid-wrap" data-view-panel="scenario:grid"><div class="channel-grid" id="scenarioGrid"></div></div>
+        <div class="table-wrap" data-view-panel="scenario:table" hidden><table class="table"><thead></thead><tbody id="scenarioTable"></tbody></table></div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<!-- ════════ ③ 변경 전후 결과 ════════ -->
+<section class="panel" id="resultsPanel">
+
+  <div class="card empty" id="noResults">
+    <i data-ic="chart"></i>
+    <strong>시뮬레이션 결과가 없습니다</strong>
+    <span>배치 변경 시나리오를 만든 뒤 시뮬레이션을 실행하세요.</span>
+    <button class="btn btn--primary" id="emptyToScenarioBtn" type="button">시나리오 만들기</button>
+  </div>
+
+  <div id="resultsContent" hidden>
+    <div class="results-head">
+      <div class="results-head__txt"><b id="resultTitle">시나리오 결과</b><span id="resultMeta"></span></div>
+      <div class="results-head__actions">
+        <button class="btn btn--sm btn--ghost" id="editScenarioBtn" type="button"><i data-ic="arrow-left"></i>시나리오 수정</button>
+        <button class="btn btn--sm btn--primary" id="downloadBtn" type="button"><i data-ic="download"></i>결과 내보내기 (CSV)</button>
+      </div>
+    </div>
+
+    <div class="results-top">
+      <div class="card hero">
+        <div class="kpi__lbl">전체 라인업 종합지수 예상 Lift <span class="tag tag--soft">MODEL v0.9</span></div>
+        <div class="hero__val" id="totalLift">+0.0%</div>
+        <div class="hero__ci" id="totalCi">95% 신뢰구간 —</div>
+      </div>
+      <div class="card kpi"><div class="kpi__lbl">개선 예상 채널</div><div class="kpi__val is-up" id="improvedCount">0개</div><div class="kpi__cap">Lift 0% 초과</div></div>
+      <div class="card kpi"><div class="kpi__lbl">하락 예상 채널</div><div class="kpi__val is-down" id="declinedCount">0개</div><div class="kpi__cap">Lift 0% 미만</div></div>
+      <div class="card kpi"><div class="kpi__lbl">판단 신뢰도</div><div class="kpi__val" id="confidenceLevel">중간</div><div class="kpi__cap">이벤트 유사도 · 표본량 종합</div></div>
+    </div>
+
+    <!-- 이벤트 전/후 추이 비교 — 변경 적용 시점을 이벤트로 두고 AS-IS 실측선과 TO-BE 예측선을 겹친다 -->
+    <section class="card">
+      <div class="card__head">
+        <h2>이벤트 전/후 추이 비교</h2>
+        <span class="sub">이벤트 = 채널 변경 적용 시점 · AS-IS 실측 · TO-BE 모델 예측</span>
+        <div class="right">
+          <select class="select select--sm" id="trendMetric" aria-label="추이 지표"></select>
+          <div class="seg seg--sm" id="trendPeriod" role="tablist">
+            <button class="is-on" data-days="7" type="button">일주일</button>
+            <button data-days="30" type="button">한 달</button>
+            <button data-days="90" type="button">90일</button>
+          </div>
+        </div>
+      </div>
+      <div class="card__body">
+        <div class="trend" id="trendChart"></div>
+      </div>
+    </section>
+
+    <div class="results-grid">
+      <section class="card">
+        <div class="card__head"><h2>전체 지표 변화</h2><span class="sub">회색 = 변경 전 · 보라 = 변경 후 예상 · 95% CI</span></div>
+        <div class="card__body"><div class="compare" id="compareBars"></div></div>
+      </section>
+      <section class="card">
+        <div class="card__head"><h2>채널별 변화</h2><span class="sub">직접 변경 · 인접 영향</span><span class="tag right" id="changeCountTag">0개 영향</span></div>
+        <div class="card__body"><div class="impact" id="impactList"></div></div>
+      </section>
+    </div>
+
+    <p class="note"><b>해석 기준</b> Lift는 과거 시청 행태와 채널 속성을 기반으로 산출한 의사결정 지원용 예상치입니다. 신뢰구간이 0을 포함하면 상승·하락 방향이 확정적이지 않으므로 실제 편성·계약 조건과 함께 검토합니다. 모델 입력 Feature는 화면에 고정하지 않고 관리 설정에 따라 확장합니다.</p>
+
+    <section class="card">
+      <div class="card__head">
+        <h2>전체 채널 결과</h2>
+        <span class="sub" id="resultsChannelCount">전체 채널</span>
+      </div>
+      <div class="toolbar">
+        <div class="legend">
+          <span class="legend__item"><span class="pair-palette"><i></i><i></i><i></i><i></i><i></i></span>교환 1~5</span>
+          <span class="legend__item"><i class="legend__swatch"></i>신규 · 이동</span>
+        </div>
+        <div class="toolbar__right">
+          <div class="pager" data-scope="results" aria-label="결과 채널 구간">
+            <button class="pager__btn" data-dir="-1" type="button" aria-label="이전 100개"><i data-ic="chev-left"></i></button>
+            <select class="select select--pager" aria-label="채널 구간 선택"></select>
+            <button class="pager__btn" data-dir="1" type="button" aria-label="다음 100개"><i data-ic="chev-right"></i></button>
+          </div>
+          <div class="seg" data-view-scope="results" role="tablist">
+            <button class="is-on" data-view="grid" type="button"><i data-ic="grid"></i>10×10</button>
+            <button data-view="table" type="button"><i data-ic="list"></i>테이블</button>
+          </div>
+        </div>
+      </div>
+      <div class="card__body card__body--list">
+        <div class="grid-wrap" data-view-panel="results:grid"><div class="channel-grid" id="resultsGrid"></div></div>
+        <div class="table-wrap" data-view-panel="results:table" hidden><table class="table"><thead></thead><tbody id="resultsTable"></tbody></table></div>
+      </div>
+    </section>
+  </div>
+</section>
+
+</main>
+</div><!-- /.shell -->
+
+<!-- ── 실행 진행 상태 팝업 — 요청 접수 → 데이터 준비 → 모델 연산 → 결과 저장 / 실패·타임아웃 ── -->
+<div class="modal-backdrop" id="runModal" role="dialog" aria-modal="true" aria-labelledby="runTitle" hidden>
+  <div class="modal modal--run">
+    <div class="run" id="runProgress">
+      <i class="run__spin" data-ic="loader"></i>
+      <h2 id="runTitle">시뮬레이션 연산 중</h2>
+      <p class="run__desc">기준일자 <b id="runBaseDate"></b> 채널 메타데이터로 모델을 실행합니다. 연산 위치와 데이터 양에 따라 시간이 걸릴 수 있습니다.</p>
+      <ol class="run__stages" id="runStages">
+        <li data-stage="0"><i></i>요청 접수</li>
+        <li data-stage="1"><i></i>기준일자 데이터 준비</li>
+        <li data-stage="2"><i></i>모델 연산</li>
+        <li data-stage="3"><i></i>결과 저장</li>
+      </ol>
+      <div class="run__bar"><i id="runBar"></i></div>
+      <p class="run__meta"><span id="runElapsed">0초</span> 경과 · 화면을 벗어나도 연산은 계속되며, 다시 들어오면 진행 상태를 확인할 수 있습니다.</p>
+    </div>
+    <div class="run run--fail" id="runFail" hidden>
+      <i class="run__alert" data-ic="alert"></i>
+      <h2>시뮬레이션에 실패했습니다</h2>
+      <p class="run__desc" id="runFailDesc">모델 서버 응답이 제한 시간을 넘겼습니다. 시나리오는 그대로 유지됩니다. 잠시 후 다시 실행하거나 시나리오를 수정하세요.</p>
+      <div class="modal__foot">
+        <button class="btn" id="runFailEditBtn" type="button">시나리오 수정</button>
+        <button class="btn btn--primary" id="runRetryBtn" type="button"><i data-ic="reset"></i>다시 실행</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 실행 이력 팝업 ── -->
+<div class="modal-backdrop" id="historyModal" role="dialog" aria-modal="true" aria-labelledby="historyTitle" hidden>
+  <div class="modal modal--history">
+    <div class="modal__head">
+      <div><h2 id="historyTitle">실행 이력</h2><p class="sub">이 브라우저에서 만든 변경안과 실행 결과입니다. 완료된 실행은 결과를 다시 열거나 CSV로 내려받을 수 있습니다.</p></div>
+      <button class="iconbtn" id="historyCloseBtn" type="button" aria-label="닫기"><i data-ic="x"></i></button>
+    </div>
+    <div class="history" id="historyList"></div>
+    <div class="modal__foot"><button class="btn btn--primary" id="historyOkBtn" type="button">확인</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="channels.js"></script>
+<script src="cp.js"></script>
+</body>
+</html>

@@ -155,8 +155,9 @@ dialog{width:514px;border:0;border-radius:26px;background:#fff;color:#1D1D1D;box
 dialog::backdrop{background:rgba(29,29,29,.4);backdrop-filter:blur(3px)}                                             /* #21134266 */
 .dialog-head{padding:24px 24px 16px;border-bottom:1px solid #D6DDE9}                                                 /* 22 24 17 · #e7e4ed → 36/40(피그마 popup) → 24 (우리 카드 .card__head 24 · KT 원본 24. 40 은 확인창 규격이라 폼 팝업엔 과함) */
 .dialog-head h2{font-size:22px;line-height:1.4;font-weight:700;color:#353A41}                                          /* 17 */
-.dialog-close{width:34px;height:34px;border:0;border-radius:6px;background:#F8F9FF;color:#58606A}                    /* 27 #71677f */
-.dialog-close svg{width:20px;height:20px}
+.dialog-close{width:34px;height:34px;border:0;border-radius:6px;background:transparent;color:#58606A}                /* 26-09-10 피그마 대조: 원본 X 아이콘(ic_close 24×24)은 배경 사각형 없이 아이콘만 — 배경 걷어냄. (옛 값) background #F8F9FF · KT 번들 27×27 흰 배경+#e8e1ee 테두리 #71677f */
+.dialog-close:hover{background:#F8F9FF}                                                                              /* 눌림 자리만 남기고 평상시엔 아이콘만 보이게 */
+.dialog-close svg{width:24px;height:24px}                                                                            /* 26-09-10 피그마 ic_close 24×24: (옛 값) 20 */
 .dialog-body{padding:24px}                                                                                             /* 22 24 → 24/40 → 24 (.card__body 24) */
 .dialog-body p{font-size:14px;line-height:1.4;color:#58606A;margin:0 0 16px}                                          /* 12/1.75 #7a7086 */
 .dialog-tabs{height:54px;padding:0 24px;gap:30px;border-bottom-color:#D6DDE9}                                          /* pad 24 gap 22 → .dtabs 24/gap30 */
@@ -166,7 +167,7 @@ dialog::backdrop{background:rgba(29,29,29,.4);backdrop-filter:blur(3px)}        
 .selection-count{font-size:13px;color:#58606A;margin-bottom:12px}                                                     /* 11 #79618f */
 .channel-choice{gap:8px;margin-bottom:0}                                                                              /* mb14 → 12 → 0 (본문 패딩 24 와 중복) */
 .channel-choice label{padding:12px 14px;border:1px solid #D6DDE9;border-radius:12px;font-size:14px;font-weight:600;color:#353A41;gap:10px}  /* 11 r7 12/400 #e8e1ef */
-.channel-choice label:has(input:checked){border-color:#5A64FF;background:color-mix(in srgb,#5A64FF 10%,#fff)}          /* #b5a2f6 #f5f1ff */
+.channel-choice label:has(input:checked){border-color:#6941FF;background:color-mix(in srgb,#6941FF 10%,#fff)}          /* 26-09-14 팝업 안 '선택됨' 액센트를 purple 로 통일: (옛 값) #5A64FF — 체크박스 skyblue 는 피그마 ic_check_on 원본이라 그대로 / #b5a2f6 #f5f1ff */
 .channel-choice small{font-size:12px;font-weight:400;color:#7A8490}                                                    /* 10 #8b7f97 */
 .channel-choice input{appearance:none;width:20px;height:20px;margin:0;border-radius:4px;background:#D6DDE9;flex:none;cursor:pointer}  /* 네이티브 체크 → DS ic_check 20 r4 */
 .channel-choice input:checked{background:#5AACF5 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 10.5l3.2 3.2L15 7'/%3E%3C/svg%3E") center/16px no-repeat}
@@ -181,19 +182,37 @@ dialog::backdrop{background:rgba(29,29,29,.4);backdrop-filter:blur(3px)}        
 .settings-switch-copy strong{font-size:16px;font-weight:700;color:#353A41;margin-bottom:4px}                          /* 13 */
 .settings-switch-copy small{font-size:12px;line-height:1.4;color:#58606A}                                              /* 11 #8b789e */
 .alarm-switch{width:34px;height:20px}                                                                                  /* 64×30 → DS ic_toggle 34×20 (ON/OFF 글자는 아래 요약문이 대신) */
-.switch-track{width:34px;height:16px;margin-top:2px;border-radius:14px;background:#D6DDE9;font-size:0;padding:0;box-shadow:none}
-.switch-track:before{left:0;top:-2px;width:20px;height:20px;box-shadow:0 1px 2px rgba(0,0,0,.08),0 0 1px rgba(0,0,0,.24)}
-.alarm-switch input:checked+.switch-track{background:#6941FF}                                                          /* #7051de */
-.alarm-switch input:checked+.switch-track:before{transform:translateX(14px)}                                           /* 34 */
+.alarm-switch input{inset:-12px;width:auto;height:auto}                                                              /* 26-09-13 보이는 토글은 34×20 그대로, 실제 클릭 영역만 58×44 로 넓힌다(세로 20 은 최소 32 미달): (옛 값) inset 0 · 100%×100% */
+.switch-track{width:34px;height:16px;margin-top:2px;border-radius:14px;background:#9EA7B3;font-size:0;padding:0;box-shadow:none}          /* OFF 트랙 — 피그마 ic_toggle_on 1:49556 실측: (옛 값) #D6DDE9 (노브 색을 트랙에 잘못 쓴 것) */
+.switch-track:before{left:0;top:-2px;width:20px;height:20px;background:#D6DDE9;box-shadow:0 1px 2px rgba(0,0,0,.08),0 0 1px rgba(0,0,0,.24)}  /* OFF 노브 — 원본은 흰색이 아니다: (옛 값) white */
+.alarm-switch input:checked+.switch-track{background:#D3C7FF}                                                          /* ON 트랙 — 원본은 연보라: (옛 값) #6941FF → 그 전 #7051de */
+.alarm-switch input:checked+.switch-track:before{transform:translateX(14px);background:#6941FF}                        /* ON 노브 — 보라는 트랙이 아니라 노브에 온다: (옛 값) 배경 지정 없음(=white) · 이동 34 */
 .alarm-switch input:focus-visible+.switch-track{outline-color:#6941FF}
-.alarm-setting-summary{font-size:13px;line-height:1.4;color:#58606A;margin:0 0 20px}                                  /* 11 #897997 */
+.alarm-setting-summary{font-size:12px;line-height:1.4;color:#58606A;margin:0 0 20px;padding-left:17px}              /* 11 #897997 · 26-09-13 설명문 크기 통일(팝업 안 유일한 13px 이었다): (옛 값) 13px / 들여쓰기 17 = 위 카드의 안쪽 여백 16 + 테두리 1 — 카드 안 글자와 왼쪽을 맞춘다: (옛 값) padding-left 없음 */
 .setting-field{margin:0 0 20px}
-.setting-field:last-of-type{margin-bottom:0}                                                                          /* 마지막 필드 20 + 본문 패딩 24 중복 제거 */
+.setting-field:last-of-type{margin-bottom:0}
+/* 26-09-14 KT 메일 이미지의 「홈쇼핑」·「일반채널」 블록 — 지난주 토글 카드(.settings-switch-row)와 같은 테두리·라운드를 쓴다 */
+.alarm-section-title{font-size:16px;font-weight:700;color:#353A41;margin:20px 0 8px}
+#alerts-panel .alarm-setting-summary{padding-left:0;margin-bottom:12px}  /* 26-09-14 두 블록 위 설명줄 — 블록 카드와 왼쪽을 맞춘다: (옛 값) padding-left 17 */
+.alarm-group{padding:16px;border-radius:12px;background:#fff;border:1px solid #D6DDE9;margin-bottom:12px}
+.alarm-group-head{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px}
+.alarm-group-head strong{font-size:16px;font-weight:700;color:#6941FF}
+.alarm-group .setting-field:last-child{margin-bottom:0}
+#alerts-panel .setting-field{margin-bottom:20px}                                                                       /* 26-09-14 등락률만 <div> 라 :last-of-type 에 걸려 아래 여백이 죽었다 */
+#alerts-panel .setting-field:last-child{margin-bottom:0}                                                                          /* 마지막 필드 20 + 본문 패딩 24 중복 제거 */
 .dialog-body .setting-field strong{font-size:16px;font-weight:700;color:#1D1D1D;margin-bottom:8px}                    /* 12/650 */
 .setting-input{font-size:14px;color:#1D1D1D;gap:8px}                                                                   /* 12 */
 .setting-input input{width:90px;height:48px;padding:0 16px;border:1px solid transparent;border-radius:8px;background:#F8F9FF;color:#1D1D1D;font-size:14px}  /* r6 pad10 #d8d0e2 */
 .setting-input input:hover{border-color:#A7B1BF}
 .setting-input input:focus-visible{outline:0;border-color:#6941FF}
+/* 26-09-14 알람주기 드롭다운 · 등락률 라디오 (피그마 ic_radio_on 1:49563 = 18×18, 링 #A7B1BF / 선택 #6941FF, 중앙 채움 27.78% inset) */
+.setting-input select{height:48px;padding:0 34px 0 16px;border:1px solid transparent;border-radius:8px;background:#F8F9FF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2358606A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E") right 12px center/16px no-repeat;color:#1D1D1D;font-size:14px;appearance:none;cursor:pointer;min-width:104px}
+.setting-input select:hover{border-color:#A7B1BF}
+.setting-input select:focus-visible{outline:0;border-color:#6941FF}
+.rate-radio{display:inline-flex;align-items:center;gap:8px;margin-right:16px;font-size:14px;color:#1D1D1D;cursor:pointer}
+.rate-radio input{appearance:none;box-sizing:border-box;flex:0 0 18px;width:18px;height:18px;min-width:0;margin:0;padding:0;border-radius:50%;border:1.5px solid #A7B1BF;background:#fff;cursor:pointer}
+.rate-radio input:checked{border-color:#6941FF;background:radial-gradient(circle,#6941FF 0 4px,#fff 4px)}
+.rate-radio input:focus-visible{outline:2px solid #6941FF;outline-offset:2px}
 .dialog-body .setting-field small{font-size:12px;line-height:1.4;color:#58606A;margin-top:6px}                        /* 10 #84788d */
 .validation{font-size:12px;font-weight:600;line-height:1.4;color:#FF8F6E;min-height:0}                                 /* 11 #9f4434 · min-h18 → 0 (오류 있을 때만 자리) */
 .validation:not(:empty){margin-top:8px}
@@ -202,7 +221,7 @@ dialog::backdrop{background:rgba(29,29,29,.4);backdrop-filter:blur(3px)}        
 .dialog-foot button{height:48px;padding:0 24px;border-radius:8px;font-size:16px;line-height:1.4;background:#E5EAFF;color:#58606A}  /* 12 r6 pad9/14 #f0ecf7 */
 .dialog-foot .save{background:#6941FF;color:#fff;font-weight:700}                                                      /* #6246df */
 .dialog-foot .save:hover{opacity:.6}
-.dialog-foot .reset{height:34px;padding:0 16px;border-radius:6px;background:#F8F9FF;color:#58606A;font-size:14px}     /* 11 투명 */
+.dialog-foot .reset{height:48px;padding:0 16px;border-radius:8px;background:#F8F9FF;color:#58606A;font-size:14px}     /* 11 투명 · 26-09-13 같은 줄 버튼 높이 2종(34/48) 해소 — 취소·적용과 같은 48·r8 로. 글자 14 와 옅은 배경은 그대로 둬 위계는 유지: (옛 값) height 34 · radius 6 */
 .detail-channel{font-size:13px;color:#7A8490;margin-bottom:8px}                                                        /* 12 #7a6991 */
 .detail-title{font-size:20px;line-height:1.4;font-weight:700;color:#353A41}                                            /* 650 */
 .detail-time{font-size:14px;color:#58606A;margin-top:8px}                                                              /* 12 #8a7a9c */
@@ -219,11 +238,30 @@ dialog::backdrop{background:rgba(29,29,29,.4);backdrop-filter:blur(3px)}        
 .alert-history-item b{font-size:14px;color:#353A41}                                                                    /* 12 #ab6926 */
 .toast{background:#1D1D1D;font-size:12px;line-height:1.4;letter-spacing:-.5px;padding:12px 16px;border-radius:8px;box-shadow:0 6px 28px rgba(0,0,0,.16)}  /* #362a4b 12/18 (DS Tooltip 문법) */
 dialog :focus-visible{outline-color:#6941FF}                                                                          /* #28c49d 민트 포커스 → 브랜드 보라 */
+dialog[open]{display:flex;flex-direction:column}
+.dialog-body{overflow-y:auto;min-height:0}                                                                            /* 26-09-14 채널 후보가 37개로 늘어 본문만 스크롤 — 탭·푸터는 고정: (옛 값) 스크롤 없음 */
 dialog:not(:has(.dialog-foot)) .dialog-body{padding-bottom:24px}                                                       /* 푸터 없는 상세·알림 팝업은 아래 여백을 위(36)와 맞춤 */
 .dialog-body p:last-child{margin-bottom:0}                                                                             /* 상세 팝업 설명문 16 + 본문 패딩 28 중복 제거 */
 .alert-history-item:last-child{border-bottom:0;padding-bottom:0}                                                      /* 마지막 행 12 + 본문 패딩 28 중복 제거 */
 .demo-toolbar{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);margin:0;z-index:20;background:#fff;border:1px solid #ddd8e7;border-radius:12px;padding:10px 16px;box-shadow:0 8px 32px #21124226;color:var(--kz-ink)}
 }
+/* ── 실시간 재핑 알람 6칸 (디자이너 결정 26-09-09, 컨셉 _archive/_concept/260908-재핑알람6 A안 승격)
+   0건 = KT 원본 1줄 스트립(감지 대기) 그대로 · 1건 이상 = 2열×3행 고정 6칸(빈 칸은 대기 슬롯, 최대 6건)
+   카드 = 반투명 유리(흰 .10 면 + 흰 .22 선), 최신 1건만 민트(#12DB91 GSI 상승색) 선 + 하단 진행 바. 상승·하락은 색이 아니라 ▲▼ 글리프로 구분 */
+#compact-widget #live-strip.kz4-off{display:none}
+.kz4{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(2,auto);gap:6px 8px;margin-top:12px;min-width:540px}
+.kz4.is-off{display:none}
+.kz4__card{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;column-gap:8px;height:30px;padding:0 10px;border-radius:6px;overflow:hidden;font-size:12px;line-height:1;color:#fff;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22)}
+.kz4__ch{font-size:13px;font-weight:700;white-space:nowrap}
+.kz4__ch small{font-weight:500;opacity:.8;margin-right:4px;font-size:12px}
+.kz4__prog{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.82}
+.kz4__time{font-variant-numeric:tabular-nums;opacity:.7}
+.kz4__rate{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;display:inline-flex;align-items:center;gap:2px;color:rgba(255,255,255,.7)}
+.kz4__rate svg{width:10px;height:10px}
+.kz4__bar{position:absolute;left:0;bottom:0;height:2px;background:#12DB91;width:62%}
+.kz4__card.is-new{border-color:#12DB91;background:rgba(255,255,255,.14)}
+.kz4__card.is-new .kz4__rate{color:#12DB91}
+.kz4__card.is-empty{grid-template-columns:1fr;justify-content:center;text-align:center;background:transparent;border:1px dashed rgba(255,255,255,.18);color:rgba(255,255,255,.45)}
 </style>
 </head>
 <body>
@@ -257,11 +295,13 @@ dialog:not(:has(.dialog-foot)) .dialog-body{padding-bottom:24px}                
 <div class="rt-bar" id="rtBar" aria-hidden="true">
   <div class="rt-bar__wrap">
     <div class="rt-bar__inner">
-      <span class="rt-bar__item"><em>시청률</em><b>2.65%</b><i class="rt-bar__up">&#9650;0.17%p</i></span>
+      <!-- 26-09-13 히어로 KPI 순서·명칭에 맞춤 (한 화면에서 같은 지표가 「시청률」·「점유율」 두 이름으로 보이지 않게).
+           (옛 순서) 시청률 2.65% | 선택 채널 시청 가구 31,240 | 현재 접속 가구 1,178,980 -->
+      <span class="rt-bar__item"><em>현재 접속 가구</em><b>1,178,980</b><i class="rt-bar__down">&#9660;0.6%</i></span>
       <span class="rt-bar__vl"></span>
       <span class="rt-bar__item"><em>선택 채널 시청 가구</em><b>31,240</b><i class="rt-bar__up">&#9650;6.0%</i></span>
       <span class="rt-bar__vl"></span>
-      <span class="rt-bar__item"><em>현재 접속 가구<small>전국</small></em><b>1,178,980</b><i class="rt-bar__down">&#9660;0.6%</i></span>
+      <span class="rt-bar__item"><em>점유율</em><b>2.65%</b><i class="rt-bar__up">&#9650;0.17%p</i></span>
       <span class="rt-bar__vl"></span>
       <span class="rt-bar__item"><em>실시간 유입 Top3</em>
         <span class="rt-bar__rank"><span class="rt-bar__no">1</span>SBS</span>
@@ -288,22 +328,27 @@ dialog:not(:has(.dialog-foot)) .dialog-body{padding-bottom:24px}                
       <div class="rt-phead">
         <span class="rt-phead__title">10분전 대비</span>
       </div>
-      <!-- 자사 성적(시청률)이 먼저, 전국 모수(접속 가구)가 마지막 -->
+      <!-- 26-09-13 KT 요구 — 1행 3칸으로 되돌리고(현재 접속 가구 | 선택 채널 시청 가구 | 점유율), 가망 고객 가구는 선택 채널 칸 안 비율 한 줄로 흡수.
+           피그마 원본 순서(REALTIME-SPEC §패널1: 현재 접속 가구 / 선택 채널 시청 가구 / 점유율)와도 같다.
+           (옛 구성) 시청률 | 선택 채널 시청 가구 | 현재 접속 가구 + 아랫줄 전폭 「가망 고객 가구 1,000 ▲20.5%」 -->
       <div class="rt-kpis">
-        <div class="rt-kpi rt-kpi--lead">
-          <span class="rt-kpi__label">시청률</span>
-          <span class="rt-kpi__value">2.65<span class="rt-kpi__unit">%</span></span>
-          <span class="rt-kpi__delta rt-up"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 6l6 10H6z"/></svg>0.17%p</span>
+        <div class="rt-kpi rt-kpi--sub">
+          <span class="rt-kpi__label">현재 접속 가구</span><!-- 26-09-13 디자이너 지시로 보조어 <small>전국</small> 삭제 -->
+          <span class="rt-kpi__value"><span data-count="1178980">0</span></span>
+          <span class="rt-kpi__delta rt-down"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 18l6-10H6z"/></svg>0.6%</span>
         </div>
         <div class="rt-kpi">
           <span class="rt-kpi__label">선택 채널 시청 가구</span>
           <span class="rt-kpi__value"><span data-count="31240">0</span></span>
           <span class="rt-kpi__delta rt-up"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 6l6 10H6z"/></svg>6.0%</span>
+          <!-- 26-09-13 · 가망 고객 가구(이 채널을 자주 보고 이 채널로 주문 콜을 자주 한 셋탑박스 가구) ÷ 선택 채널 시청 가구. 실데이터 접합 시 두 값의 비율로 계산 -->
+          <span class="rt-kpi__note">가망고객수 (14.5%)</span>
         </div>
-        <div class="rt-kpi rt-kpi--sub">
-          <span class="rt-kpi__label">현재 접속 가구<small>전국</small></span>
-          <span class="rt-kpi__value"><span data-count="1178980">0</span></span>
-          <span class="rt-kpi__delta rt-down"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 18l6-10H6z"/></svg>0.6%</span>
+        <div class="rt-kpi rt-kpi--lead">
+          <!-- 명칭 26-09-13 「시청률」 → 「점유율」 (KT 요구안 캡처). 산식·수치는 그대로 = 선택 채널 시청 가구 ÷ 현재 접속 가구 -->
+          <span class="rt-kpi__label">점유율</span>
+          <span class="rt-kpi__value">2.65<span class="rt-kpi__unit">%</span></span>
+          <span class="rt-kpi__delta rt-up"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 6l6 10H6z"/></svg>0.17%p</span>
         </div>
       </div>
     </div>
@@ -364,7 +409,7 @@ dialog:not(:has(.dialog-foot)) .dialog-body{padding-bottom:24px}                
 <div class="live-strip" id="live-strip" data-channel-row="other"></div>
 <div class="columns" aria-hidden="true"><span>채널</span><span>프로그램 · 방송시간</span><span>예상 재핑시간</span><span>실시간 재핑</span></div>
 <div class="adjacent-rows" id="adjacent-rows"></div>
-<footer class="widget-foot"><span id="criteria">06.05(금) 기록 · −5% 이하 · 알림 10초</span><span class="foot-clock"><i class="status-dot"></i>시연 <time class="demo-clock" data-clock>10:44:00</time></span></footer>
+<footer class="widget-foot"><span id="criteria">06.05(금) 기록 · −5% 이하 · 30초마다 10초</span><span class="foot-clock"><i class="status-dot"></i>시연 <time class="demo-clock" data-clock>10:44:00</time></span></footer>
 </section>
 <dialog id="settings-dialog" aria-labelledby="settings-title">
 <div class="dialog-head"><h2 id="settings-title">커스터마이징</h2><button class="dialog-close" data-close="settings-dialog" aria-label="설정 닫기"><svg><use href="#close"/></svg></button></div>
@@ -377,9 +422,16 @@ dialog:not(:has(.dialog-foot)) .dialog-body{padding-bottom:24px}                
 <section id="channels-panel" role="tabpanel" aria-labelledby="channels-tab"><p>편성표에 표시할 인접채널 4개를 선택하세요.<br>실시간 알람을 받을 채널은 ‘관심 채널’에서 별도로 설정합니다.</p><div class="selection-count" id="selection-count">4 / 4개 선택</div><div class="channel-choice" id="channel-choices"></div></section>
 <section id="interest-panel" role="tabpanel" aria-labelledby="interest-tab" hidden><p>실시간 재핑 알람을 받을 채널을 선택하세요.<br>인접채널은 해당 컬럼에, 그 외 관심 채널은 최상단에 표시됩니다.</p><div class="interest-panel-tools"><div class="selection-count" id="interest-count">10개 채널 선택</div><div class="interest-tools"><button id="interest-all">전체 선택</button><button id="interest-clear">전체 해제</button></div></div><div class="channel-choice" id="interest-choices"></div><div class="interest-empty-note" id="interest-empty-note" hidden>관심 채널이 없어 실시간 알람을 받지 않습니다. 예상 재핑시간은 계속 표시됩니다.</div><div class="settings-notice" id="interest-alarm-notice" hidden>재핑 알람이 OFF입니다. 관심 채널은 저장되며, 알람을 켠 뒤 새로 감지된 재핑부터 알려드립니다.</div></section>
 <section id="alerts-panel" role="tabpanel" aria-labelledby="alerts-tab" hidden>
-<div class="settings-switch-row"><div class="settings-switch-copy"><strong id="alarm-switch-label">재핑 알람</strong><small>관심 채널의 실시간 재핑 알람을 켜거나 끕니다.</small></div><label class="alarm-switch"><input type="checkbox" role="switch" id="alerts-enabled" aria-labelledby="alarm-switch-label" checked><span class="switch-track" aria-hidden="true"><span class="switch-on-label">ON</span><span class="switch-off-label">OFF</span></span></label></div>
+<!-- 26-09-14 KT 메일(9/8) 「* 재핑알람 on / off — 지난주 재핑알람 / 실시간 재핑알람」로 토글 2개 분리: (옛 구성) 「재핑 알람」 토글 1개 -->
+<div class="settings-switch-row"><div class="settings-switch-copy"><strong id="lastweek-switch-label">지난주 재핑알람</strong><small>지난주 같은 요일 기록으로 계산한 예상 재핑시간을 켜거나 끕니다.</small></div><label class="alarm-switch"><input type="checkbox" role="switch" id="lastweek-enabled" aria-labelledby="lastweek-switch-label" checked><span class="switch-track" aria-hidden="true"><span class="switch-on-label">ON</span><span class="switch-off-label">OFF</span></span></label></div>
+<!-- 26-09-14 KT 메일(9/8) 첨부 이미지대로 「홈쇼핑」·「일반채널」 두 블록 — 각 블록 = on/off 토글 + 알람주기(분+초) + 등락률(+/− 라디오 + %).
+     (옛 구성) 「실시간 재핑알람」 토글 1개 + 알람주기 1벌 + 등락률 1벌 — 두 항목으로 나누지 않았다.
+     KT 원본 엔진은 값 한 벌만 받으므로 실제 감지는 「홈쇼핑」 블록이 구동한다.
+     「일반채널」 블록은 설정 저장·표시까지이고 동작 연결은 개발 단계에서 붙인다. -->
+<h3 class="alarm-section-title">실시간 재핑알람</h3>
 <div class="alarm-setting-summary" id="alarm-setting-summary">알람 ON · 선택한 관심 채널에서 실시간 재핑을 받습니다.</div>
-<label class="setting-field"><strong>재핑 증감률</strong><span class="setting-input"><input type="number" id="threshold" aria-label="재핑 증감률" min="-50" max="-1" step="0.1" value="-5">% 이하</span><small>예상 시점과 실제 감지에 적용합니다. 기본 −5%<br>예: −8%는 포함, −3%는 제외</small></label>
+<div class="alarm-group"><div class="alarm-group-head"><strong id="alarm-switch-label">홈쇼핑</strong><label class="alarm-switch"><input type="checkbox" role="switch" id="alerts-enabled" aria-labelledby="alarm-switch-label" checked><span class="switch-track" aria-hidden="true"><span class="switch-on-label">ON</span><span class="switch-off-label">OFF</span></span></label></div><label class="setting-field"><strong>알람주기</strong><span class="setting-input"><select id="period-min" aria-label="홈쇼핑 알람주기 분"><option value="0">00분</option><option value="1">01분</option><option value="2">02분</option><option value="3">03분</option><option value="4">04분</option><option value="5">05분</option><option value="6">06분</option><option value="7">07분</option><option value="8">08분</option><option value="9">09분</option></select><select id="period-sec" aria-label="홈쇼핑 알람주기 초"><option value="0">00초</option><option value="10" selected>10초</option><option value="20">20초</option><option value="30">30초</option><option value="40">40초</option><option value="50">50초</option></select></span><small>감지된 재핑을 몇 초마다 보여줄지 정합니다. 기본 10초<br>노출 시간보다 짧게 잡으면 알람이 겹칩니다.</small></label><div class="setting-field"><strong>등락률</strong><span class="setting-input"><label class="rate-radio"><input type="radio" name="rate-dir" id="rate-up" value="up" aria-label="홈쇼핑 상승 기준">+</label><label class="rate-radio"><input type="radio" name="rate-dir" id="rate-down" value="down" aria-label="홈쇼핑 하락 기준" checked>−</label><input type="number" id="threshold" aria-label="홈쇼핑 등락률" min="1" max="50" step="0.1" value="5">%</span><small id="rate-help">예상 시점과 실제 감지에 적용합니다.</small></div></div>
+<div class="alarm-group"><div class="alarm-group-head"><strong id="gen-switch-label">일반채널</strong><label class="alarm-switch"><input type="checkbox" role="switch" id="gen-enabled" aria-labelledby="gen-switch-label" checked><span class="switch-track" aria-hidden="true"><span class="switch-on-label">ON</span><span class="switch-off-label">OFF</span></span></label></div><label class="setting-field"><strong>알람주기</strong><span class="setting-input"><select id="gen-period-min" aria-label="일반채널 알람주기 분"><option value="0">00분</option><option value="1">01분</option><option value="2">02분</option><option value="3">03분</option><option value="4">04분</option><option value="5">05분</option><option value="6">06분</option><option value="7">07분</option><option value="8">08분</option><option value="9">09분</option></select><select id="gen-period-sec" aria-label="일반채널 알람주기 초"><option value="0">00초</option><option value="10" selected>10초</option><option value="20">20초</option><option value="30">30초</option><option value="40">40초</option><option value="50">50초</option></select></span></label><div class="setting-field"><strong>등락률</strong><span class="setting-input"><label class="rate-radio"><input type="radio" name="gen-rate-dir" id="gen-rate-up" value="up" aria-label="일반채널 상승 기준">+</label><label class="rate-radio"><input type="radio" name="gen-rate-dir" id="gen-rate-down" value="down" aria-label="일반채널 하락 기준" checked>−</label><input type="number" id="gen-threshold" aria-label="일반채널 등락률" min="1" max="50" step="0.1" value="5">%</span><small id="gen-rate-help">예상 시점과 실제 감지에 적용합니다.</small></div></div>
 <label class="setting-field"><strong>실시간 재핑 노출 시간</strong><span class="setting-input"><input type="number" id="exposure" aria-label="실시간 재핑 노출 시간" min="1" max="60" step="1" value="10">초</span><small>기본 10초 · 1–60초 사이로 설정할 수 있습니다.<br>시연 시계가 멈춰 있어도 실제 경과 시간에 따라 알람이 종료됩니다.</small></label>
 </section>
 <div class="validation" id="settings-error" role="status"></div>
@@ -1023,7 +1075,9 @@ const CompactPreferences = (() => {
 
   function validate(value, availableIds, ownId) {
     const base = ZappingEngine.validateSettings(value, availableIds, ownId);
-    const errors = [...base.errors];
+    // 등락률 입력이 양수(+/− 는 라디오)로 바뀌어 KT 원본의 음수 안내문이 맞지 않는다 — 우리 레이어에서 문구만 바꾼다 (26-09-14)
+    const errors = base.errors.map(e => e.startsWith('재핑 증감률은')
+      ? '등락률은 1%부터 50% 사이의 숫자로 입력해 주세요.' : e);
     const settings = isRecord(value) ? value : {};
     const available = new Set(Array.isArray(availableIds) || availableIds instanceof Set ? availableIds : []);
     if (!Array.isArray(settings.interest)) {
@@ -1040,7 +1094,30 @@ const CompactPreferences = (() => {
       }
     }
     if (typeof settings.alertsEnabled !== 'boolean') {
-      errors.push('재핑 알람 기능의 켜짐 또는 꺼짐 상태를 확인해 주세요.');
+      errors.push('실시간 재핑알람의 켜짐 또는 꺼짐 상태를 확인해 주세요.');
+    }
+    // 26-09-14 KT 메일(9/8) 「2. 알람 설정 및 on/off」로 추가 — 알람주기, 지난주 재핑알람 on/off
+    if (!Number.isInteger(settings.period) || settings.period < 10 || settings.period > 590) {
+      errors.push('알람주기는 10초 이상으로 선택해 주세요.');
+    }
+    if (typeof settings.rateUp !== 'boolean') {
+      errors.push('등락률의 상승·하락을 선택해 주세요.');
+    }
+    if (typeof settings.lastweekEnabled !== 'boolean') {
+      errors.push('지난주 재핑알람의 켜짐 또는 꺼짐 상태를 확인해 주세요.');
+    }
+    // 26-09-14 「일반채널」 블록 — 홈쇼핑 블록과 같은 규칙으로 검사한다
+    if (typeof settings.genEnabled !== 'boolean') {
+      errors.push('일반채널 알람의 켜짐 또는 꺼짐 상태를 확인해 주세요.');
+    }
+    if (!Number.isInteger(settings.genPeriod) || settings.genPeriod < 10 || settings.genPeriod > 590) {
+      errors.push('일반채널 알람주기는 10초 이상으로 선택해 주세요.');
+    }
+    if (typeof settings.genRateUp !== 'boolean') {
+      errors.push('일반채널 등락률의 상승·하락을 선택해 주세요.');
+    }
+    if (!Number.isFinite(settings.genThreshold) || settings.genThreshold > -1 || settings.genThreshold < -50) {
+      errors.push('일반채널 등락률은 1%부터 50% 사이의 숫자로 입력해 주세요.');
     }
     return { valid: errors.length === 0, errors };
   }
@@ -1051,8 +1128,15 @@ const CompactPreferences = (() => {
       adjacent: Array.isArray(raw.adjacent) ? [...raw.adjacent] : raw.adjacent,
       threshold: raw.threshold,
       exposure: raw.exposure,
+      period: owns(raw, 'period') ? raw.period : defaults.period,
+      rateUp: owns(raw, 'rateUp') ? raw.rateUp : false,
       interest: owns(raw, 'interest') ? raw.interest : defaults.interest,
-      alertsEnabled: owns(raw, 'alertsEnabled') ? raw.alertsEnabled : true
+      alertsEnabled: owns(raw, 'alertsEnabled') ? raw.alertsEnabled : true,
+      lastweekEnabled: owns(raw, 'lastweekEnabled') ? raw.lastweekEnabled : true,
+      genEnabled: owns(raw, 'genEnabled') ? raw.genEnabled : true,
+      genPeriod: owns(raw, 'genPeriod') ? raw.genPeriod : defaults.genPeriod,
+      genRateUp: owns(raw, 'genRateUp') ? raw.genRateUp : false,
+      genThreshold: owns(raw, 'genThreshold') ? raw.genThreshold : defaults.genThreshold
     };
     if (Array.isArray(value.interest)) value.interest = [...value.interest];
     return validate(value, availableIds).valid ? value : null;
@@ -1084,37 +1168,91 @@ const CompactPreferences = (() => {
 (() => {
   'use strict';
   const E=ZappingEngine, P=CompactPreferences, $=id=>document.getElementById(id);
-  const DEFAULTS={adjacent:['kbs1','mbc','channela','tvchosun'],threshold:-5,exposure:10,interest:['kbs1','mbc','channela','tvchosun','kbs2','sbs','ebs','jtbc','ytn','mbn'],alertsEnabled:true};
+  const DEFAULTS={adjacent:['kbs1','mbc','channela','tvchosun'],threshold:-5,exposure:10,period:10,rateUp:false,interest:['kbs1','mbc','channela','tvchosun','kbs2','sbs','ebs','jtbc','ytn','mbn'],alertsEnabled:true,lastweekEnabled:true,/* 26-09-14 KT 메일(9/8) 이미지의 「일반채널」 블록 — 홈쇼핑과 같은 항목 한 벌 더: (옛 값) 없음 */genEnabled:true,genPeriod:10,genRateUp:false,genThreshold:-5};
   const initialSecond=644*60, startMinute=630, endMinute=690;
   const storageKey='gsi-compact-zapping-settings-v1';
   const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const clone=value=>({adjacent:[...value.adjacent],threshold:value.threshold,exposure:value.exposure,interest:[...value.interest],alertsEnabled:value.alertsEnabled});
+  const clone=value=>({adjacent:[...value.adjacent],threshold:value.threshold,exposure:value.exposure,period:value.period,rateUp:value.rateUp,interest:[...value.interest],alertsEnabled:value.alertsEnabled,lastweekEnabled:value.lastweekEnabled,genEnabled:value.genEnabled,genPeriod:value.genPeriod,genRateUp:value.genRateUp,genThreshold:value.genThreshold});
   const pairs=value=>value.map(([time,rate])=>({minute:E.parseTime(time),rate}));
   const pgm=(name,start,end)=>({name,start:E.parseTime(start),end:E.parseTime(end)});
   // Illustrative programme and historical data; no connection to GSI's live feed.
   const channels=[
-    {id:'kbs1',name:'KBS1',number:'09',programmes:[pgm('KBS 뉴스','10:00','11:00'),pgm('생활의 발견','11:00','11:30')],candidates:pairs([['10:40',-4.1],['10:50',-8.2],['10:52',-9.4],['10:53',-6.3],['10:54',-7.1]])},
+  /* 26-09-14 KT 메일(9/8) 「3. 채널 설정」 표 54개로 교체 — (옛 값) 시연용 10개(KBS1·MBC·채널A·TV조선·KBS2·SBS·EBS·JTBC·YTN·MBN).
+     shop:true = 홈쇼핑사 17개 → 같은 메일 「채널 후보 범위」의 '홈쇼핑사 채널 17개 제외'에 따라 인접·관심 채널 후보에서 뺀다(선택 가능 37개).
+     프로그램·후보 시각 데이터는 기존 10개에만 있다. 나머지 44개는 목록·번호만 있는 상태(선택하면 '방송정보 없음 / 기록 없음')로, 실데이터는 개발 단계에서 붙인다.
+     TV조선 채널번호는 메일 표에 맞춰 19로 정정: (옛 값) 20
+     번호 표기도 메일 표 그대로 한 자리는 한 자리로 둔다 — ch.0 ch.1 ch.9: (옛 값) ch.00 ch.01 ch.09 (0 채움) */
+    {id:'genie-guide',name:'지니 TV 가이드',number:'997',programmes:[],candidates:null},
+    {id:'echannel',name:'E채널',number:'998',programmes:[],candidates:null},
+    {id:'ena-play',name:'ENA PLAY',number:'999',programmes:[],candidates:null},
+    {id:'gs-my-shop',name:'GS MY SHOP',number:'0',shop:true,programmes:[],candidates:null},
+    {id:'ena',name:'ENA',number:'1',programmes:[],candidates:null},
+    {id:'ns-shop',name:'NS홈쇼핑',number:'2',shop:true,programmes:[],candidates:null},
+    {id:'tvn',name:'tvN',number:'3',programmes:[],candidates:null},
+    {id:'lotte-shop',name:'롯데홈쇼핑',number:'4',shop:true,programmes:[],candidates:null},
+    {id:'sbs',name:'SBS',number:'5',programmes:[pgm('모닝와이드','10:00','11:00'),pgm('생활의 달인','11:00','12:00')],candidates:pairs([['10:50',-6.3],['10:57',-11.5],['11:19',-7.5]])},
+    {id:'cj-onstyle',name:'CJ ONSTYLE',number:'6',shop:true,programmes:[],candidates:null},
+    {id:'kbs2',name:'KBS2',number:'7',programmes:[pgm('생생정보 스페셜','10:30','11:10'),pgm('인간극장 스페셜','11:10','12:00')],candidates:pairs([['10:51',-6.2],['10:56',-10.2],['11:09',-7.2]])},
+    {id:'gs-shop',name:'GS SHOP',number:'8',shop:true,programmes:[],candidates:null},
+    {id:'kbs1',name:'KBS1',number:'9',programmes:[pgm('KBS 뉴스','10:00','11:00'),pgm('생활의 발견','11:00','11:30')],candidates:pairs([['10:40',-4.1],['10:50',-8.2],['10:52',-9.4],['10:53',-6.3],['10:54',-7.1]])},
+    {id:'hyundai-shop',name:'현대홈쇼핑',number:'10',shop:true,programmes:[],candidates:null},
     {id:'mbc',name:'MBC',number:'11',programmes:[pgm('기분 좋은 날','10:00','10:45'),pgm('오늘의 건강','10:45','11:15'),pgm('MBC 생활 정보','11:15','12:00')],candidates:pairs([['10:43',-5.7],['10:55',-6.7],['10:58',-8.1],['11:10',-7.2]])},
-    {id:'channela',name:'채널A',number:'18',programmes:[pgm('김진의 돌직구 쇼','10:00','11:00'),pgm('채널A 뉴스','11:00','11:30')],candidates:pairs([['10:38',-6.1],['10:52',-7.6],['10:54',-9.2],['11:15',-6.1]])},
-    {id:'tvchosun',name:'TV조선',number:'20',programmes:[pgm('신통방통','10:20','11:05'),pgm('보도본부 핫라인','11:05','12:00')],candidates:pairs([['10:46',-4.7],['11:00',-8.1],['11:05',-6.3],['11:20',-5.9]])},
-    {id:'kbs2',name:'KBS2',number:'07',programmes:[pgm('생생정보 스페셜','10:30','11:10'),pgm('인간극장 스페셜','11:10','12:00')],candidates:pairs([['10:51',-6.2],['10:56',-10.2],['11:09',-7.2]])},
-    {id:'sbs',name:'SBS',number:'05',programmes:[pgm('모닝와이드','10:00','11:00'),pgm('생활의 달인','11:00','12:00')],candidates:pairs([['10:50',-6.3],['10:57',-11.5],['11:19',-7.5]])},
+    {id:'ktalpha-shop',name:'KT알파 쇼핑',number:'12',shop:true,programmes:[],candidates:null},
     {id:'ebs',name:'EBS',number:'13',programmes:[pgm('한국기행 <슬기로운 강원 생활 4부 여보, 하고 싶은 거 다 해~>','10:00','11:00'),pgm('다큐프라임','11:00','12:00')],candidates:null},
+    {id:'homeandshopping',name:'홈&쇼핑',number:'14',shop:true,programmes:[],candidates:null},
     {id:'jtbc',name:'JTBC',number:'15',programmes:[pgm('상암동 클라스','10:20','11:15'),pgm('사건반장','11:15','12:00')],candidates:pairs([['10:53',-7.8],['10:59',-12.1]])},
+    {id:'mbn',name:'MBN',number:'16',programmes:[pgm('프레스룸','10:20','11:10'),pgm('아침 & 매일경제','11:10','12:00')],candidates:pairs([['10:58',-8.7],['11:12',-6.6]])},
+    {id:'sk-stoa',name:'SK 스토아',number:'17',shop:true,programmes:[],candidates:null},
+    {id:'channela',name:'채널A',number:'18',programmes:[pgm('김진의 돌직구 쇼','10:00','11:00'),pgm('채널A 뉴스','11:00','11:30')],candidates:pairs([['10:38',-6.1],['10:52',-7.6],['10:54',-9.2],['11:15',-6.1]])},
+    {id:'tvchosun',name:'TV조선',number:'19',programmes:[pgm('신통방통','10:20','11:05'),pgm('보도본부 핫라인','11:05','12:00')],candidates:pairs([['10:46',-4.7],['11:00',-8.1],['11:05',-6.3],['11:20',-5.9]])},
+    {id:'shinsegae-shop',name:'신세계쇼핑',number:'20',shop:true,programmes:[],candidates:null},
+    {id:'tvn-story',name:'tvN STORY',number:'21',programmes:[],candidates:null},
+    {id:'gongyoung-shop',name:'공영쇼핑',number:'22',shop:true,programmes:[],candidates:null},
+    {id:'yonhapnews',name:'연합뉴스TV',number:'23',programmes:[],candidates:null},
     {id:'ytn',name:'YTN',number:'24',programmes:[pgm('뉴스퀘어 10AM','09:40','11:40')],candidates:pairs([['10:59',-6.7],['11:06',-7.8]])},
-    {id:'mbn',name:'MBN',number:'16',programmes:[pgm('프레스룸','10:20','11:10'),pgm('아침 & 매일경제','11:10','12:00')],candidates:pairs([['10:58',-8.7],['11:12',-6.6]])}
+    {id:'sbs-biz',name:'SBS Biz',number:'25',programmes:[],candidates:null},
+    {id:'obs',name:'OBS',number:'26',programmes:[],candidates:null},
+    {id:'mnet',name:'Mnet',number:'27',programmes:[],candidates:null},
+    {id:'hyundai-plusshop',name:'현대홈쇼핑+샵',number:'28',shop:true,programmes:[],candidates:null},
+    {id:'mbc-every1',name:'MBC 에브리원',number:'29',programmes:[],candidates:null},
+    {id:'shopping-nt',name:'쇼핑엔티',number:'30',shop:true,programmes:[],candidates:null},
+    {id:'mbc-dramanet',name:'MBC 드라마넷',number:'31',programmes:[],candidates:null},
+    {id:'lotte-onetv',name:'LOTTE OneTV',number:'32',shop:true,programmes:[],candidates:null},
+    {id:'ocn',name:'OCN',number:'33',programmes:[],candidates:null},
+    {id:'w-shopping',name:'W쇼핑',number:'34',shop:true,programmes:[],candidates:null},
+    {id:'kbs-drama',name:'KBS drama',number:'35',programmes:[],candidates:null},
+    {id:'ns-shop-plus',name:'NS Shop+',number:'36',shop:true,programmes:[],candidates:null},
+    {id:'sbs-plus',name:'SBS 플러스',number:'37',programmes:[],candidates:null},
+    {id:'cj-onstyle-plus',name:'CJ ONSTYLE+',number:'38',shop:true,programmes:[],candidates:null},
+    {id:'jtbc2',name:'JTBC2',number:'39',programmes:[],candidates:null},
+    {id:'tvn-show',name:'tvN SHOW',number:'40',programmes:[],candidates:null},
+    {id:'kbs-joy',name:'KBS joy',number:'41',programmes:[],candidates:null},
+    {id:'ena-drama',name:'ENA DRAMA',number:'42',programmes:[],candidates:null},
+    {id:'sbs-fune',name:'SBS funE',number:'43',programmes:[],candidates:null},
+    {id:'channel-s',name:'채널S',number:'44',programmes:[],candidates:null},
+    {id:'tvn-drama',name:'tvN DRAMA',number:'45',programmes:[],candidates:null},
+    {id:'dramacube',name:'드라마큐브',number:'46',programmes:[],candidates:null},
+    {id:'dramax',name:'Dramax',number:'47',programmes:[],candidates:null},
+    {id:'ocn-movies',name:'OCN Movies',number:'48',programmes:[],candidates:null},
+    {id:'cinema-heaven',name:'시네마천국',number:'49',programmes:[],candidates:null},
+    {id:'the-life',name:'더라이프',number:'50',programmes:[],candidates:null}
   ];
   const byId=new Map(channels.map(c=>[c.id,c]));
+  /* 26-09-14 KT 메일(9/8) 「채널 후보 범위」 — 인접·관심 채널 후보는 홈쇼핑사 17개를 뺀 37개: (옛 값) 전체 채널 */
+  const selectable=channels.filter(c=>!c.shop), selectableIds=selectable.map(c=>c.id);
   let settings=clone(DEFAULTS), events=[], nextId=0, otherIndex=0, adjacentIndex=0, toastTimer;
   let clockBase=initialSecond, monoBase=performance.now(), playing=false, lastMinute=-1, lastSignature='';
   let detailChannel=null, detailProgramme=null, triggerElement=null, triggerKey=null, settingsTab='channels', draftOrder=[...DEFAULTS.adjacent];
-  try{const value=P.normalize(JSON.parse(localStorage.getItem(storageKey)),DEFAULTS,channels.map(c=>c.id));if(value)settings=clone(value);}catch{}
+  try{const value=P.normalize(JSON.parse(localStorage.getItem(storageKey)),DEFAULTS,selectableIds);if(value)settings=clone(value);}catch{}
   const currentSecond=()=>Math.min(endMinute*60,Math.floor(clockBase+(playing?(performance.now()-monoBase)/1000:0)));
   const candidateFor=(channel,second=currentSecond())=>E.nextCandidate(channel.candidates,second,settings.threshold,startMinute,endMinute);
   const currentProgramme=(channel,second=currentSecond())=>channel.programmes.find(p=>p.start<=Math.floor(second/60)&&Math.floor(second/60)<p.end);
   const activeEvents=()=>E.visibleEvents(events,Date.now(),settings).filter(event=>P.shouldReceive(event.channelId,settings,'gs-shop'));
   const groupsFor=active=>E.groupEvents(active,settings.adjacent,'gs-shop');
   const percent=value=>String(value).replace('-','−')+'%';
+  /* 26-09-14 등락률 방향 표기. 감지·예상 판정은 KT 원본대로 하락 기준 그대로다 — 상승(+)은 설정값 저장·표시까지이고 실제 동작은 개발 단계에서 붙인다 */
+  const rateText=()=>settings.rateUp?`+${Math.abs(settings.threshold)}% 이상`:`${percent(settings.threshold)} 이하`;
+  const periodText=()=>settings.period>=60?`${Math.floor(settings.period/60)}분 ${settings.period%60?String(settings.period%60)+'초':''}`.trim()+'마다':`${settings.period}초마다`;
   const svg=name=>`<svg aria-hidden="true"><use href="#${name}"/></svg>`;
   function notify(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,3200);}
   function countdown(minute,second){if(minute===Math.floor(second/60))return '지금 예상';const difference=minute*60-second;return difference<60?`${difference}초 후`:`${Math.ceil(difference/60)}분 후`;}
@@ -1130,12 +1268,12 @@ const CompactPreferences = (() => {
     $('adjacent-rows').innerHTML=settings.adjacent.map(id=>{
       const channel=byId.get(id),programme=currentProgramme(channel,second),next=candidateFor(channel,second),actual=groups.adjacent[id]?.[0];
       const eligible=E.eligibleCandidates(channel.candidates,settings.threshold,startMinute,endMinute);
-      const isNow=next?.minute===Math.floor(second/60),isFirst=next&&next.minute===first;
+      const isNow=settings.lastweekEnabled&&next?.minute===Math.floor(second/60),isFirst=settings.lastweekEnabled&&next&&next.minute===first;  /* 26-09-14 지난주 재핑알람 OFF 면 강조도 끈다: (옛 값) lastweekEnabled 조건 없음 */
       const expiry=actual?actual.receivedAt+actual.durationSeconds*1000:0;
       const emptyLabel=channel.candidates===null?'기록 없음':eligible.length?'남은 예상 없음':'기준 해당 없음';
       const following=next?eligible.filter(c=>c.minute>next.minute).slice(0,3):[];
       const followingList=following.length?`<span class="after-label">이후</span><ol class="prediction-list" aria-label="${esc(channel.name)} 이후 예상 시각">${following.map(c=>`<li><time>${E.formatTime(c.minute)}</time></li>`).join('')}</ol>`:'<span class="no-following">이후 예상 없음</span>';
-      const prediction=next?`<div class="prediction-main"><time class="prediction-time">${E.formatTime(next.minute)}</time><span class="prediction-status" data-countdown="${next.minute}">${countdown(next.minute,second)}</span></div><div class="prediction-following">${followingList}</div>`:`<span class="prediction-empty">${emptyLabel}</span>`;
+      const prediction=!settings.lastweekEnabled?`<span class="prediction-empty">지난주 알람 OFF</span>`:next?`<div class="prediction-main"><time class="prediction-time">${E.formatTime(next.minute)}</time><span class="prediction-status" data-countdown="${next.minute}">${countdown(next.minute,second)}</span></div><div class="prediction-following">${followingList}</div>`:`<span class="prediction-empty">${emptyLabel}</span>`;
       const receiving=P.shouldReceive(id,settings,'gs-shop');
       const realtime=actual?`<div class="realtime-event" aria-label="${esc(channel.name)} ${E.formatClock(actual.demoSecond)} 실제 감지, ${percent(actual.rate)}"><strong>${percent(actual.rate)}<small>감지</small></strong><span class="realtime-meta"><time>${E.formatClock(actual.demoSecond)}</time> · <span data-expiry="${expiry}">${actual.durationSeconds}</span>초</span><i class="event-progress" data-progress="${expiry}" data-duration="${actual.durationSeconds}" style="width:100%"></i></div>`:`<span class="realtime-idle ${receiving?'':'off'}">${!settings.alertsEnabled?'알람 OFF':receiving?'감지 대기':'수신 제외'}</span>`;
       return `<div class="neighbor-row ${isFirst?'nearest':''} ${isNow?'now':''} ${actual?'detected':''}" data-channel-row="adjacent" data-channel-id="${id}"><div class="channel-cell"><strong class="channel-name">${esc(channel.name)}</strong><span class="channel-no">ch.${channel.number}</span></div><button class="program-cell" data-detail="${id}" aria-label="${esc(channel.name+' '+(programme?.name||'방송정보 없음')+' '+timeRange(programme)+', 예상 재핑 상세 보기')}"><span class="program-name">${esc(programme?.name||'방송정보 없음')}</span><span class="program-time">${timeRange(programme)}</span></button><div class="prediction-cell">${prediction}</div><div class="realtime-cell" aria-label="${esc(channel.name)} 실시간 재핑">${realtime}</div></div>`;
@@ -1155,7 +1293,7 @@ const CompactPreferences = (() => {
     const moreFocused=document.activeElement?.id==='more-alerts';
     renderOther(groups.other);renderRows(groups,second);
     if(moreFocused){($('more-alerts')||$('inject-other')).focus({preventScroll:true});}
-    $('criteria').textContent=`06.05(금) 기록 · ${percent(settings.threshold)} 이하 · 알람 ${settings.exposure}초 · 관심 ${settings.interest.length}개`;
+    $('criteria').textContent=`${settings.lastweekEnabled?'06.05(금) 기록':'지난주 알람 OFF'} · ${rateText()} · ${periodText()} ${settings.exposure}초 · 관심 ${settings.interest.length}개`;
     $('alarm-state-label').textContent=settings.alertsEnabled?'알람 ON':'알람 OFF';
     $('open-alarm-settings').classList.toggle('off',!settings.alertsEnabled);
     $('open-alarm-settings').setAttribute('aria-label',`재핑 알람 ${settings.alertsEnabled?'ON':'OFF'}, 알람 설정 열기`);
@@ -1176,6 +1314,7 @@ const CompactPreferences = (() => {
   $('toggle-play').addEventListener('click',()=>{clockBase=currentSecond();monoBase=performance.now();playing=!playing;setPlayButton();});
   $('plus-minute').addEventListener('click',()=>setSecond(currentSecond()+60));
   $('next-prediction').addEventListener('click',()=>{
+    if(!settings.lastweekEnabled){notify('지난주 재핑알람이 OFF입니다. 알람 설정에서 켜고 적용해 주세요.');return;}  /* 26-09-14 추가 */
     const minute=Math.floor(currentSecond()/60),next=settings.adjacent.flatMap(id=>E.eligibleCandidates(byId.get(id).candidates,settings.threshold,startMinute,endMinute)).filter(c=>c.minute>minute).sort((a,b)=>a.minute-b.minute)[0];
     if(!next){notify('현재 방송 구간에 남은 예상 시점이 없습니다.');return;}setSecond(next.minute*60);
   });
@@ -1183,7 +1322,7 @@ const CompactPreferences = (() => {
   function inject(id){
     if(!settings.alertsEnabled){notify('재핑 알람이 OFF입니다. 알람 설정에서 켜고 적용해 주세요.');return;}
     if(!P.shouldReceive(id,settings,'gs-shop')){notify(`${byId.get(id).name}은 관심 채널에 포함되지 않아 실시간 알람을 받지 않습니다.`);return;}
-    const rate=-8.2;if(!E.qualifyingEvent(rate,settings.threshold)){notify(`시연 증감률 −8.2%는 현재 ${percent(settings.threshold)} 이하 기준에 해당하지 않습니다.`);return;}
+    const rate=-8.2;if(!E.qualifyingEvent(rate,settings.threshold)){notify(`시연 증감률 −8.2%는 현재 ${rateText()} 기준에 해당하지 않습니다.`);return;}
     const channel=byId.get(id);events.push({id:++nextId,channelId:id,rate,receivedAt:Date.now(),durationSeconds:settings.exposure,demoSecond:currentSecond()});
     $('live-announcement').textContent=`${channel.name}, 채널 ${channel.number}, 실제 재핑 감지 시연. 증감률 ${percent(rate)}. ${settings.exposure}초간 표시됩니다.`;render();
   }
@@ -1201,18 +1340,20 @@ const CompactPreferences = (() => {
   function renderDetail(){
     const channel=detailChannel,programme=detailProgramme,second=currentSecond(),next=candidateFor(channel,second);
     const eligible=E.eligibleCandidates(channel.candidates,settings.threshold,startMinute,endMinute);
-    $('detail-body').innerHTML=`<div class="detail-channel">ch.${channel.number} · ${esc(channel.name)}</div><div class="detail-title">${esc(programme?.name||'방송정보 없음')}</div><div class="detail-time">방송시간 ${timeRange(programme)}</div><div class="candidate-list"><h3>현재 자사 방송 구간의 예상 재핑 · 10:30–11:30</h3><div class="candidate-tags">${eligible.length?eligible.map(c=>`<span class="${next?.minute===c.minute?'next':''} ${c.minute<Math.floor(second/60)?'past':''}">${E.formatTime(c.minute)}</span>`).join(''):`<span>${channel.candidates===null?'1주 전 기록 없음':'기준에 맞는 예상 없음'}</span>`}</div><p class="detail-explain">06.05(금)의 분 단위 기록 중 ${percent(settings.threshold)} 이하 시점을 표시합니다.<br>현재 분을 끝까지 표시하고 다음 분부터 다음 후보로 전환합니다.<br>예상 시점 도달은 실제 감지 알림을 발생시키지 않습니다.</p></div>`;
+    $('detail-body').innerHTML=`<div class="detail-channel">ch.${channel.number} · ${esc(channel.name)}</div><div class="detail-title">${esc(programme?.name||'방송정보 없음')}</div><div class="detail-time">방송시간 ${timeRange(programme)}</div><div class="candidate-list"><h3>현재 자사 방송 구간의 예상 재핑 · 10:30–11:30</h3><div class="candidate-tags">${!settings.lastweekEnabled?'<span>지난주 재핑알람 OFF</span>':eligible.length?eligible.map(c=>`<span class="${next?.minute===c.minute?'next':''} ${c.minute<Math.floor(second/60)?'past':''}">${E.formatTime(c.minute)}</span>`).join(''):`<span>${channel.candidates===null?'1주 전 기록 없음':'기준에 맞는 예상 없음'}</span>`}</div><p class="detail-explain">${!settings.lastweekEnabled?'지난주 재핑알람이 꺼져 있어 예상 재핑 시점을 표시하지 않습니다.<br>알람 설정에서 켜면 다시 표시됩니다.':`06.05(금)의 분 단위 기록 중 ${rateText()} 시점을 표시합니다.<br>현재 분을 끝까지 표시하고 다음 분부터 다음 후보로 전환합니다.<br>예상 시점 도달은 실제 감지 알림을 발생시키지 않습니다.`}</p></div>`;
   }
   const settingsTabs=['channels','interest','alerts'];
   function selectSettingsTab(name){settingsTab=name;for(const tab of settingsTabs){const selected=tab===name;$(tab+'-tab').setAttribute('aria-selected',String(selected));$(tab+'-tab').tabIndex=selected?0:-1;$(tab+'-panel').hidden=!selected;}}
   for(const name of settingsTabs){$(name+'-tab').addEventListener('click',()=>selectSettingsTab(name));$(name+'-tab').addEventListener('keydown',event=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();const i=settingsTabs.indexOf(name),next=event.key==='Home'?settingsTabs[0]:event.key==='End'?settingsTabs[2]:settingsTabs[(i+(event.key==='ArrowRight'?1:2))%3];selectSettingsTab(next);$(next+'-tab').focus();}});}
-  function fillSettings(value){draftOrder=[...value.adjacent];$('channel-choices').innerHTML=channels.map(c=>`<label><input type="checkbox" value="${c.id}" ${value.adjacent.includes(c.id)?'checked':''}><span>${esc(c.name)}</span><small>ch.${c.number}</small></label>`).join('');$('interest-choices').innerHTML=channels.map(c=>`<label><input type="checkbox" value="${c.id}" aria-label="${esc(c.name)} 관심 채널" ${value.interest.includes(c.id)?'checked':''}><span>${esc(c.name)}</span><span class="choice-meta"><span class="neighbor-tag" data-interest-neighbor="${c.id}" ${value.adjacent.includes(c.id)?'':'hidden'}>인접</span><small>ch.${c.number}</small></span></label>`).join('');$('threshold').value=value.threshold;$('exposure').value=value.exposure;$('alerts-enabled').checked=value.alertsEnabled;validateDraft();}
-  function readDraft(){const checked=Array.from($('channel-choices').querySelectorAll('input:checked')).map(el=>el.value);const retained=draftOrder.filter(id=>checked.includes(id));return {adjacent:[...retained,...checked.filter(id=>!retained.includes(id))],threshold:$('threshold').value===''?NaN:Number($('threshold').value),exposure:$('exposure').value===''?NaN:Number($('exposure').value),interest:Array.from($('interest-choices').querySelectorAll('input:checked')).map(el=>el.value),alertsEnabled:$('alerts-enabled').checked};}
-  function validateDraft(){const draft=readDraft(),result=P.validate(draft,channels.map(c=>c.id),'gs-shop');$('selection-count').textContent=`${draft.adjacent.length} / 4개 선택`;$('interest-count').textContent=`${draft.interest.length}개 채널 선택`;$('interest-empty-note').hidden=draft.interest.length>0;$('interest-alarm-notice').hidden=draft.alertsEnabled;$('alarm-setting-summary').textContent=!draft.alertsEnabled?'적용하면 표시 중인 알람이 종료됩니다. 예상 시간은 계속 표시되며, 다시 켠 뒤 새로 감지된 재핑부터 알려드립니다.':draft.interest.length?`알람 ON · 선택한 관심 채널 ${draft.interest.length}개에서 실시간 재핑을 받습니다.`:'관심 채널이 없습니다. 관심 채널을 선택하면 실시간 재핑 알람을 받을 수 있습니다.';$('interest-choices').querySelectorAll('[data-interest-neighbor]').forEach(el=>el.hidden=!draft.adjacent.includes(el.dataset.interestNeighbor));$('settings-error').textContent=result.errors[0]||'';$('save-settings').disabled=!result.valid;return result.valid;}
+  function fillSettings(value){draftOrder=[...value.adjacent];$('channel-choices').innerHTML=selectable.map(c=>`<label><input type="checkbox" value="${c.id}" ${value.adjacent.includes(c.id)?'checked':''}><span>${esc(c.name)}</span><small>ch.${c.number}</small></label>`).join('');$('interest-choices').innerHTML=selectable.map(c=>`<label><input type="checkbox" value="${c.id}" aria-label="${esc(c.name)} 관심 채널" ${value.interest.includes(c.id)?'checked':''}><span>${esc(c.name)}</span><span class="choice-meta"><span class="neighbor-tag" data-interest-neighbor="${c.id}" ${value.adjacent.includes(c.id)?'':'hidden'}>인접</span><small>ch.${c.number}</small></span></label>`).join('');$('threshold').value=Math.abs(value.threshold);$('exposure').value=value.exposure;$('period-min').value=String(Math.floor(value.period/60));$('period-sec').value=String(value.period%60);$('rate-up').checked=!!value.rateUp;$('rate-down').checked=!value.rateUp;$('alerts-enabled').checked=value.alertsEnabled;$('lastweek-enabled').checked=value.lastweekEnabled;$('gen-enabled').checked=value.genEnabled;$('gen-period-min').value=String(Math.floor(value.genPeriod/60));$('gen-period-sec').value=String(value.genPeriod%60);$('gen-rate-up').checked=!!value.genRateUp;$('gen-rate-down').checked=!value.genRateUp;$('gen-threshold').value=Math.abs(value.genThreshold);validateDraft();}
+  function readDraft(){const checked=Array.from($('channel-choices').querySelectorAll('input:checked')).map(el=>el.value);const retained=draftOrder.filter(id=>checked.includes(id));return {adjacent:[...retained,...checked.filter(id=>!retained.includes(id))],threshold:$('threshold').value===''?NaN:-Math.abs(Number($('threshold').value)),exposure:$('exposure').value===''?NaN:Number($('exposure').value),period:Number($('period-min').value)*60+Number($('period-sec').value),rateUp:$('rate-up').checked,interest:Array.from($('interest-choices').querySelectorAll('input:checked')).map(el=>el.value),alertsEnabled:$('alerts-enabled').checked,lastweekEnabled:$('lastweek-enabled').checked,genEnabled:$('gen-enabled').checked,genPeriod:Number($('gen-period-min').value)*60+Number($('gen-period-sec').value),genRateUp:$('gen-rate-up').checked,genThreshold:$('gen-threshold').value===''?NaN:-Math.abs(Number($('gen-threshold').value))};}
+  function validateDraft(){const draft=readDraft(),result=P.validate(draft,selectableIds,'gs-shop');$('selection-count').textContent=`${draft.adjacent.length} / 4개 선택`;$('interest-count').textContent=`${draft.interest.length}개 채널 선택`;$('interest-empty-note').hidden=draft.interest.length>0;$('interest-alarm-notice').hidden=draft.alertsEnabled;/* 26-09-14 홈쇼핑·일반채널 두 블록의 등락률 안내문을 같은 규칙으로 갱신 */
+    const rateHelp=(id,value,up)=>{const v=Math.abs(value)||5,sign=up?'+':'−',cmp=up?'이상':'이하';$(id).innerHTML=`예상 시점과 실제 감지에 적용합니다. 현재 ${sign}${v}% ${cmp}<br>예: ${sign}${(v+3).toFixed(0)}%는 포함, ${sign}${Math.max(1,v-2).toFixed(0)}%는 제외`;};
+    rateHelp('rate-help',draft.threshold,draft.rateUp);rateHelp('gen-rate-help',draft.genThreshold,draft.genRateUp);$('alarm-setting-summary').textContent=!draft.alertsEnabled?'적용하면 표시 중인 알람이 종료됩니다. 예상 시간은 계속 표시되며, 다시 켠 뒤 새로 감지된 재핑부터 알려드립니다.':draft.interest.length?`알람 ON · 선택한 관심 채널 ${draft.interest.length}개에서 실시간 재핑을 받습니다.`:'관심 채널이 없습니다. 관심 채널을 선택하면 실시간 재핑 알람을 받을 수 있습니다.';$('interest-choices').querySelectorAll('[data-interest-neighbor]').forEach(el=>el.hidden=!draft.adjacent.includes(el.dataset.interestNeighbor));$('settings-error').textContent=result.errors[0]||'';$('save-settings').disabled=!result.valid;return result.valid;}
   function openSettings(tab){fillSettings(settings);selectSettingsTab(tab);showDialog('settings-dialog');}
   $('open-settings').addEventListener('click',()=>openSettings('channels'));
   $('open-alarm-settings').addEventListener('click',()=>openSettings('alerts'));
-  $('channel-choices').addEventListener('change',validateDraft);$('interest-choices').addEventListener('change',validateDraft);$('alerts-enabled').addEventListener('change',validateDraft);$('threshold').addEventListener('input',validateDraft);$('exposure').addEventListener('input',validateDraft);
+  $('channel-choices').addEventListener('change',validateDraft);$('interest-choices').addEventListener('change',validateDraft);/* 26-09-14 알람 탭은 입력칸을 패널 단위로 받는다 — 홈쇼핑·일반채널 두 블록으로 늘면서 개별 연결이 빠지기 쉬웠다. (옛 방식) alerts-enabled·lastweek-enabled·period-min·period-sec·rate-up·rate-down·threshold·exposure 8개를 하나씩 연결 */$('alerts-panel').addEventListener('change',validateDraft);$('alerts-panel').addEventListener('input',validateDraft);
   $('interest-all').addEventListener('click',()=>{$('interest-choices').querySelectorAll('input').forEach(el=>el.checked=true);validateDraft();});
   $('interest-clear').addEventListener('click',()=>{$('interest-choices').querySelectorAll('input').forEach(el=>el.checked=false);validateDraft();});
   $('default-settings').addEventListener('click',()=>fillSettings(DEFAULTS));
@@ -1220,6 +1361,51 @@ const CompactPreferences = (() => {
     render();setInterval(()=>{const active=activeEvents();if(Math.floor(currentSecond()/60)!==lastMinute||active.map(e=>e.id).join(',')!==lastSignature)render();else updateClock();},200);
 })();
 
+</script>
+<script id="gsiAlert4">
+/* 실시간 재핑 알람 4칸(2×2) — 디자이너 결정 26-09-09, 26-09-14 화면 재확인으로 유지(KT 9/8 메일의 '최대 6개'는 반려) (컨셉 260908-재핑알람6 A안 승격, 같은 날 6칸 2×3 → 4칸 2×2 로 축소)
+   KT 위젯 스크립트(위 IIFE)는 손대지 않고, 스트립 뒤에 표시 레이어만 얹는다. 표시 건수는 시연용 샘플(기본 3건, ?alerts=0~4 로 확인).
+   0건이면 이 레이어가 숨고 KT 원본 스트립(감지 대기)이 그대로 보인다. 증감률은 KT 감지 기준(−5% 이하)에 맞춘 하락값 · 시각은 시연 시계(10:44 기준) */
+(() => {
+  const SAMPLE = [
+    { ch: '05', name: 'SBS',  prog: '모닝와이드',        time: '10:43:50', rate: -8.2 },
+    { ch: '15', name: 'JTBC', prog: '상암동 클라스',     time: '10:41:12', rate: -6.3 },
+    { ch: '24', name: 'YTN',  prog: '뉴스퀘어 10AM',     time: '10:39:05', rate: -5.4 },
+    { ch: '07', name: 'KBS2', prog: '생생정보 스페셜',   time: '10:37:40', rate: -7.1 },
+    { ch: '13', name: 'EBS',  prog: '한국기행 <슬기로운 강원 생활 4부 여보, 하고 싶은 거 다 해~>', time: '10:35:20', rate: -5.9 },
+    { ch: '16', name: 'MBN',  prog: '프레스룸',          time: '10:33:02', rate: -6.8 }
+  ];
+  const MAX = 4;   /* 2열 × 2행 — 26-09-14 디자이너가 화면 보고 4칸 확정. KT 9/8 메일은 '최대 6개'지만 디자이너 결정이 우선.
+                      6칸(2×3)으로 갈 때 고칠 곳은 이 값과 위 .kz4 의 grid-template-rows 두 개뿐이다: (옛 값) 6 = 2×3 */
+  const strip = document.getElementById('live-strip');
+  if (!strip) return;
+  const param = new URLSearchParams(location.search).get('alerts');
+  const count = param === null || !Number.isInteger(Number(param)) ? 3 : Math.max(0, Math.min(MAX, Number(param)));
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const percent = v => String(v).replace('-', '−') + '%';
+  const glyph = v => v < 0
+    ? '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 18l6-10H6z"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 6l6 10H6z"/></svg>';
+  const grid = document.createElement('div');
+  grid.className = 'kz4';
+  grid.setAttribute('aria-label', '실시간 재핑 알람, 최대 4건');
+  strip.insertAdjacentElement('afterend', grid);
+  const list = SAMPLE.slice(0, count);
+  strip.classList.toggle('kz4-off', list.length > 0);
+  grid.classList.toggle('is-off', list.length === 0);
+  grid.innerHTML = Array.from({ length: MAX }, (_, i) => {
+    const a = list[i];
+    if (!a) return '<div class="kz4__card is-empty" aria-label="빈 알람 슬롯">대기</div>';
+    const isNew = i === 0;
+    return `<div class="kz4__card${isNew ? ' is-new' : ''}" aria-label="${esc(a.name)} 채널 ${a.ch} ${esc(a.prog)} ${a.time} 실제 재핑 감지, 증감률 ${percent(a.rate)}">`
+      + `<span class="kz4__ch"><small>ch.${a.ch}</small>${esc(a.name)}</span>`
+      + `<span class="kz4__prog" title="${esc(a.prog)}">${esc(a.prog)}</span>`
+      + `<time class="kz4__time">${a.time}</time>`
+      + `<span class="kz4__rate">${glyph(a.rate)}${percent(a.rate)}</span>`
+      + (isNew ? '<i class="kz4__bar" aria-hidden="true"></i>' : '')
+      + '</div>';
+  }).join('');
+})();
 </script>
 </body>
 </html>

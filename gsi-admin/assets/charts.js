@@ -435,11 +435,15 @@
     const render = () => {
       const H = opts.height || 400;
       const { svg, W } = baseSVG(container, H);
-      const padL = 132, padR = 152, padT = 30, padB = 10;
-      const plotW = W - padL - padR, plotH = H - padT - padB;
       const nS = opts.stages.length;
       const fmt = opts.valueFmt || fmtComma;
       const GAP = 14, BARW = 10;
+      /* 26-09-09 디자이너 지적(양옆이 비고 리본이 좁다): 좌우 여백을 고정 132/152 대신 실제 라벨 폭으로 잡는다.
+         글자 폭 추정 = 한글 1자 ≈ 글자크기, 영문·숫자 ≈ 0.55배. 이름 12.5 / 값 11 중 넓은 쪽 + 바 간격 10 + 여유 6 */
+      const estW = (str, size) => Array.from(String(str)).reduce((a, ch) => a + (/[\u1100-\u11FF\u3130-\u318F\uAC00-\uD7AF]/.test(ch) ? size : size * .55), 0);
+      const sideW = names => Math.max(...names.map(nm => Math.max(estW(nm, 12.5), estW(fmt(opts.flows.filter(f => f.path.includes(nm)).reduce((a, f) => a + f.value, 0)) + ' · 100%', 11))));
+      const padL = Math.ceil(sideW(opts.order[0]) + 16), padR = Math.ceil(sideW(opts.order[nS - 1]) + 16), padT = 30, padB = 10;  /* 132 / 152 */
+      const plotW = W - padL - padR, plotH = H - padT - padB;
 
       /* 노드 집계 */
       const nodes = {}; // name -> {stage, idx, value}
