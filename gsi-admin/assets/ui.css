@@ -248,7 +248,7 @@ svg text[font-size="11"] { font-size: 12px; } /* 03 동결 보존 */
   max-width: none; margin: 0 auto; padding: 33px 48px 34px;   /* 26-08-30 — KT 라이브처럼 가로 무제한(좌우 48 고정, 콘텐츠는 계속 늘어남). (이전) max-width: 1920px */
   min-height: 423px; /* 380 히어로 + 43 보라 연장(피그마 y379~423) — 단일 요소로 합쳐 줌 이음새 제거 */
   /* 피그마 비율 유동 그리드: 598 / (41) / 552 / (41) / 592 = 1824. 스페이서=빈 트랙
-     26-09-13 디자이너 지시 「간격 맞춰라」 — 피그마 원본은 패널 사이가 18 / 64 로 달라서
+     26-09-13 디자이너 요구 「간격 맞춰라」 — 피그마 원본은 패널 사이가 18 / 64 로 달라서
      1·2번 패널의 제목 밑줄이 거의 붙어 보였다. 패널 폭·총폭은 그대로 두고 남는 82px 을 두 틈에 41씩 균등 분배.
      (옛 값) 598fr 18fr 552fr 64fr 592fr */
   display: grid; grid-template-columns: 598fr 41fr 552fr 41fr 592fr; align-items: start;
@@ -283,7 +283,7 @@ svg text[font-size="11"] { font-size: 12px; } /* 03 동결 보존 */
 /* 26-09-13 KT 요구 — 아랫줄(가망 고객 가구)을 없애고 1행 3칸으로. 셀 안에 보조 한 줄(가망고객수 비율)이 생겨 공유 행이 3 → 4
    (옛 값) grid-template-rows: repeat(6, auto) · .rt-kpi grid-row: 1 / span 3 */
 .rt-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(4, auto); align-items: baseline; margin-top: 30px; }
-/* 26-09-13 디자이너 지시 — 세 칸 전부 가운데 정렬.
+/* 26-09-13 디자이너 요구 — 세 칸 전부 가운데 정렬.
    첫 칸의 좌패딩 0 해제도 같이 간다(그대로 두면 첫 칸만 폭 20px 넓어 글자 중심이 칸 중심과 10px 어긋난다)
    (옛 값) .rt-kpi { text-align 없음 } · .rt-kpi:first-child { padding-left: 0; } */
 .rt-kpi { position: relative; display: grid; grid-row: 1 / span 4; grid-template-rows: subgrid; align-items: baseline; padding: 0 20px; min-width: 0; text-align: center; }
