@@ -224,6 +224,10 @@
       </div>
     </div>
 
+    <!-- 26-09-14 KT 자체 시안(9/7) 상단의 「테스트 조건」 한 줄 — 무엇을 바꿔서 나온 결과인지 채널명으로 읽힌다.
+         (옛 표기) 헤드의 「교환 N건 · 신규 N건」 숫자뿐 -->
+    <p class="cond" id="resultCond"></p>
+
     <div class="results-top">
       <div class="card hero">
         <div class="kpi__lbl">전체 라인업 종합지수 예상 Lift <span class="tag tag--soft">MODEL v0.9</span></div>
@@ -265,6 +269,22 @@
       </section>
     </div>
 
+    <!-- 26-09-14 KT 자체 시안(9/7)의 「거시 총량 가치 비교」·「주요 채널 가치 등급 변동」을 위 SVI/CPI/ZSI 결과 아래에 덧붙인다
+         — 디자이너 요구 「기존은 기존대로, 그 아래 이것은 이것대로」.
+         KT 요구서 지표(SVI·CPI·ZSI·종합지수)와 KT 시안 지표(UV·체류시간·콜수·등급)가 서로 다른 체계라 어느 쪽도 지우지 않고 둘 다 둔다.
+         UV·체류시간·콜수·등급은 종합지수 Lift 에서 파생시킨 자리표시 더미 — 실산식은 모델링 담당이 정한다.
+         (옛 구성) 이 두 카드 없음 — 전체 지표 변화 + 채널별 변화까지였다. -->
+    <div class="results-grid">
+      <section class="card">
+        <div class="card__head"><h2>거시 총량 가치 비교</h2><span class="sub">Macro Summary · 라인업 전체 합산</span></div>
+        <div class="card__body"><table class="table table--macro"><thead><tr><th>평가 항목</th><th>AS-IS (현재)</th><th>TO-BE (예측)</th><th>변동분</th></tr></thead><tbody id="macroTable"></tbody></table></div>
+      </section>
+      <section class="card">
+        <div class="card__head"><h2>주요 채널 가치 등급 변동</h2><span class="sub">Asset Value · S / A+ / A- / B</span><span class="tag right" id="gradeCountTag">0개</span></div>
+        <div class="card__body"><div class="grades" id="gradeList"></div></div>
+      </section>
+    </div>
+
     <p class="note"><b>해석 기준</b> Lift는 과거 시청 행태와 채널 속성을 기반으로 산출한 의사결정 지원용 예상치입니다. 신뢰구간이 0을 포함하면 상승·하락 방향이 확정적이지 않으므로 실제 편성·계약 조건과 함께 검토합니다. 모델 입력 Feature는 화면에 고정하지 않고 관리 설정에 따라 확장합니다.</p>
 
     <section class="card">
@@ -282,6 +302,12 @@
             <button class="pager__btn" data-dir="-1" type="button" aria-label="이전 100개"><i data-ic="chev-left"></i></button>
             <select class="select select--pager" aria-label="채널 구간 선택"></select>
             <button class="pager__btn" data-dir="1" type="button" aria-label="다음 100개"><i data-ic="chev-right"></i></button>
+          </div>
+          <!-- 26-09-14 KT 자체 시안(9/7)의 뷰 토글. 카드에 어떤 값을 쓸지만 바꾼다 — 채널 목록·정렬·페이지는 그대로 -->
+          <div class="seg seg--sm" id="valueView" role="tablist">
+            <button data-vv="asis" type="button">AS-IS</button>
+            <button data-vv="tobe" type="button">TO-BE</button>
+            <button class="is-on" data-vv="compare" type="button">COMPARE</button>
           </div>
           <div class="seg" data-view-scope="results" role="tablist">
             <button class="is-on" data-view="grid" type="button"><i data-ic="grid"></i>10×10</button>

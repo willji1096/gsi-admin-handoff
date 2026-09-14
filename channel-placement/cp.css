@@ -465,3 +465,42 @@ button.tile:hover { border-color: var(--line-strong); box-shadow: 0 2px 8px rgba
 @media (max-width: 1500px) {
   .toolbar__right { flex-basis: 100%; justify-content: space-between; }
 }
+
+/* ── 26-09-14 KT 자체 시안(9/7) 블록 3종 ───────────────────────
+   기존 SVI/CPI/ZSI 결과 아래에 덧붙인 거시 총량·가치 등급, 그리고 결과 카드의 AS-IS/TO-BE/COMPARE 토글.
+   (옛 구성) 이 세 덩어리 없음 */
+.table--macro td { font-variant-numeric: tabular-nums; }
+.table--macro td small { color: var(--ink-4); font-size: var(--body-3); font-weight: 400; }
+.table--macro td:first-child { width: 40%; }
+
+.grades { display: flex; flex-direction: column; gap: 6px; }
+.grade { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); border-left: 3px solid var(--gray-300); }
+.grade.is-moved { border-left-color: var(--brand); background: color-mix(in srgb, var(--brand) 4%, var(--white)); }
+.grade__ch { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.grade__ch strong { font-size: var(--body-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.grade__ch span { font-size: var(--body-3); color: var(--ink-4); }
+.grade__move { display: inline-flex; align-items: center; gap: 6px; }
+.grade__move i { color: var(--ink-4); font-style: normal; }
+.grade__tag { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 26px; padding: 0 8px; border-radius: 6px; font-size: var(--body-2); font-weight: 700; }
+.grade__tag.is-before { background: var(--gray-100); color: var(--ink-3); }
+.grade__tag.is-after { background: color-mix(in srgb, var(--brand) 12%, var(--white)); color: var(--brand); }
+.grade__note { grid-column: 1 / -1; margin: 0; font-size: var(--body-3); color: var(--ink-4); }
+.empty-line { margin: 0; padding: 16px 0; text-align: center; font-size: var(--body-2); color: var(--ink-4); }
+
+.tile__dual { display: inline-flex; align-items: center; gap: 3px; font-variant-numeric: tabular-nums; color: var(--ink-3); }
+.tile__dual i { font-style: normal; color: var(--ink-4); }
+.cond { margin: 0 0 16px; padding: 12px 16px; border-radius: 8px; background: var(--gray-50, #F6F7F9); border: 1px solid var(--line); font-size: var(--body-2); color: var(--ink-2); }
+.cond b { margin-right: 10px; color: var(--brand); font-weight: 700; }
+.cond small { color: var(--ink-4); }
+
+/* ── 26-09-14 결과 탭 간격·배치 정리 ────────────────────────
+   블록끼리 세로 간격이 0 이라 흰 카드가 서로 붙어 한 덩어리로 보였다(실측: 헤드→조건 0 · KPI→차트 0 · 차트→지표 0 · 이하 전부 0).
+   (옛 값) #resultsContent 자식 사이 간격 없음 — results-top 위 16px 한 곳만 */
+#resultsContent > * + * { margin-top: 24px; }
+#resultsContent > .cond { margin-top: 16px; margin-bottom: 0; }   /* 조건 줄은 헤드에 딸린 줄이라 조금 더 붙인다 */
+.results-top { gap: 24px; }                                        /* (옛 값) 16px — 카드 안 패딩 24 보다 좁아 카드가 서로 눌려 보였다 */
+.results-grid { gap: 24px; }
+/* Lift 카드가 549px 인데 내용은 3줄이라 오른쪽이 비었다 — 4칸 폭 차이를 줄인다. (옛 값) 1.6fr repeat(3,1fr) */
+.results-top { grid-template-columns: 1.25fr repeat(3, 1fr); }
+/* 좌우 카드 높이가 내용 길이대로 달라 하단선이 어긋났다(지표 변화 4행 vs 채널별 변화 2개). 카드 아래를 맞춘다: (옛 값) align-items: start */
+.results-grid { align-items: stretch; }

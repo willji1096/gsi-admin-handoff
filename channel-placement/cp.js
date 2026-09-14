@@ -24,10 +24,22 @@ const GENRE_COLORS = {
   '공공/공익/정보': 'var(--graph-10)', '다큐/교양': 'var(--graph-07)', '애니/유아/교육': 'var(--graph-06)', '종교/오픈': 'var(--graph-08)',
   '성인': 'var(--graph-15)', '오디오': 'var(--graph-12)'
 };
+/* 26-09-14 KT 자체 시안(9/7) 지표. 요구서의 SVI/CPI/ZSI 와 다른 체계라 지우지 않고 나란히 둔다.
+   값은 종합지수 Lift 에서 파생시킨 자리표시 더미 — 실산식은 모델링 담당이 정한다 */
+const MACRO = [
+  { key: 'uv',   label: '총 시청 UV 합산',   unit: '만 UV',  base: 1284.6, factor: 1,   digits: 1 },
+  { key: 'stay', label: '평균 체류시간',      unit: '분',     base: 18.4,   factor: .62, digits: 1 },
+  { key: 'call', label: '홈쇼핑 대역 콜수',   unit: '천 건',  base: 96.2,   factor: 1.18, digits: 1 }
+];
+/* 등급 구간 — 종합지수(약 60~93) 기준. 구간이 바뀌면 여기만 고친다 */
+const GRADES = [[85, 'S'], [78, 'A+'], [70, 'A-'], [0, 'B']];
+const gradeOf = v => (GRADES.find(g => v >= g[0]) || GRADES[GRADES.length - 1])[1];
+
 const PAGE_SIZE = 100;
 const MAX_SWAPS = 5;
 const STORE = { history: 'cpHistory' };
 const URL_STATE = new URLSearchParams(location.search).get('state') || '';
+let valueView = 'compare';   /* 26-09-14 KT 시안 뷰 토글 — asis(현재값) · tobe(예측값) · compare(현재→미래) */
 
 /* ── 유틸 ─────────────────────────────────────────────── */
 const $ = (s, r = document) => r.querySelector(s);
@@ -212,13 +224,19 @@ function tile(c, opts = {}) {
   const role = opts.scenario ? scenarioRole(c) : '';
   const roleLabel = role === 'is-role-target' ? '첫 채널 선택 중' : role === 'is-role-counterpart' ? '맞바꿀 채널' : '';
   const badge = roleLabel ? `<span class="tile__badge" style="--pair:var(--brand)">${roleLabel}</span>` : meta.label ? `<span class="tile__badge">${meta.label}</span>` : '';
-  const score = opts.after ? opts.after.composite : c.composite;
-  const lift = opts.lift !== undefined ? `<span class="tile__lift ${opts.lift > 0 ? 'is-up' : opts.lift < 0 ? 'is-down' : ''}">${opts.lift ? signed(opts.lift) : '—'}</span>` : '';
+  /* 26-09-14 KT 시안 뷰 토글 — 결과 카드만 값 표기를 바꾼다. asis=현재값 · tobe=예측값 · compare=현재→미래.
+     (옛 동작) 언제나 예측값 + Lift 한 벌 */
+  const vv = opts.after ? valueView : 'compare';
+  const score = opts.after ? (vv === 'asis' ? (opts.before ?? c.composite) : opts.after.composite) : c.composite;
+  /* 전후를 나란히 쓰는 건 값이 실제로 움직인 채널만 — 314개가 전부 「53.1 → 53.1」 이면 변경 채널이 묻힌다 */
+  const dual = opts.after && vv === 'compare' && opts.before !== undefined && opts.lift
+    ? `<span class="tile__dual">${f1(opts.before)} <i>→</i> ${f1(opts.after.composite)}</span>` : '';
+  const lift = opts.lift !== undefined && vv !== 'asis' ? `<span class="tile__lift ${opts.lift > 0 ? 'is-up' : opts.lift < 0 ? 'is-down' : ''}">${opts.lift ? signed(opts.lift) : f1(score)}</span>` : '';
   const tag = opts.readonly ? 'div' : 'button';
   return `<${tag} ${opts.readonly ? '' : 'type="button"'} class="tile ${!opts.scenario && !opts.readonly && selectedId === c.id ? 'is-selected' : ''} ${meta.cls} ${role}" style="--genre:${genreColor(c.g)}" data-id="${c.id}" title="${esc(c.name)} · ${c.g}">
     <div class="tile__top"><span class="tile__no">${c.no}</span>${lift || `<span class="tile__score">${f1(score)}</span>`}</div>
     <div class="tile__name">${esc(c.name)}</div>
-    <div class="tile__genre">${c.g}${lift ? ` · ${f1(score)}` : ''}</div>${badge}
+    <div class="tile__genre">${dual || c.g}</div>${badge}
   </${tag}>`;
 }
 
@@ -490,11 +508,15 @@ function renderResults() {
   const run = resultRun, impact = lineupImpact(run);
   $('#resultTitle').textContent = `시나리오 결과 · 교환 ${run.swapScenarios.length}건 · 신규 ${run.changes.filter(x => x.type === 'new').length}건`;
   $('#resultMeta').textContent = `기준일자 ${fmtDate(run.baseDate)} · 실행 ${fmtTime(run.time)} · 결과는 브라우저에 저장됩니다`;
+  renderCond(run);
   $('#totalLift').textContent = `+${f1(impact)}%`;
   $('#totalCi').textContent = `95% 신뢰구간 +${f1(impact - 1.1)}% ~ +${f1(impact + 1.3)}%`;
   const affected = run.changes.slice(0, 10).map((x, i) => { const c = byId(x.id, run.work); return { ...x, c, lift: x.type === 'shift' ? (.2 + (i % 4) * .14) : (1.3 + (hash(c.name) % 24) / 10) }; });
   $('#improvedCount').textContent = affected.length + '개';
   $('#declinedCount').textContent = '0개';
+  /* 26-09-14 0개일 때는 색을 빼고 회색으로 — 하락이 없는데 빨갛게 강조돼 읽는 사람이 멈칫한다 */
+  $('#improvedCount').classList.toggle('is-up', affected.length > 0);
+  $('#declinedCount').classList.remove('is-down');
   $('#confidenceLevel').textContent = run.changes.length > 12 ? '낮음' : '중간';
 
   /* 전체 지표 변화 */
@@ -514,9 +536,58 @@ function renderResults() {
     return `<div class="impact__row ${meta.badge}"><div class="impact__name"><strong>${esc(x.c.name)}</strong><span>${x.c.g} · ${meta.label || '인접 영향'} · 95% CI ${f1(x.lift - .8)}~${f1(x.lift + 1)}%</span></div><div class="impact__pos">${x.before} → <b>${x.after}</b></div><span class="impact__lift">+${f1(x.lift)}%</span></div>`;
   }).join('');
 
+  renderMacro(impact);
+  renderGrades(run);
+
   $('#trendMetric').innerHTML = ALL_METRICS.map(m => `<option value="${m.key}" ${m.key === trend.metric ? 'selected' : ''}>${m.label} · ${m.desc}</option>`).join('');
   renderTrend();
   renderResultsChannels();
+}
+
+/* 테스트 조건 한 줄 — KT 자체 시안(9/7) 상단 표기.
+   번호 이동(shift)은 교환·신규의 결과라 조건에 넣지 않는다 */
+function renderCond(run) {
+  const el = $('#resultCond'); if (!el) return;
+  const label = id => { const c = byId(id, run.work); return c ? `${c.no}번 ${c.name}` : '채널'; };
+  const parts = [];
+  run.swapScenarios.forEach(sc => { parts.push(`${sc.sourceBefore}번 ${sc.sourceName} ↔ ${sc.targetBefore}번 ${sc.targetName} 교환`); });
+  run.changes.filter(x => x.type === 'new').forEach(x => { parts.push(`${label(x.id)} 신규 편성`); });
+  const shifts = run.changes.filter(x => x.type === 'shift').length;
+  el.innerHTML = parts.length
+    ? `<b>테스트 조건</b> ${parts.map(esc).join(' · ')}${shifts ? ` <small>(번호 순차 이동 ${shifts}개 포함)</small>` : ''}`
+    : '<b>테스트 조건</b> 변경 없음';
+}
+
+/* 거시 총량 가치 비교 — KT 자체 시안(9/7)의 Macro Summary.
+   라인업 전체 합산값을 AS-IS / TO-BE / 변동분 세 칸으로 본다 */
+function renderMacro(impact) {
+  $('#macroTable').innerHTML = MACRO.map(m => {
+    const before = m.base, after = +(before * (1 + impact * m.factor / 100)).toFixed(m.digits), diff = +(after - before).toFixed(m.digits);
+    const pct = +(diff / before * 100).toFixed(2);
+    return `<tr><td><b>${m.label}</b></td><td>${before.toFixed(m.digits)}<small> ${m.unit}</small></td><td><b>${after.toFixed(m.digits)}</b><small> ${m.unit}</small></td>
+      <td class="${diff > 0 ? 'is-up' : diff < 0 ? 'is-down' : ''}">${diff > 0 ? '+' : ''}${diff.toFixed(m.digits)} <small>(${pct > 0 ? '+' : ''}${pct}%)</small></td></tr>`;
+  }).join('');
+}
+
+/* 주요 채널 가치 등급 변동 — KT 자체 시안(9/7)의 Asset Value.
+   변경 영향 채널만 종합지수 전→후로 등급을 다시 매긴다 */
+function renderGrades(run) {
+  const rows = run.changes.slice(0, 8).map(x => {
+    const c = byId(x.id, run.work); if (!c) return null;
+    const p = projection(c, run), gb = gradeOf(p.src.composite), ga = gradeOf(p.after.composite);
+    const moved = gb !== ga;
+    const note = x.type === 'new' ? `신규 편성 · ${x.after}번 진입, 유사 채널 대비 보수 추정`
+      : x.type === 'shift' ? `번호 이동 ${x.before} → ${x.after} · 인접 재핑 흐름 변화`
+      : `번호 교환 ${x.before} → ${x.after} · 위치가치 재산정`;
+    return { c, gb, ga, moved, note, lift: p.lift };
+  }).filter(Boolean);
+  $('#gradeCountTag').textContent = rows.length + '개';
+  $('#gradeList').innerHTML = rows.length ? rows.map(r =>
+    `<div class="grade ${r.moved ? 'is-moved' : ''}">
+      <div class="grade__ch"><strong>${esc(r.c.name)}</strong><span>${r.c.g} · ${r.c.no}번</span></div>
+      <div class="grade__move"><span class="grade__tag is-before">${r.gb}</span><i>→</i><span class="grade__tag ${r.moved ? 'is-after' : 'is-before'}">${r.ga}</span></div>
+      <p class="grade__note">${r.note}</p>
+    </div>`).join('') : '<p class="empty-line">변경된 채널이 없습니다.</p>';
 }
 /* 결과 스냅샷 기준의 변경 메타 — 현재 편집 중인 changes 와 분리 */
 function changeMetaIn(c, run) {
@@ -544,7 +615,7 @@ function renderResultsChannels() {
   const { start, end } = pageWindow('results', list.length);
   $('#resultsChannelCount').textContent = `전체 ${list.length}개 · 변경 ${run.changes.filter(x => x.type !== 'shift').length}개`;
   const saved = changes; changes = run.changes;
-  $('#resultsGrid').innerHTML = rows.slice(start, end).map(({ c, p }) => tile(c, { scenario: true, readonly: true, after: p.after, lift: p.lift })).join('');
+  $('#resultsGrid').innerHTML = rows.slice(start, end).map(({ c, p }) => tile(c, { scenario: true, readonly: true, after: p.after, before: p.src.composite, lift: p.lift })).join('');
   changes = saved;
   const tb = $('#resultsTable');
   tb.innerHTML = tableRows.slice(start, end).map(({ c, p, meta }, i) => `<tr data-id="${c.id}"><td>${start + i + 1}</td><td>${p.beforeNo}</td><td><b>${c.no}</b></td><td><b>${esc(c.name)}</b></td><td><i class="genre-dot" style="background:${genreColor(c.g)}"></i>${c.g}</td><td><span class="rolebadge ${meta.badge || 'is-none'}">${meta.label || '변경 없음'}</span></td>${ALL_METRICS.map(m => `<td>${m.key === 'composite' ? '<b>' : ''}${f1(p.src[m.key])} → ${f1(p.after[m.key])}${m.key === 'composite' ? '</b>' : ''}</td>`).join('')}<td class="${p.lift > 0 ? 'is-up' : ''}">${p.lift ? signed(p.lift) : '—'}</td><td>${p.lift ? `${f1(p.ciLow)}~${f1(p.ciHigh)}%` : '—'}</td></tr>`).join('');
@@ -555,7 +626,8 @@ function renderResultsChannels() {
 /* 이벤트 전/후 추이 — AS-IS 실측선(더미)과 TO-BE 예측선. 이벤트(변경 적용 시점) 왼쪽은 둘이 같고 오른쪽부터 갈라진다 */
 function renderTrend() {
   if (!hasResults) return;
-  const el = $('#trendChart'), W = Math.max(480, el.clientWidth), H = 260, padL = 44, padR = 16, padT = 16, padB = 32;
+  /* 26-09-14 오른쪽 여백 16 은 카드 안 패딩 24 보다 좁아 마지막 날 신뢰구간 음영이 카드 끝에 닿았다: (옛 값) padR = 16 */
+  const el = $('#trendChart'), W = Math.max(480, el.clientWidth), H = 260, padL = 44, padR = 28, padT = 16, padB = 32;
   const N = trend.days, m = ALL_METRICS.find(x => x.key === trend.metric), baseV = avg(m.key), impact = lineupImpact() * (m.key === 'composite' ? 1 : METRICS.find(x => x.key === m.key).lineupLift);
   const seed = hash(m.key + N);
   const pts = [];
@@ -703,6 +775,12 @@ function bind() {
     $('select', p).addEventListener('change', e => { pages[scope] = +e.target.value || 1; renderScope(scope); });
   });
   $$('.seg[data-view-scope] button').forEach(b => b.addEventListener('click', () => setView(b.closest('.seg').dataset.viewScope, b.dataset.view)));
+  /* 26-09-14 KT 시안 뷰 토글 — 결과 카드의 값 표기만 바꾼다 */
+  $$('#valueView button').forEach(b => b.addEventListener('click', () => {
+    valueView = b.dataset.vv;
+    $$('#valueView button').forEach(x => x.classList.toggle('is-on', x === b));
+    renderResultsChannels();
+  }));
 
   $('#historyBtn').addEventListener('click', openHistory);
   $('#historyCloseBtn').addEventListener('click', () => { $('#historyModal').hidden = true; });
