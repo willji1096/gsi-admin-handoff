@@ -182,17 +182,49 @@ dialog::backdrop{background:rgba(29,29,29,.4);backdrop-filter:blur(3px)}        
 .settings-switch-copy strong{font-size:16px;font-weight:700;color:#353A41;margin-bottom:4px}                          /* 13 */
 .settings-switch-copy small{font-size:12px;line-height:1.4;color:#58606A}                                              /* 11 #8b789e */
 .alarm-switch{width:34px;height:20px}                                                                                  /* 64×30 → DS ic_toggle 34×20 (ON/OFF 글자는 아래 요약문이 대신) */
-.alarm-switch input{inset:-12px;width:auto;height:auto}                                                              /* 26-09-13 보이는 토글은 34×20 그대로, 실제 클릭 영역만 58×44 로 넓힌다(세로 20 은 최소 32 미달): (옛 값) inset 0 · 100%×100% */
-.switch-track{width:34px;height:16px;margin-top:2px;border-radius:14px;background:#9EA7B3;font-size:0;padding:0;box-shadow:none}          /* OFF 트랙 — 피그마 ic_toggle_on 1:49556 실측: (옛 값) #D6DDE9 (노브 색을 트랙에 잘못 쓴 것) */
-.switch-track:before{left:0;top:-2px;width:20px;height:20px;background:#D6DDE9;box-shadow:0 1px 2px rgba(0,0,0,.08),0 0 1px rgba(0,0,0,.24)}  /* OFF 노브 — 원본은 흰색이 아니다: (옛 값) white */
+.alarm-switch input{inset:-12px 0 -12px -12px;width:auto;height:auto}                                                /* 26-09-13 보이는 토글은 34×20 그대로, 실제 클릭 영역만 46×44 로 넓힌다(세로 20 은 최소 32 미달): 26-09-15 오른쪽 12px 은 뺐다 — 큰 묶음 박스를 걷어내면서 토글이 패널 오른쪽 끝에 붙어, 안 보이는 클릭칸이 패널 밖으로 나가 가로 스크롤 폭을 12px 늘렸다. (옛 값) inset:-12px 사방 · 그 전 inset 0 · 100%×100% */
+.switch-track{width:34px;height:16px;margin-top:2px;border-radius:14px;background:#A7B1BF;font-size:0;padding:0;box-shadow:none}          /* OFF 트랙 — 피그마 ic_toggle_on 1:49556 벡터 실측: (옛 값) #9EA7B3 — PNG 안티앨리어싱 픽셀을 집었던 값 · 그 전 #D6DDE9 (노브 색을 트랙에 잘못 쓴 것) */
+.switch-track:before{left:0;top:0;width:20px;height:20px;background:#D6DDE9;box-shadow:0 1px 2px rgba(0,0,0,.08),0 0 1px rgba(0,0,0,.24)}  /* OFF 노브 — 원본은 흰색이 아니다: (옛 값) white */
+/* 26-09-15 노브 세로 위치 — 기준은 트랙(static)이 아니라 .alarm-switch(34x20) 다. top:-2 면 노브가 위로만 4px,
+   아래로는 0px 삐져나와 트랙 한가운데가 아니었다. top:0 이면 위아래 2px 씩 균등하다. (옛 값) top:-2px */
 .alarm-switch input:checked+.switch-track{background:#D3C7FF}                                                          /* ON 트랙 — 원본은 연보라: (옛 값) #6941FF → 그 전 #7051de */
 .alarm-switch input:checked+.switch-track:before{transform:translateX(14px);background:#6941FF}                        /* ON 노브 — 보라는 트랙이 아니라 노브에 온다: (옛 값) 배경 지정 없음(=white) · 이동 34 */
 .alarm-switch input:focus-visible+.switch-track{outline-color:#6941FF}
 .alarm-setting-summary{font-size:12px;line-height:1.4;color:#58606A;margin:0 0 20px;padding-left:17px}              /* 11 #897997 · 26-09-13 설명문 크기 통일(팝업 안 유일한 13px 이었다): (옛 값) 13px / 들여쓰기 17 = 위 카드의 안쪽 여백 16 + 테두리 1 — 카드 안 글자와 왼쪽을 맞춘다: (옛 값) padding-left 없음 */
 .setting-field{margin:0 0 20px}
 .setting-field:last-of-type{margin-bottom:0}
+/* 26-09-15 알람 설정 재구성 — 「1. 관심채널 실시간 알림」·「2. 인접채널 재핑 알림(2-1·2-2)」 카드.
+   설정 한 줄은 라벨 왼쪽 / 입력 오른쪽 가로 배치로 바꿨다 — 세로 배치(.setting-field)는 줄 수가 많아져 스크롤만 길어졌다.
+   (옛 구성) .settings-switch-row 토글 2개 + .setting-field 세로 나열 */
+/* 26-09-15 큰 묶음도 박스를 걷어냈다 — 팝업 안에서 테두리가 겹겹이 쌓이는 것보다
+   가로 구분선 + 여백이 읽기 쉽다. 구분은 제목 색·크기와 선이 맡는다.
+   (옛 값) padding 18 · border 1px #D6DDE9 · radius 12 · background #fff · margin-bottom 20 */
+.alarm-section{padding:0;border:0;background:none}
+.alarm-section + .alarm-section{margin-top:26px;padding-top:26px;border-top:1px solid #ECEFF4}
+.alarm-section__head{display:flex;align-items:center;justify-content:space-between;gap:18px}
+.alarm-section__title{font-size:16px;font-weight:700;color:#6941FF;line-height:1.4}
+.alarm-sub__title{font-size:14px;font-weight:700;color:#353A41;line-height:1.4}  /* 26-09-15 (옛 값) #6941FF — 1·2·3 제목과 같은 보라라 층이 안 보였다 */
+.alarm-section__desc{font-size:12px;line-height:1.6;color:#58606A;margin:8px 0 16px}
+/* 26-09-15 하위 칸은 「테두리 박스」가 아니라 왼쪽 선 + 들여쓰기로 구분한다 — 팝업 안에서 박스가 박스를 또 감싸 답답했다.
+   (옛 값) padding 16 · border 1px #E4E9F0 · radius 10 · background #FBFCFE · margin-top 12 */
+.alarm-sub{padding:0 0 0 14px;border-left:2px solid #E4E2F2;margin-top:28px}  /* 26-09-15 칸 사이(28)가 칸 안 제목 간격(20)보다 넓어야 묶임이 보인다 (옛 값: 20px) */
+.alarm-sub .alarm-section__desc{margin:6px 0 14px}
+/* 26-09-15 설명문 없이 제목 바로 아래 입력칸이 오는 칸(홈쇼핑·일반채널)은 간격이 0 이라 제목에 붙었다.
+   설명문이 있는 칸의 제목→첫 줄 간격(6+14=20)과 같게 맞춘다. (옛 값) 여백 없음 */
+.alarm-section__head + .setting-row{margin-top:20px}
+.setting-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.setting-row>strong{flex:none;width:118px;font-size:13px;font-weight:650;color:#353A41}
+.setting-row .setting-input{display:flex;align-items:center;gap:8px;font-size:13px;flex-wrap:wrap}
+.setting-row .setting-input input[type=number]{width:64px;border:1px solid #D8D0E2;border-radius:6px;padding:8px 10px;color:#353A41;text-align:center}
+.setting-row .setting-input select{border:1px solid #D8D0E2;border-radius:6px;padding:8px 10px;color:#353A41;background:#fff;font-size:13px}
+.setting-row .setting-input em{font-style:normal;color:#58606A;white-space:nowrap}
+.setting-static{font-size:13px;color:#353A41;font-weight:600}
+.setting-help{display:block;font-size:11px;line-height:1.6;color:#84788d;margin:-4px 0 14px 130px}
+.alarm-section .setting-row:last-of-type{margin-bottom:0}
+.alarm-sub .setting-row:last-of-type{margin-bottom:0}
+.alarm-sub .setting-help:last-child{margin-bottom:0}
+.alarm-section .alarm-setting-summary{margin:14px 0 0;padding-left:0}
 /* 26-09-14 KT 메일 이미지의 「홈쇼핑」·「일반채널」 블록 — 지난주 토글 카드(.settings-switch-row)와 같은 테두리·라운드를 쓴다 */
-.alarm-section-title{font-size:16px;font-weight:700;color:#353A41;margin:24px 0 12px}
 
 .alarm-group{padding:16px;border-radius:12px;background:#fff;border:1px solid #D6DDE9;margin-bottom:12px}
 .alarm-group-head{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px}
@@ -209,10 +241,6 @@ dialog::backdrop{background:rgba(29,29,29,.4);backdrop-filter:blur(3px)}        
 .setting-input select{height:48px;padding:0 34px 0 16px;border:1px solid transparent;border-radius:8px;background:#F8F9FF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2358606A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E") right 12px center/16px no-repeat;color:#1D1D1D;font-size:14px;appearance:none;cursor:pointer;min-width:104px}
 .setting-input select:hover{border-color:#A7B1BF}
 .setting-input select:focus-visible{outline:0;border-color:#6941FF}
-.rate-radio{display:inline-flex;align-items:center;gap:8px;margin-right:16px;font-size:14px;color:#1D1D1D;cursor:pointer}
-.rate-radio input{appearance:none;box-sizing:border-box;flex:0 0 18px;width:18px;height:18px;min-width:0;margin:0;padding:0;border-radius:50%;border:1.5px solid #A7B1BF;background:#fff;cursor:pointer}
-.rate-radio input:checked{border-color:#6941FF;background:radial-gradient(circle,#6941FF 0 4px,#fff 4px)}
-.rate-radio input:focus-visible{outline:2px solid #6941FF;outline-offset:2px}
 .dialog-body .setting-field small{font-size:12px;line-height:1.4;color:#58606A;margin-top:6px}                        /* 10 #84788d */
 .validation{font-size:12px;font-weight:600;line-height:1.4;color:#FF8F6E;min-height:0}                                 /* 11 #9f4434 · min-h18 → 0 (오류 있을 때만 자리) */
 .validation:not(:empty){margin-top:8px}
@@ -345,7 +373,7 @@ dialog:not(:has(.dialog-foot)) .dialog-body{padding-bottom:24px}                
           <span class="rt-kpi__value"><span data-count="31240">0</span></span>
           <span class="rt-kpi__delta rt-up"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 6l6 10H6z"/></svg>6.0%</span>
           <!-- 26-09-13 · 가망 고객 가구(이 채널을 자주 보고 이 채널로 주문 콜을 자주 한 셋탑박스 가구) ÷ 선택 채널 시청 가구. 실데이터 접합 시 두 값의 비율로 계산 -->
-          <span class="rt-kpi__note">가망고객수 (14.5%)</span>
+          <span class="rt-kpi__note">가망고객수 14.5%</span>
         </div>
         <div class="rt-kpi rt-kpi--lead">
           <!-- 명칭 26-09-13 「시청률」 → 「점유율」 (KT 요구안 캡처). 산식·수치는 그대로 = 선택 채널 시청 가구 ÷ 현재 접속 가구 -->
@@ -417,33 +445,70 @@ dialog:not(:has(.dialog-foot)) .dialog-body{padding-bottom:24px}                
 <dialog id="settings-dialog" aria-labelledby="settings-title">
 <div class="dialog-head"><h2 id="settings-title">커스터마이징</h2><button class="dialog-close" data-close="settings-dialog" aria-label="설정 닫기"><svg><use href="#close"/></svg></button></div>
 <div class="dialog-tabs" role="tablist" aria-label="편성표 설정">
-<button role="tab" id="channels-tab" aria-controls="channels-panel" aria-selected="true">인접채널</button>
-<button role="tab" id="interest-tab" aria-controls="interest-panel" aria-selected="false" tabindex="-1">관심 채널</button>
+<!-- 26-09-15 디자이너 요구 — 관심채널을 먼저 고르고 인접채널을 정하는 순서: (옛 순서) 인접채널 · 관심 채널 -->
+<button role="tab" id="interest-tab" aria-controls="interest-panel" aria-selected="true">관심 채널</button>
+<button role="tab" id="channels-tab" aria-controls="channels-panel" aria-selected="false" tabindex="-1">인접채널</button>
 <button role="tab" id="alerts-tab" aria-controls="alerts-panel" aria-selected="false" tabindex="-1">알람 설정</button>
 </div>
 <div class="dialog-body">
-<section id="channels-panel" role="tabpanel" aria-labelledby="channels-tab"><p>편성표에 표시할 인접채널 4개를 선택하세요.<br>실시간 알람을 받을 채널은 ‘관심 채널’에서 별도로 설정합니다.</p><div class="selection-count" id="selection-count">4 / 4개 선택</div><div class="channel-choice" id="channel-choices"></div></section>
-<section id="interest-panel" role="tabpanel" aria-labelledby="interest-tab" hidden><p>실시간 재핑 알람을 받을 채널을 선택하세요.<br>인접채널은 해당 컬럼에, 그 외 관심 채널은 최상단에 표시됩니다.</p><div class="interest-panel-tools"><div class="selection-count" id="interest-count">10개 채널 선택</div><div class="interest-tools"><button id="interest-all">전체 선택</button><button id="interest-clear">전체 해제</button></div></div><div class="channel-choice" id="interest-choices"></div><div class="interest-empty-note" id="interest-empty-note" hidden>관심 채널이 없어 실시간 알람을 받지 않습니다. 예상 재핑시간은 계속 표시됩니다.</div><div class="settings-notice" id="interest-alarm-notice" hidden>재핑 알람이 OFF입니다. 관심 채널은 저장되며, 알람을 켠 뒤 새로 감지된 재핑부터 알려드립니다.</div></section>
+<section id="channels-panel" role="tabpanel" aria-labelledby="channels-tab" hidden><p>편성표에 표시할 인접채널 4개를 선택하세요.<br>실시간 알람을 받을 채널은 ‘관심 채널’에서 별도로 설정합니다.</p><div class="selection-count" id="selection-count">4 / 4개 선택</div><div class="channel-choice" id="channel-choices"></div></section>
+<section id="interest-panel" role="tabpanel" aria-labelledby="interest-tab"><p>실시간 재핑 알람을 받을 채널을 선택하세요.<br>인접채널은 해당 컬럼에, 그 외 관심 채널은 최상단에 표시됩니다.</p><div class="interest-panel-tools"><div class="selection-count" id="interest-count">10개 채널 선택</div><div class="interest-tools"><button id="interest-all">전체 선택</button><button id="interest-clear">전체 해제</button></div></div><div class="channel-choice" id="interest-choices"></div><div class="interest-empty-note" id="interest-empty-note" hidden>관심 채널이 없어 실시간 알람을 받지 않습니다. 예상 재핑시간은 계속 표시됩니다.</div><div class="settings-notice" id="interest-alarm-notice" hidden>재핑 알람이 OFF입니다. 관심 채널은 저장되며, 알람을 켠 뒤 새로 감지된 재핑부터 알려드립니다.</div></section>
 <section id="alerts-panel" role="tabpanel" aria-labelledby="alerts-tab" hidden>
-<!-- 26-09-14 KT 메일(9/8) 「* 재핑알람 on / off — 지난주 재핑알람 / 실시간 재핑알람」로 토글 2개 분리: (옛 구성) 「재핑 알람」 토글 1개 -->
-<div class="settings-switch-row"><div class="settings-switch-copy"><strong id="lastweek-switch-label">지난주 재핑알람</strong><small>지난주 같은 요일 기록으로 계산한 예상 재핑시간을 켜거나 끕니다.</small></div><label class="alarm-switch"><input type="checkbox" role="switch" id="lastweek-enabled" aria-labelledby="lastweek-switch-label" checked><span class="switch-track" aria-hidden="true"><span class="switch-on-label">ON</span><span class="switch-off-label">OFF</span></span></label></div>
-<div class="settings-switch-row"><div class="settings-switch-copy"><strong id="alarm-switch-label">실시간 재핑알람</strong><small>관심 채널의 실시간 재핑 알람을 켜거나 끕니다.</small></div><label class="alarm-switch"><input type="checkbox" role="switch" id="alerts-enabled" aria-labelledby="alarm-switch-label" checked><span class="switch-track" aria-hidden="true"><span class="switch-on-label">ON</span><span class="switch-off-label">OFF</span></span></label></div>
-<div class="alarm-setting-summary" id="alarm-setting-summary">알람 ON · 선택한 관심 채널에서 실시간 재핑을 받습니다.</div>
-<label class="setting-field"><strong>재핑 증감률</strong><span class="setting-input"><input type="number" id="threshold" aria-label="재핑 증감률" min="-50" max="-1" step="0.1" value="-5">% 이하</span><small id="rate-help">예상 시점과 실제 감지에 적용합니다. 기본 −5%<br>예: −8%는 포함, −3%는 제외</small></label>
-<label class="setting-field"><strong>실시간 재핑 노출 시간</strong><span class="setting-input"><input type="number" id="exposure" aria-label="실시간 재핑 노출 시간" min="1" max="60" step="1" value="10">초</span><small>기본 10초 · 1–60초 사이로 설정할 수 있습니다.<br>시연 시계가 멈춰 있어도 실제 경과 시간에 따라 알람이 종료됩니다.</small></label>
-<!-- 26-09-14 KT 메일(9/8) 첨부 이미지의 「홈쇼핑」·「일반채널」 블록을 위 기존 설정 아래에 덧붙인다 — 디자이너 요구 「기존은 기존대로, 그 아래 이것은 이것대로」.
-     각 블록 = on/off 토글 + 알람주기(분+초) + 등락률(+/− 라디오 + %).
-     알람주기 = KT 기존 기능(알람을 몇 초마다 보여줄지) · 위의 노출 시간 = 신규 기능(알람을 몇 초 동안 노출할지).
-     KT 원본 엔진은 증감률을 한 벌만 받으므로 실제 감지 판정은 위 「재핑 증감률」이 그대로 한다.
-     두 블록의 값은 저장·표시까지이고 동작 연결은 개발 단계에서 붙인다.
-     (옛 구성) 이 블록들 없음 — 「재핑 알람」 토글 1개 + 재핑 증감률 + 노출 시간뿐이었다. -->
-<h3 class="alarm-section-title">채널 구분별 알람</h3>
-<div class="alarm-group"><div class="alarm-group-head"><strong id="shop-switch-label">홈쇼핑</strong><label class="alarm-switch"><input type="checkbox" role="switch" id="shop-enabled" aria-labelledby="shop-switch-label" checked><span class="switch-track" aria-hidden="true"><span class="switch-on-label">ON</span><span class="switch-off-label">OFF</span></span></label></div><label class="setting-field"><strong>알람주기</strong><span class="setting-input"><select id="shop-period-min" aria-label="홈쇼핑 알람주기 분"><option value="0">00분</option><option value="1">01분</option><option value="2">02분</option><option value="3">03분</option><option value="4">04분</option><option value="5">05분</option><option value="6">06분</option><option value="7">07분</option><option value="8">08분</option><option value="9">09분</option></select><select id="shop-period-sec" aria-label="홈쇼핑 알람주기 초"><option value="0">00초</option><option value="10" selected>10초</option><option value="20">20초</option><option value="30">30초</option><option value="40">40초</option><option value="50">50초</option></select></span></label><div class="setting-field"><strong>등락률</strong><span class="setting-input"><label class="rate-radio"><input type="radio" name="shop-rate-dir" id="shop-rate-up" value="up" aria-label="홈쇼핑 상승 기준">+</label><label class="rate-radio"><input type="radio" name="shop-rate-dir" id="shop-rate-down" value="down" aria-label="홈쇼핑 하락 기준" checked>−</label><input type="number" id="shop-threshold" aria-label="홈쇼핑 등락률" min="1" max="50" step="0.1" value="5">%</span><small id="shop-rate-help">예상 시점과 실제 감지에 적용합니다.</small></div></div>
-<div class="alarm-group"><div class="alarm-group-head"><strong id="gen-switch-label">일반채널</strong><label class="alarm-switch"><input type="checkbox" role="switch" id="gen-enabled" aria-labelledby="gen-switch-label" checked><span class="switch-track" aria-hidden="true"><span class="switch-on-label">ON</span><span class="switch-off-label">OFF</span></span></label></div><label class="setting-field"><strong>알람주기</strong><span class="setting-input"><select id="gen-period-min" aria-label="일반채널 알람주기 분"><option value="0">00분</option><option value="1">01분</option><option value="2">02분</option><option value="3">03분</option><option value="4">04분</option><option value="5">05분</option><option value="6">06분</option><option value="7">07분</option><option value="8">08분</option><option value="9">09분</option></select><select id="gen-period-sec" aria-label="일반채널 알람주기 초"><option value="0">00초</option><option value="10" selected>10초</option><option value="20">20초</option><option value="30">30초</option><option value="40">40초</option><option value="50">50초</option></select></span></label><div class="setting-field"><strong>등락률</strong><span class="setting-input"><label class="rate-radio"><input type="radio" name="gen-rate-dir" id="gen-rate-up" value="up" aria-label="일반채널 상승 기준">+</label><label class="rate-radio"><input type="radio" name="gen-rate-dir" id="gen-rate-down" value="down" aria-label="일반채널 하락 기준" checked>−</label><input type="number" id="gen-threshold" aria-label="일반채널 등락률" min="1" max="50" step="0.1" value="5">%</span><small id="gen-rate-help">예상 시점과 실제 감지에 적용합니다.</small></div></div>
+<!-- 26-09-15 디자이너 개선안 — 알람을 「무엇을 감시하나」로 묶어 다시 세웠다.
+     1. 관심채널 실시간 알림 / 2. 인접채널 재핑 알림(2-1 과거 · 2-2 실시간).
+     감시 대상이 관심채널인지 인접채널인지가 먼저 읽히고, 과거 기준과 실시간 기준이 2 아래로 나란히 들어간다.
+     증감률은 세 곳 모두 「감소/증가 + 숫자 + % 이상이면 알림」 한 형태로 통일했다 — 전엔 「−5 % 이하」와 「+/− 라디오」 두 형태가 섞여 있었다.
+     저장값 threshold 는 KT 원본 엔진(validateSettings −50~−1) 때문에 계속 음수로 넣고, 방향은 별도 키(rateUp)가 든다.
+     (옛 구성) 「지난주 재핑알람」·「실시간 재핑알람」 토글 2개 + 재핑 증감률(−5 % 이하) + 노출 시간이 평평하게 나열 -->
+
+<div class="alarm-section">
+  <div class="alarm-section__head"><strong class="alarm-section__title" id="alarm-switch-label">1. 관심채널 실시간 알림</strong><label class="alarm-switch"><input type="checkbox" role="switch" id="alerts-enabled" aria-labelledby="alarm-switch-label" checked><span class="switch-track" aria-hidden="true"><span class="switch-on-label">ON</span><span class="switch-off-label">OFF</span></span></label></div>
+  <p class="alarm-section__desc">관심채널의 실시간 재핑 변화를 감지합니다.</p>
+  <div class="setting-row"><strong>감지 주기</strong><span class="setting-input"><select id="interest-period-min" aria-label="관심채널 감지 주기 분"><option value="0">00분</option><option value="1">01분</option><option value="2">02분</option><option value="3">03분</option><option value="4">04분</option><option value="5">05분</option><option value="6">06분</option><option value="7">07분</option><option value="8">08분</option><option value="9">09분</option></select><select id="interest-period-sec" aria-label="관심채널 감지 주기 초"><option value="0">00초</option><option value="10" selected>10초</option><option value="20">20초</option><option value="30">30초</option><option value="40">40초</option><option value="50">50초</option></select></span></div>
+  <div class="setting-row"><strong>재핑 증감률</strong><span class="setting-input"><select id="threshold-dir" aria-label="관심채널 증감 방향"><option value="down" selected>감소</option><option value="up">증가</option></select><input type="number" id="threshold-rate" aria-label="관심채널 재핑 증감률" min="1" max="50" step="0.1" value="5"><em>% 이상이면 알림</em></span></div><small class="setting-help" id="rate-help">감소 5% 이상이면 알립니다. 예: 8% 감소는 포함, 3% 감소는 제외</small>
+  <div class="setting-row"><strong>실시간 재핑 노출 시간</strong><span class="setting-input"><input type="number" id="exposure" aria-label="실시간 재핑 노출 시간" min="1" max="60" step="1" value="10"><em>초</em></span></div>
+  <small class="setting-help">기본 10초 · 1–60초 사이로 설정할 수 있습니다.</small>
+  <div class="alarm-setting-summary" id="alarm-setting-summary">알람 ON · 선택한 관심 채널에서 실시간 재핑을 받습니다.</div>
+</div>
+
+<div class="alarm-section">
+  <div class="alarm-section__head"><strong class="alarm-section__title" id="adj-switch-label">2. 인접채널 재핑 알림</strong><label class="alarm-switch"><input type="checkbox" role="switch" id="adj-enabled" aria-labelledby="adj-switch-label" checked><span class="switch-track" aria-hidden="true"><span class="switch-on-label">ON</span><span class="switch-off-label">OFF</span></span></label></div>
+  <p class="alarm-section__desc">선택한 과거 기록 또는 실시간 시청 데이터를 기준으로 인접채널의 재핑 변화를 감지합니다.</p>
+
+  <div class="alarm-sub">
+    <div class="alarm-section__head"><strong class="alarm-sub__title" id="lastweek-switch-label">2-1. 과거 재핑 알림</strong><label class="alarm-switch"><input type="checkbox" role="switch" id="lastweek-enabled" aria-labelledby="lastweek-switch-label" checked><span class="switch-track" aria-hidden="true"><span class="switch-on-label">ON</span><span class="switch-off-label">OFF</span></span></label></div>
+    <p class="alarm-section__desc">1주 전 기록을 기반으로 예상시간을 안내하고, 예측시간 전후의 재핑 변화를 감지합니다.</p>
+    <div class="setting-row"><strong>예측 기준</strong><span class="setting-static">1주 전 기록 기반</span></div>
+    <div class="setting-row"><strong>재핑 증감률</strong><span class="setting-input"><select id="past-dir" aria-label="과거 재핑 증감 방향"><option value="down" selected>감소</option><option value="up">증가</option></select><input type="number" id="past-rate" aria-label="과거 재핑 재핑 증감률" min="1" max="50" step="0.1" value="5"><em>% 이상이면 알림</em></span></div><small class="setting-help" id="past-rate-help">감소 5% 이상이면 알립니다. 예: 8% 감소는 포함, 3% 감소는 제외</small>
+  </div>
+
+  <div class="alarm-sub">
+    <div class="alarm-section__head"><strong class="alarm-sub__title" id="adjrt-switch-label">2-2. 실시간 재핑 알림</strong><label class="alarm-switch"><input type="checkbox" role="switch" id="adjrt-enabled" aria-labelledby="adjrt-switch-label" checked><span class="switch-track" aria-hidden="true"><span class="switch-on-label">ON</span><span class="switch-off-label">OFF</span></span></label></div>
+    <p class="alarm-section__desc">실시간 시청 데이터를 기준으로 인접채널의 재핑 변화를 감지합니다.</p>
+    <div class="setting-row"><strong>감지 주기</strong><span class="setting-input"><select id="adj-period-min" aria-label="인접채널 실시간 감지 주기 분"><option value="0">00분</option><option value="1">01분</option><option value="2">02분</option><option value="3">03분</option><option value="4">04분</option><option value="5">05분</option><option value="6">06분</option><option value="7">07분</option><option value="8">08분</option><option value="9">09분</option></select><select id="adj-period-sec" aria-label="인접채널 실시간 감지 주기 초"><option value="0">00초</option><option value="10" selected>10초</option><option value="20">20초</option><option value="30">30초</option><option value="40">40초</option><option value="50">50초</option></select></span></div>
+    <div class="setting-row"><strong>실시간 재핑 노출 시간</strong><span class="setting-input"><input type="number" id="adj-exposure" aria-label="인접채널 실시간 재핑 노출 시간" min="1" max="60" step="1" value="10"><em>초</em></span></div>
+    <div class="setting-row"><strong>재핑 증감률</strong><span class="setting-input"><select id="adj-dir" aria-label="인접채널 실시간 증감 방향"><option value="down" selected>감소</option><option value="up">증가</option></select><input type="number" id="adj-rate" aria-label="인접채널 실시간 재핑 증감률" min="1" max="50" step="0.1" value="5"><em>% 이상이면 알림</em></span></div><small class="setting-help" id="adj-rate-help">감소 5% 이상이면 알립니다. 예: 8% 감소는 포함, 3% 감소는 제외</small>
+  </div>
+</div>
+
+<div class="alarm-section">
+<div class="alarm-section__head"><strong class="alarm-section__title">3. 채널 구분별 알람</strong></div>
+<p class="alarm-section__desc">홈쇼핑·일반채널을 나눠 알람 주기와 등락률 기준을 따로 둡니다.</p>
+<div class="alarm-sub">
+    <div class="alarm-section__head"><strong class="alarm-sub__title" id="shop-switch-label">홈쇼핑</strong><label class="alarm-switch"><input type="checkbox" role="switch" id="shop-enabled" aria-labelledby="shop-switch-label" checked><span class="switch-track" aria-hidden="true"><span class="switch-on-label">ON</span><span class="switch-off-label">OFF</span></span></label></div>
+    <div class="setting-row"><strong>알람주기</strong><span class="setting-input"><select id="shop-period-min" aria-label="홈쇼핑 알람주기 분"><option value="0">00분</option><option value="1">01분</option><option value="2">02분</option><option value="3">03분</option><option value="4">04분</option><option value="5">05분</option><option value="6">06분</option><option value="7">07분</option><option value="8">08분</option><option value="9">09분</option></select><select id="shop-period-sec" aria-label="홈쇼핑 알람주기 초"><option value="0">00초</option><option value="10" selected>10초</option><option value="20">20초</option><option value="30">30초</option><option value="40">40초</option><option value="50">50초</option></select></span></div>
+    <div class="setting-row"><strong>등락률</strong><span class="setting-input"><select id="shop-dir" aria-label="홈쇼핑 등락 방향"><option value="down" selected>감소</option><option value="up">증가</option></select><input type="number" id="shop-threshold" aria-label="홈쇼핑 등락률" min="1" max="50" step="0.1" value="5"><em>% 이상이면 알림</em></span></div><small class="setting-help" id="shop-rate-help">감소 5% 이상이면 알립니다. 예: 8% 감소는 포함, 3% 감소는 제외</small>
+  </div>
+  <div class="alarm-sub">
+    <div class="alarm-section__head"><strong class="alarm-sub__title" id="gen-switch-label">일반채널</strong><label class="alarm-switch"><input type="checkbox" role="switch" id="gen-enabled" aria-labelledby="gen-switch-label" checked><span class="switch-track" aria-hidden="true"><span class="switch-on-label">ON</span><span class="switch-off-label">OFF</span></span></label></div>
+    <div class="setting-row"><strong>알람주기</strong><span class="setting-input"><select id="gen-period-min" aria-label="일반채널 알람주기 분"><option value="0">00분</option><option value="1">01분</option><option value="2">02분</option><option value="3">03분</option><option value="4">04분</option><option value="5">05분</option><option value="6">06분</option><option value="7">07분</option><option value="8">08분</option><option value="9">09분</option></select><select id="gen-period-sec" aria-label="일반채널 알람주기 초"><option value="0">00초</option><option value="10" selected>10초</option><option value="20">20초</option><option value="30">30초</option><option value="40">40초</option><option value="50">50초</option></select></span></div>
+    <div class="setting-row"><strong>등락률</strong><span class="setting-input"><select id="gen-dir" aria-label="일반채널 등락 방향"><option value="down" selected>감소</option><option value="up">증가</option></select><input type="number" id="gen-threshold" aria-label="일반채널 등락률" min="1" max="50" step="0.1" value="5"><em>% 이상이면 알림</em></span></div><small class="setting-help" id="gen-rate-help">감소 5% 이상이면 알립니다. 예: 8% 감소는 포함, 3% 감소는 제외</small>
+  </div>
+</div>
 </section>
 <div class="validation" id="settings-error" role="status"></div>
 </div>
-<div class="dialog-foot"><button class="reset" id="default-settings">기본값 불러오기</button><div class="actions"><button data-close="settings-dialog">취소</button><button class="save" id="save-settings">적용</button></div></div>
+<div class="dialog-foot"><button class="reset" id="default-settings">기본값 불러오기</button><div class="actions"><button data-close="settings-dialog">취소</button><button class="save" id="save-settings">저장</button></div></div>
 </dialog>
 <dialog id="detail-dialog" aria-labelledby="detail-heading"><div class="dialog-head"><h2 id="detail-heading">프로그램 · 예상 재핑</h2><button class="dialog-close" data-close="detail-dialog" aria-label="상세 닫기"><svg><use href="#close"/></svg></button></div><div class="dialog-body" id="detail-body"></div></dialog>
 <dialog id="alerts-dialog" aria-labelledby="active-alerts-title"><div class="dialog-head"><h2 id="active-alerts-title">타 채널 실제 재핑</h2><button class="dialog-close" data-close="alerts-dialog" aria-label="알림 목록 닫기"><svg><use href="#close"/></svg></button></div><div class="dialog-body" id="active-alerts-body"></div></dialog>
@@ -1105,6 +1170,37 @@ const CompactPreferences = (() => {
     if (typeof settings.lastweekEnabled !== 'boolean') {
       errors.push('지난주 재핑알람의 켜짐 또는 꺼짐 상태를 확인해 주세요.');
     }
+    // 26-09-15 알람 재구성 — 1(관심채널 실시간) 감지주기 · 2(인접채널) 토글 · 2-1 과거 증감률 · 2-2 실시간 한 벌
+    if (!Number.isInteger(settings.interestPeriod) || settings.interestPeriod < 10 || settings.interestPeriod > 590) {
+      errors.push('관심채널 실시간 알림의 감지 주기는 10초 이상으로 선택해 주세요.');
+    }
+    if (typeof settings.rateUp !== 'boolean') {
+      errors.push('관심채널 실시간 알림의 증감 방향을 선택해 주세요.');
+    }
+    if (typeof settings.adjEnabled !== 'boolean') {
+      errors.push('인접채널 재핑 알림의 켜짐 또는 꺼짐 상태를 확인해 주세요.');
+    }
+    if (typeof settings.adjRtEnabled !== 'boolean') {
+      errors.push('인접채널 실시간 재핑 알림의 켜짐 또는 꺼짐 상태를 확인해 주세요.');
+    }
+    if (typeof settings.pastRateUp !== 'boolean') {
+      errors.push('과거 재핑 알림의 증감 방향을 선택해 주세요.');
+    }
+    if (!Number.isFinite(settings.pastThreshold) || settings.pastThreshold > -1 || settings.pastThreshold < -50) {
+      errors.push('과거 재핑 알림의 재핑 증감률은 1%부터 50% 사이의 숫자로 입력해 주세요.');
+    }
+    if (!Number.isInteger(settings.adjPeriod) || settings.adjPeriod < 10 || settings.adjPeriod > 590) {
+      errors.push('인접채널 실시간 재핑 알림의 감지 주기는 10초 이상으로 선택해 주세요.');
+    }
+    if (!Number.isInteger(settings.adjExposure) || settings.adjExposure < 1 || settings.adjExposure > 60) {
+      errors.push('인접채널 실시간 재핑 노출 시간은 1초부터 60초 사이로 입력해 주세요.');
+    }
+    if (typeof settings.adjRateUp !== 'boolean') {
+      errors.push('인접채널 실시간 재핑 알림의 증감 방향을 선택해 주세요.');
+    }
+    if (!Number.isFinite(settings.adjThreshold) || settings.adjThreshold > -1 || settings.adjThreshold < -50) {
+      errors.push('인접채널 실시간 재핑 알림의 재핑 증감률은 1%부터 50% 사이의 숫자로 입력해 주세요.');
+    }
     // 26-09-14 KT 메일(9/8) 이미지의 「홈쇼핑」·「일반채널」 블록 — 두 벌을 같은 규칙으로 검사한다
     [['shop', '홈쇼핑'], ['gen', '일반채널']].forEach(([key, label]) => {
       if (typeof settings[key + 'Enabled'] !== 'boolean') {
@@ -1115,7 +1211,7 @@ const CompactPreferences = (() => {
         errors.push(label + ' 알람주기는 10초 이상으로 선택해 주세요.');
       }
       if (typeof settings[key + 'RateUp'] !== 'boolean') {
-        errors.push(label + ' 등락률의 상승·하락을 선택해 주세요.');
+        errors.push(label + ' 등락률의 증가·감소를 선택해 주세요.');
       }
       const rate = settings[key + 'Threshold'];
       if (!Number.isFinite(rate) || rate > -1 || rate < -50) {
@@ -1134,6 +1230,17 @@ const CompactPreferences = (() => {
       interest: owns(raw, 'interest') ? raw.interest : defaults.interest,
       alertsEnabled: owns(raw, 'alertsEnabled') ? raw.alertsEnabled : true,
       lastweekEnabled: owns(raw, 'lastweekEnabled') ? raw.lastweekEnabled : true,
+      /* 26-09-15 알람 재구성 키 — 옛 저장값엔 없으므로 기본값으로 채운다 */
+      interestPeriod: owns(raw, 'interestPeriod') ? raw.interestPeriod : defaults.interestPeriod,
+      rateUp: owns(raw, 'rateUp') ? raw.rateUp : false,
+      adjEnabled: owns(raw, 'adjEnabled') ? raw.adjEnabled : true,
+      adjRtEnabled: owns(raw, 'adjRtEnabled') ? raw.adjRtEnabled : true,
+      adjPeriod: owns(raw, 'adjPeriod') ? raw.adjPeriod : defaults.adjPeriod,
+      adjExposure: owns(raw, 'adjExposure') ? raw.adjExposure : defaults.adjExposure,
+      adjRateUp: owns(raw, 'adjRateUp') ? raw.adjRateUp : false,
+      adjThreshold: owns(raw, 'adjThreshold') ? raw.adjThreshold : defaults.adjThreshold,
+      pastRateUp: owns(raw, 'pastRateUp') ? raw.pastRateUp : false,
+      pastThreshold: owns(raw, 'pastThreshold') ? raw.pastThreshold : defaults.pastThreshold,
       shopEnabled: owns(raw, 'shopEnabled') ? raw.shopEnabled : true,
       shopPeriod: owns(raw, 'shopPeriod') ? raw.shopPeriod : defaults.shopPeriod,
       shopRateUp: owns(raw, 'shopRateUp') ? raw.shopRateUp : false,
@@ -1173,11 +1280,11 @@ const CompactPreferences = (() => {
 (() => {
   'use strict';
   const E=ZappingEngine, P=CompactPreferences, $=id=>document.getElementById(id);
-  const DEFAULTS={adjacent:['kbs1','mbc','channela','tvchosun'],threshold:-5,exposure:10,interest:['kbs1','mbc','channela','tvchosun','kbs2','sbs','ebs','jtbc','ytn','mbn'],alertsEnabled:true,lastweekEnabled:true,/* 26-09-14 KT 메일(9/8) 이미지의 「홈쇼핑」·「일반채널」 블록 값 — 기존 설정과 별개로 한 벌씩: (옛 값) 없음 */shopEnabled:true,shopPeriod:10,shopRateUp:false,shopThreshold:-5,genEnabled:true,genPeriod:10,genRateUp:false,genThreshold:-5};
+  const DEFAULTS={adjacent:['kbs1','mbc','channela','tvchosun'],threshold:-5,exposure:10,interest:['kbs1','mbc','channela','tvchosun','kbs2','sbs','ebs','jtbc','ytn','mbn'],alertsEnabled:true,lastweekEnabled:true,/* 26-09-15 알람 재구성 값 — 1(관심채널 실시간) 감지주기·증감 방향 · 2(인접채널) 토글·2-2 실시간 한 벌: (옛 값) 없음 */interestPeriod:10,rateUp:false,adjEnabled:true,adjRtEnabled:true,adjPeriod:10,adjExposure:10,adjRateUp:false,adjThreshold:-5,pastRateUp:false,pastThreshold:-5,/* 26-09-14 KT 메일(9/8) 이미지의 「홈쇼핑」·「일반채널」 블록 값 — 기존 설정과 별개로 한 벌씩: (옛 값) 없음 */shopEnabled:true,shopPeriod:10,shopRateUp:false,shopThreshold:-5,genEnabled:true,genPeriod:10,genRateUp:false,genThreshold:-5};
   const initialSecond=644*60, startMinute=630, endMinute=690;
   const storageKey='gsi-compact-zapping-settings-v1';
   const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const clone=value=>({adjacent:[...value.adjacent],threshold:value.threshold,exposure:value.exposure,interest:[...value.interest],alertsEnabled:value.alertsEnabled,lastweekEnabled:value.lastweekEnabled,shopEnabled:value.shopEnabled,shopPeriod:value.shopPeriod,shopRateUp:value.shopRateUp,shopThreshold:value.shopThreshold,genEnabled:value.genEnabled,genPeriod:value.genPeriod,genRateUp:value.genRateUp,genThreshold:value.genThreshold});
+  const clone=value=>({adjacent:[...value.adjacent],threshold:value.threshold,exposure:value.exposure,interest:[...value.interest],alertsEnabled:value.alertsEnabled,lastweekEnabled:value.lastweekEnabled,interestPeriod:value.interestPeriod,rateUp:value.rateUp,adjEnabled:value.adjEnabled,adjRtEnabled:value.adjRtEnabled,adjPeriod:value.adjPeriod,adjExposure:value.adjExposure,adjRateUp:value.adjRateUp,adjThreshold:value.adjThreshold,pastRateUp:value.pastRateUp,pastThreshold:value.pastThreshold,shopEnabled:value.shopEnabled,shopPeriod:value.shopPeriod,shopRateUp:value.shopRateUp,shopThreshold:value.shopThreshold,genEnabled:value.genEnabled,genPeriod:value.genPeriod,genRateUp:value.genRateUp,genThreshold:value.genThreshold});
   const pairs=value=>value.map(([time,rate])=>({minute:E.parseTime(time),rate}));
   const pgm=(name,start,end)=>({name,start:E.parseTime(start),end:E.parseTime(end)});
   // Illustrative programme and historical data; no connection to GSI's live feed.
@@ -1247,7 +1354,7 @@ const CompactPreferences = (() => {
   const selectable=channels.filter(c=>!c.shop), selectableIds=selectable.map(c=>c.id);
   let settings=clone(DEFAULTS), events=[], nextId=0, otherIndex=0, adjacentIndex=0, toastTimer;
   let clockBase=initialSecond, monoBase=performance.now(), playing=false, lastMinute=-1, lastSignature='';
-  let detailChannel=null, detailProgramme=null, triggerElement=null, triggerKey=null, settingsTab='channels', draftOrder=[...DEFAULTS.adjacent];
+  let detailChannel=null, detailProgramme=null, triggerElement=null, triggerKey=null, settingsTab='interest', draftOrder=[...DEFAULTS.adjacent];
   try{const value=P.normalize(JSON.parse(localStorage.getItem(storageKey)),DEFAULTS,selectableIds);if(value)settings=clone(value);}catch{}
   const currentSecond=()=>Math.min(endMinute*60,Math.floor(clockBase+(playing?(performance.now()-monoBase)/1000:0)));
   const candidateFor=(channel,second=currentSecond())=>E.nextCandidate(channel.candidates,second,settings.threshold,startMinute,endMinute);
@@ -1347,16 +1454,16 @@ const CompactPreferences = (() => {
     const eligible=E.eligibleCandidates(channel.candidates,settings.threshold,startMinute,endMinute);
     $('detail-body').innerHTML=`<div class="detail-channel">ch.${channel.number} · ${esc(channel.name)}</div><div class="detail-title">${esc(programme?.name||'방송정보 없음')}</div><div class="detail-time">방송시간 ${timeRange(programme)}</div><div class="candidate-list"><h3>현재 자사 방송 구간의 예상 재핑 · 10:30–11:30</h3><div class="candidate-tags">${!settings.lastweekEnabled?'<span>지난주 재핑알람 OFF</span>':eligible.length?eligible.map(c=>`<span class="${next?.minute===c.minute?'next':''} ${c.minute<Math.floor(second/60)?'past':''}">${E.formatTime(c.minute)}</span>`).join(''):`<span>${channel.candidates===null?'1주 전 기록 없음':'기준에 맞는 예상 없음'}</span>`}</div><p class="detail-explain">${!settings.lastweekEnabled?'지난주 재핑알람이 꺼져 있어 예상 재핑 시점을 표시하지 않습니다.<br>알람 설정에서 켜면 다시 표시됩니다.':`06.05(금)의 분 단위 기록 중 ${rateText()} 시점을 표시합니다.<br>현재 분을 끝까지 표시하고 다음 분부터 다음 후보로 전환합니다.<br>예상 시점 도달은 실제 감지 알림을 발생시키지 않습니다.`}</p></div>`;
   }
-  const settingsTabs=['channels','interest','alerts'];
+  const settingsTabs=['interest','channels','alerts'];   /* 26-09-15 디자이너 요구 — 화살표 이동 순서도 탭 순서를 따른다: (옛 값) ['channels','interest','alerts'] */
   function selectSettingsTab(name){settingsTab=name;for(const tab of settingsTabs){const selected=tab===name;$(tab+'-tab').setAttribute('aria-selected',String(selected));$(tab+'-tab').tabIndex=selected?0:-1;$(tab+'-panel').hidden=!selected;}}
   for(const name of settingsTabs){$(name+'-tab').addEventListener('click',()=>selectSettingsTab(name));$(name+'-tab').addEventListener('keydown',event=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();const i=settingsTabs.indexOf(name),next=event.key==='Home'?settingsTabs[0]:event.key==='End'?settingsTabs[2]:settingsTabs[(i+(event.key==='ArrowRight'?1:2))%3];selectSettingsTab(next);$(next+'-tab').focus();}});}
-  function fillSettings(value){draftOrder=[...value.adjacent];$('channel-choices').innerHTML=selectable.map(c=>`<label><input type="checkbox" value="${c.id}" ${value.adjacent.includes(c.id)?'checked':''}><span>${esc(c.name)}</span><small>ch.${c.number}</small></label>`).join('');$('interest-choices').innerHTML=selectable.map(c=>`<label><input type="checkbox" value="${c.id}" aria-label="${esc(c.name)} 관심 채널" ${value.interest.includes(c.id)?'checked':''}><span>${esc(c.name)}</span><span class="choice-meta"><span class="neighbor-tag" data-interest-neighbor="${c.id}" ${value.adjacent.includes(c.id)?'':'hidden'}>인접</span><small>ch.${c.number}</small></span></label>`).join('');$('threshold').value=value.threshold;$('exposure').value=value.exposure;$('alerts-enabled').checked=value.alertsEnabled;$('lastweek-enabled').checked=value.lastweekEnabled;$('shop-enabled').checked=value.shopEnabled;$('shop-period-min').value=String(Math.floor(value.shopPeriod/60));$('shop-period-sec').value=String(value.shopPeriod%60);$('shop-rate-up').checked=!!value.shopRateUp;$('shop-rate-down').checked=!value.shopRateUp;$('shop-threshold').value=Math.abs(value.shopThreshold);$('gen-enabled').checked=value.genEnabled;$('gen-period-min').value=String(Math.floor(value.genPeriod/60));$('gen-period-sec').value=String(value.genPeriod%60);$('gen-rate-up').checked=!!value.genRateUp;$('gen-rate-down').checked=!value.genRateUp;$('gen-threshold').value=Math.abs(value.genThreshold);validateDraft();}
-  function readDraft(){const checked=Array.from($('channel-choices').querySelectorAll('input:checked')).map(el=>el.value);const retained=draftOrder.filter(id=>checked.includes(id));return {adjacent:[...retained,...checked.filter(id=>!retained.includes(id))],threshold:$('threshold').value===''?NaN:Number($('threshold').value),exposure:$('exposure').value===''?NaN:Number($('exposure').value),interest:Array.from($('interest-choices').querySelectorAll('input:checked')).map(el=>el.value),alertsEnabled:$('alerts-enabled').checked,lastweekEnabled:$('lastweek-enabled').checked,shopEnabled:$('shop-enabled').checked,shopPeriod:Number($('shop-period-min').value)*60+Number($('shop-period-sec').value),shopRateUp:$('shop-rate-up').checked,shopThreshold:$('shop-threshold').value===''?NaN:-Math.abs(Number($('shop-threshold').value)),genEnabled:$('gen-enabled').checked,genPeriod:Number($('gen-period-min').value)*60+Number($('gen-period-sec').value),genRateUp:$('gen-rate-up').checked,genThreshold:$('gen-threshold').value===''?NaN:-Math.abs(Number($('gen-threshold').value))};}
+  function fillSettings(value){draftOrder=[...value.adjacent];$('channel-choices').innerHTML=selectable.map(c=>`<label><input type="checkbox" value="${c.id}" ${value.adjacent.includes(c.id)?'checked':''}><span>${esc(c.name)}</span><small>ch.${c.number}</small></label>`).join('');$('interest-choices').innerHTML=selectable.map(c=>`<label><input type="checkbox" value="${c.id}" aria-label="${esc(c.name)} 관심 채널" ${value.interest.includes(c.id)?'checked':''}><span>${esc(c.name)}</span><span class="choice-meta"><span class="neighbor-tag" data-interest-neighbor="${c.id}" ${value.adjacent.includes(c.id)?'':'hidden'}>인접</span><small>ch.${c.number}</small></span></label>`).join('');/* 26-09-15 증감률은 세 곳 모두 「방향 select + 양수」로 보여준다 — 저장값은 KT 엔진 때문에 음수다 */$('threshold-rate').value=Math.abs(value.threshold);$('threshold-dir').value=value.rateUp?'up':'down';$('exposure').value=value.exposure;$('alerts-enabled').checked=value.alertsEnabled;$('interest-period-min').value=String(Math.floor(value.interestPeriod/60));$('interest-period-sec').value=String(value.interestPeriod%60);$('adj-enabled').checked=value.adjEnabled;$('lastweek-enabled').checked=value.lastweekEnabled;$('past-rate').value=Math.abs(value.pastThreshold);$('past-dir').value=value.pastRateUp?'up':'down';$('adjrt-enabled').checked=value.adjRtEnabled;$('adj-period-min').value=String(Math.floor(value.adjPeriod/60));$('adj-period-sec').value=String(value.adjPeriod%60);$('adj-exposure').value=value.adjExposure;$('adj-rate').value=Math.abs(value.adjThreshold);$('adj-dir').value=value.adjRateUp?'up':'down';$('shop-enabled').checked=value.shopEnabled;$('shop-period-min').value=String(Math.floor(value.shopPeriod/60));$('shop-period-sec').value=String(value.shopPeriod%60);$('shop-dir').value=value.shopRateUp?'up':'down';$('shop-threshold').value=Math.abs(value.shopThreshold);$('gen-enabled').checked=value.genEnabled;$('gen-period-min').value=String(Math.floor(value.genPeriod/60));$('gen-period-sec').value=String(value.genPeriod%60);$('gen-dir').value=value.genRateUp?'up':'down';$('gen-threshold').value=Math.abs(value.genThreshold);validateDraft();}
+  function readDraft(){const checked=Array.from($('channel-choices').querySelectorAll('input:checked')).map(el=>el.value);const retained=draftOrder.filter(id=>checked.includes(id));return {adjacent:[...retained,...checked.filter(id=>!retained.includes(id))],threshold:$('threshold-rate').value===''?NaN:-Math.abs(Number($('threshold-rate').value)),rateUp:$('threshold-dir').value==='up',exposure:$('exposure').value===''?NaN:Number($('exposure').value),interest:Array.from($('interest-choices').querySelectorAll('input:checked')).map(el=>el.value),alertsEnabled:$('alerts-enabled').checked,interestPeriod:Number($('interest-period-min').value)*60+Number($('interest-period-sec').value),adjEnabled:$('adj-enabled').checked,lastweekEnabled:$('lastweek-enabled').checked,pastRateUp:$('past-dir').value==='up',pastThreshold:$('past-rate').value===''?NaN:-Math.abs(Number($('past-rate').value)),adjRtEnabled:$('adjrt-enabled').checked,adjPeriod:Number($('adj-period-min').value)*60+Number($('adj-period-sec').value),adjExposure:$('adj-exposure').value===''?NaN:Number($('adj-exposure').value),adjRateUp:$('adj-dir').value==='up',adjThreshold:$('adj-rate').value===''?NaN:-Math.abs(Number($('adj-rate').value)),shopEnabled:$('shop-enabled').checked,shopPeriod:Number($('shop-period-min').value)*60+Number($('shop-period-sec').value),shopRateUp:$('shop-dir').value==='up',shopThreshold:$('shop-threshold').value===''?NaN:-Math.abs(Number($('shop-threshold').value)),genEnabled:$('gen-enabled').checked,genPeriod:Number($('gen-period-min').value)*60+Number($('gen-period-sec').value),genRateUp:$('gen-dir').value==='up',genThreshold:$('gen-threshold').value===''?NaN:-Math.abs(Number($('gen-threshold').value))};}
   function validateDraft(){const draft=readDraft(),result=P.validate(draft,selectableIds,'gs-shop');$('selection-count').textContent=`${draft.adjacent.length} / 4개 선택`;$('interest-count').textContent=`${draft.interest.length}개 채널 선택`;$('interest-empty-note').hidden=draft.interest.length>0;$('interest-alarm-notice').hidden=draft.alertsEnabled;/* 26-09-14 안내문 갱신 — 기존 「재핑 증감률」은 하락 기준 고정, 아래 두 블록은 +/− 를 따른다 */
-    const rateHelp=(id,value,up)=>{const v=Math.abs(value)||5,sign=up?'+':'−',cmp=up?'이상':'이하';$(id).innerHTML=`예상 시점과 실제 감지에 적용합니다. 현재 ${sign}${v}% ${cmp}<br>예: ${sign}${(v+3).toFixed(0)}%는 포함, ${sign}${Math.max(1,v-2).toFixed(0)}%는 제외`;};
-    rateHelp('rate-help',draft.threshold,false);rateHelp('shop-rate-help',draft.shopThreshold,draft.shopRateUp);rateHelp('gen-rate-help',draft.genThreshold,draft.genRateUp);$('alarm-setting-summary').textContent=!draft.alertsEnabled?'적용하면 표시 중인 알람이 종료됩니다. 예상 시간은 계속 표시되며, 다시 켠 뒤 새로 감지된 재핑부터 알려드립니다.':draft.interest.length?`알람 ON · 선택한 관심 채널 ${draft.interest.length}개에서 실시간 재핑을 받습니다.`:'관심 채널이 없습니다. 관심 채널을 선택하면 실시간 재핑 알람을 받을 수 있습니다.';$('interest-choices').querySelectorAll('[data-interest-neighbor]').forEach(el=>el.hidden=!draft.adjacent.includes(el.dataset.interestNeighbor));$('settings-error').textContent=result.errors[0]||'';$('save-settings').disabled=!result.valid;return result.valid;}
+    /* 26-09-15 화면 표기가 「감소/증가 + 양수 + % 이상이면 알림」으로 통일되어 안내문도 같은 말로 쓴다: (옛 문구) 「현재 −5% 이하 · 예: −8%는 포함」 */const rateHelp=(id,value,up)=>{const el=$(id);if(!el)return;const v=Math.abs(value)||5,dir=up?'증가':'감소';el.innerHTML=`${dir} ${v}% 이상이면 알립니다. 예: ${(v+3).toFixed(0)}% ${dir}는 포함, ${Math.max(1,v-2).toFixed(0)}% ${dir}는 제외`;};
+    rateHelp('rate-help',draft.threshold,draft.rateUp);rateHelp('past-rate-help',draft.pastThreshold,draft.pastRateUp);rateHelp('adj-rate-help',draft.adjThreshold,draft.adjRateUp);rateHelp('shop-rate-help',draft.shopThreshold,draft.shopRateUp);rateHelp('gen-rate-help',draft.genThreshold,draft.genRateUp);$('alarm-setting-summary').textContent=!draft.alertsEnabled?'적용하면 표시 중인 알람이 종료됩니다. 예상 시간은 계속 표시되며, 다시 켠 뒤 새로 감지된 재핑부터 알려드립니다.':draft.interest.length?`알람 ON · 선택한 관심 채널 ${draft.interest.length}개에서 실시간 재핑을 받습니다.`:'관심 채널이 없습니다. 관심 채널을 선택하면 실시간 재핑 알람을 받을 수 있습니다.';$('interest-choices').querySelectorAll('[data-interest-neighbor]').forEach(el=>el.hidden=!draft.adjacent.includes(el.dataset.interestNeighbor));$('settings-error').textContent=result.errors[0]||'';$('save-settings').disabled=!result.valid;return result.valid;}
   function openSettings(tab){fillSettings(settings);selectSettingsTab(tab);showDialog('settings-dialog');}
-  $('open-settings').addEventListener('click',()=>openSettings('channels'));
+  $('open-settings').addEventListener('click',()=>openSettings('interest'));  // 26-09-15 탭 순서를 관심채널·인접채널로 바꿔 첫 탭이 관심채널이 됐다 (옛 값: 'channels')
   $('open-alarm-settings').addEventListener('click',()=>openSettings('alerts'));
   $('channel-choices').addEventListener('change',validateDraft);$('interest-choices').addEventListener('change',validateDraft);/* 26-09-14 알람 탭은 입력칸을 패널 단위로 받는다 — 홈쇼핑·일반채널 두 블록으로 늘면서 개별 연결이 빠지기 쉬웠다. (옛 방식) alerts-enabled·lastweek-enabled·period-min·period-sec·rate-up·rate-down·threshold·exposure 8개를 하나씩 연결 */$('alerts-panel').addEventListener('change',validateDraft);$('alerts-panel').addEventListener('input',validateDraft);
   $('interest-all').addEventListener('click',()=>{$('interest-choices').querySelectorAll('input').forEach(el=>el.checked=true);validateDraft();});
