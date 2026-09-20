@@ -26,6 +26,12 @@
   --pair-3: var(--graph-06);
   --pair-4: var(--graph-15);
   --pair-5: var(--graph-05);
+  /* 26-09-16 교환 한도가 5 → 10 건이 되어 짝 색도 10개로 늘린다 (9/14 요구) */
+  --pair-6: var(--graph-01);
+  --pair-7: var(--graph-13);
+  --pair-8: var(--graph-07);
+  --pair-9: var(--graph-08);
+  --pair-10: var(--graph-03);
   --new: var(--graph-07);
 }
 
@@ -88,7 +94,9 @@ ol, ul { padding: 0; list-style: none; }
 .topbar__user .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--brand-tint); color: var(--brand); display: inline-flex; align-items: center; justify-content: center; font-size: var(--body-2); font-weight: 700; }
 
 /* ── 페이지 헤더 ─────────────────────────────────────── */
-.page-top { display: flex; flex-direction: column; gap: 12px; background: var(--surface); padding: 24px 32px 0; border-bottom: 1px solid var(--line); }
+/* 26-09-16 (옛 값) border-bottom: 1px solid var(--line) — 디자이너 지적으로 선을 빼고 그림자로 띄운다.
+   아래 본문이 흰 바탕이라 선이 없어도 머리 영역이 한 겹 떠 보이게 하는 것이 목적이다. */
+.page-top { display: flex; flex-direction: column; gap: 12px; background: var(--surface); padding: 24px 32px 0; box-shadow: 0 1px 3px rgba(29, 29, 29, .06), 0 4px 12px rgba(29, 29, 29, .04); position: relative; z-index: 2; }
 .page-top__main { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .page-top h1 { font-size: var(--h2); font-weight: 700; letter-spacing: -1px; }
 .page-desc { font-size: var(--body-1); color: var(--ink-3); }
@@ -112,7 +120,8 @@ ol, ul { padding: 0; list-style: none; }
 /* 스테퍼 — 3단계. 활성 = 보라, 완료 = 체크 */
 .stepper { display: flex; align-items: center; gap: 12px; }
 .step { display: inline-flex; align-items: center; gap: 12px; padding: 12px 8px 14px; border: 0; background: transparent; color: var(--ink-4); text-align: left; position: relative; }
-.step::after { content: ""; position: absolute; left: 8px; right: 8px; bottom: -1px; height: 2px; background: transparent; }
+/* 26-09-16 (옛 값) bottom: -1px — 머리 영역의 1px 선 위에 얹던 값이다. 선을 빼면서 0 으로 내린다 */
+.step::after { content: ""; position: absolute; left: 8px; right: 8px; bottom: 0; height: 2px; background: transparent; }
 .step__num { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--line-strong); display: inline-flex; align-items: center; justify-content: center; font-size: var(--body-2); font-weight: 700; color: var(--ink-4); flex: none; }
 .step__txt { display: flex; flex-direction: column; gap: 2px; }
 .step__txt b { font-size: var(--title-2); font-weight: 600; color: inherit; }
@@ -132,7 +141,9 @@ ol, ul { padding: 0; list-style: none; }
 .panel.is-active { display: flex; }
 
 /* 진입 안내 */
-.notice { display: flex; align-items: center; gap: 16px; padding: 16px 24px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-card); }
+/* 26-09-16 (옛 값) border: 1px solid var(--line) — 카드 42개는 전부 그림자만 쓰는데 이 안내만 테두리를 더 갖고 있었다.
+   같은 층에 놓인 상자가 혼자 윤곽선을 두르면 한 단 위로 떠 보인다. 그림자만 남겨 나머지와 맞춘다. */
+.notice { display: flex; align-items: center; gap: 16px; padding: 16px 24px; border-radius: 12px; background: var(--surface); box-shadow: var(--shadow-card); }
 .notice__ic { width: 40px; height: 40px; border-radius: 10px; background: var(--brand-tint); color: var(--brand); display: inline-flex; align-items: center; justify-content: center; flex: none; }
 .notice__txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .notice__txt b { font-size: var(--title-2); }
@@ -161,7 +172,10 @@ ol, ul { padding: 0; list-style: none; }
 .card__head h3 { font-size: var(--title-2); font-weight: 700; white-space: nowrap; }
 .card__head .sub { font-size: var(--body-2); color: var(--ink-4); padding-top: 2px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .card__head .right { margin-left: auto; display: flex; align-items: center; gap: 8px; flex: none; }
-.card__head--sub { border-top: 1px solid var(--line); padding: 14px 24px; }
+/* 26-09-16 (옛 값) border-top 만 더하고 .card__head 의 border-bottom 을 그대로 물려받아
+   「변경안」 제목이 위아래 두 줄 사이에 갇혀 있었다. 제목이 아니라 띠로 읽힌다.
+   가르는 선은 위 하나면 충분하다 — 아래 선은 의도가 아니라 상속의 결과였다. */
+.card__head--sub { border-top: 1px solid var(--line); border-bottom: 0; padding: 14px 24px 4px; }
 .card__body { display: flex; flex-direction: column; gap: 16px; padding: 24px; }
 .card__body--list { padding: 16px 24px 24px; }
 .card__foot { display: flex; justify-content: space-between; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--line); margin-top: auto; }
@@ -247,7 +261,14 @@ button.tile:hover { border-color: var(--line-strong); box-shadow: 0 2px 8px rgba
 /* 교환 페어 — 첫 채널 실선, 맞바꿀 채널 점선. 색은 --pair */
 .tile.is-swap { border-color: var(--pair); box-shadow: 0 0 0 1px var(--pair) inset; }
 .tile.is-swap.is-counterpart { border-style: dashed; box-shadow: none; }
-.tile.is-new { --pair: var(--new); border-color: var(--new); background: color-mix(in srgb, var(--new) 6%, var(--white)); }
+/* 26-09-16 9/14 요구 — 신규 채널이 그리드에서 눈에 안 띈다는 지적.
+   (옛 스타일) 테두리 1px + 배경 6% 뿐이라 교환 타일(안쪽 1px 링까지)보다 약했다.
+   교환과 같은 두께의 링을 주고 왼쪽 장르 띠도 신규 색으로 바꿔 타일 전체가 한 덩어리로 읽히게 한다. */
+.tile.is-new { --pair: var(--new); border-color: var(--new); box-shadow: 0 0 0 1px var(--new) inset; background: color-mix(in srgb, var(--new) 8%, var(--white)); }
+.tile.is-new::before { background: var(--new); }
+/* 26-09-16 시나리오 1 — 번호는 그대로고 그 자리의 PP사만 바뀐 채널. 교환·신규와 색을 갈라 준다 */
+.tile.is-pp { --pair: var(--brand); border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand) inset; background: color-mix(in srgb, var(--brand) 6%, var(--white)); }
+.tile.is-pp::before { background: var(--brand); }
 .tile.is-shift { --pair: var(--new); border-style: dashed; border-color: var(--new); }
 .tile.is-shift .tile__badge { background: transparent; color: var(--new); border: 1px solid var(--new); }
 /* 선택 중 역할(반영 전) — 보라 강조 */
@@ -257,6 +278,7 @@ button.tile:hover { border-color: var(--line-strong); box-shadow: 0 2px 8px rgba
 .tile__lift.is-up { color: var(--graph-07); }
 .tile__lift.is-down { color: var(--down); }
 .pair-1 { --pair: var(--pair-1); } .pair-2 { --pair: var(--pair-2); } .pair-3 { --pair: var(--pair-3); } .pair-4 { --pair: var(--pair-4); } .pair-5 { --pair: var(--pair-5); }
+.pair-6 { --pair: var(--pair-6); } .pair-7 { --pair: var(--pair-7); } .pair-8 { --pair: var(--pair-8); } .pair-9 { --pair: var(--pair-9); } .pair-10 { --pair: var(--pair-10); }
 
 /* 테이블 */
 .table-wrap { overflow-x: auto; }
@@ -278,26 +300,28 @@ button.tile:hover { border-color: var(--line-strong); box-shadow: 0 2px 8px rgba
 .rolebadge { --pair: var(--gray-300); display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 4px; font-size: 11px; font-weight: 700; color: var(--pair); border: 1px solid var(--pair); white-space: nowrap; }
 .rolebadge.is-none { color: var(--ink-4); border-color: var(--line); font-weight: 400; }
 .rolebadge.is-new, .rolebadge.is-shift { --pair: var(--new); }
+.rolebadge.is-pp { --pair: var(--brand); }
 .rolebadge.is-role { --pair: var(--brand); }
 .table .is-up { color: var(--graph-07); font-weight: 700; }
 .table .is-down { color: var(--down); font-weight: 700; }
 
 /* 우측 상세 */
-.detail { display: flex; flex-direction: column; gap: 20px; padding: 24px; }
+/* 26-09-16 패널이 801px 까지 자라 화면 아래로 넘쳤다. (옛 값) gap 20px · padding 24px */
+.detail { display: flex; flex-direction: column; gap: 16px; padding: 20px; }
 .detail__kicker { font-size: var(--body-3); color: var(--ink-4); font-weight: 600; letter-spacing: 0; }
 .detail__title { display: flex; align-items: baseline; gap: 10px; }
 .detail__title b { font-size: var(--h4); font-weight: 700; letter-spacing: -0.6px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .detail__no { font-size: var(--h3); font-weight: 700; color: var(--brand); flex: none; }
 .detail__genre { display: inline-flex; align-items: center; gap: 6px; font-size: var(--body-2); color: var(--ink-3); }
 .detail__genre i { width: 8px; height: 8px; border-radius: 50%; }
-.scores { display: flex; flex-direction: column; gap: 14px; }
-.score { display: flex; flex-direction: column; gap: 6px; }
+.scores { display: flex; flex-direction: column; gap: 12px; }
+.score { display: flex; flex-direction: column; gap: 5px; }
 .score__lbl { display: flex; justify-content: space-between; align-items: baseline; font-size: var(--body-2); color: var(--ink-3); }
 .score__lbl b { font-size: var(--title-2); color: var(--ink); }
 .score__track { height: 8px; border-radius: 4px; background: var(--gray-100); overflow: hidden; }
 .score__track i { display: block; height: 100%; border-radius: 4px; background: var(--brand); }
 .score--composite .score__track i { background: var(--graph-07); }
-.formula { padding: 12px 14px; border-radius: 8px; background: var(--gray-100); font-size: var(--body-3); color: var(--ink-3); line-height: 1.5; }
+.formula { padding: 10px 12px; border-radius: 8px; background: var(--gray-100); font-size: var(--body-3); color: var(--ink-3); line-height: 1.5; }
 .empty-side { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 48px 24px; color: var(--ink-4); text-align: center; }
 .empty-side strong { color: var(--ink-2); }
 
@@ -310,6 +334,33 @@ button.tile:hover { border-color: var(--line-strong); box-shadow: 0 2px 8px rgba
 .mode-tab small { font-size: var(--body-3); color: var(--ink-4); }
 .mode-tab:hover { border-color: var(--line-strong); }
 .mode-tab.is-on { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 5%, var(--white)); }
+/* 26-09-16 시나리오가 셋이 되면서 380px 빌더 칸에 나란히 두면 글자가 눌린다 → 한 줄에 하나씩 세로로 쌓는다 */
+.mode-tabs--3 { grid-template-columns: 1fr; gap: 6px; }
+.mode-tabs--3 .mode-tab { display: grid; grid-template-columns: 18px 1fr; column-gap: 10px; align-items: center; padding: 10px 12px; }
+.mode-tabs--3 .mode-tab .i { grid-row: 1 / span 2; margin-bottom: 0; align-self: center; }
+.mode-tabs--3 .mode-tab b { font-size: var(--body-2); }
+/* 시나리오 1 의 기준 홈쇼핑 — 결과 1순위라 변경안에서도 맨 위에 두고 브랜드색으로 짚어 준다 */
+.change__row--home b { color: var(--brand); }
+.change__row--home { margin-bottom: 2px; }
+
+/* 26-09-16 주위 ±5 채널 영향 — 변경 지점마다 한 덩어리 */
+.zones { display: grid; gap: 14px; }
+.zone { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.zone__head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 10px 14px; background: var(--surface-2); border-bottom: 1px solid var(--line); }
+.zone__head b { font-size: var(--body-1); color: var(--ink); }
+.zone__head span { font-size: var(--body-3); color: var(--ink-3); }
+.zone__range { margin-left: auto; font-variant-numeric: tabular-nums; }
+.zone__tbl { width: 100%; border-collapse: collapse; }
+.zone__tbl th, .zone__tbl td { padding: 7px 14px; text-align: right; font-size: var(--body-2); font-variant-numeric: tabular-nums; }
+.zone__tbl th:nth-child(2), .zone__tbl td:nth-child(2) { text-align: left; }
+.zone__tbl thead th { font-size: var(--body-3); font-weight: 600; color: var(--ink-3); background: var(--surface); border-bottom: 1px solid var(--line); }
+.zone__tbl tbody tr + tr td { border-top: 1px solid var(--line); }
+.zone__tbl td.is-up { color: var(--up); font-weight: 700; }
+/* 시나리오 1 의 결과 1순위 = 옆 홈쇼핑 채널. 표 맨 위에 두고 한 줄만 진하게 */
+.zone__tbl tr.is-home td { background: color-mix(in srgb, var(--brand) 5%, var(--white)); font-weight: 700; }
+/* 26-09-16 직접 바뀐 채널의 시청자수·시청초시간 (요구서 G-5 · 모델 명세 v0.1) */
+.impact__view { display: block; margin-top: 2px; font-size: var(--body-3); color: var(--up); font-weight: 600; font-variant-numeric: tabular-nums; }
+.zone__tag { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 4px; background: var(--brand); color: var(--white); font-size: 10px; font-weight: 700; vertical-align: 1px; }
 .mode-tab.is-on .i, .mode-tab.is-on b { color: var(--brand); }
 
 .flow { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
@@ -338,15 +389,43 @@ button.tile:hover { border-color: var(--line-strong); box-shadow: 0 2px 8px rgba
 .change__row .arrow { color: var(--ink-4); font-variant-numeric: tabular-nums; }
 .change__role { font-size: 10px; font-weight: 700; color: var(--pair); border: 1px solid var(--pair); border-radius: 4px; padding: 0 4px; height: 16px; display: inline-flex; align-items: center; flex: none; }
 .change--new { --pair: var(--new); }
+.change--pp { --pair: var(--brand); }
 
 .legend { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .legend__item { display: inline-flex; align-items: center; gap: 6px; font-size: var(--body-3); color: var(--ink-3); white-space: nowrap; }
 .pair-palette { display: inline-flex; gap: 2px; }
 .pair-palette i { width: 10px; height: 10px; border-radius: 3px; }
 .pair-palette i:nth-child(1) { background: var(--pair-1); } .pair-palette i:nth-child(2) { background: var(--pair-2); } .pair-palette i:nth-child(3) { background: var(--pair-3); } .pair-palette i:nth-child(4) { background: var(--pair-4); } .pair-palette i:nth-child(5) { background: var(--pair-5); }
+.pair-palette i:nth-child(6) { background: var(--pair-6); } .pair-palette i:nth-child(7) { background: var(--pair-7); } .pair-palette i:nth-child(8) { background: var(--pair-8); } .pair-palette i:nth-child(9) { background: var(--pair-9); } .pair-palette i:nth-child(10) { background: var(--pair-10); }
 .legend__line { width: 18px; height: 10px; border: 2px solid var(--ink-3); border-radius: 3px; }
 .legend__line--dash { border-style: dashed; }
 .legend__swatch { width: 10px; height: 10px; border-radius: 3px; background: var(--new); }
+
+/* 26-09-16 변경 건별 취소 버튼 — 9/14 요구. 평소엔 옅게, 올리면 경고색 */
+.change { position: relative; }
+.change__del { position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: var(--ink-3); cursor: pointer; }
+.change__del:hover { background: color-mix(in srgb, var(--down) 10%, var(--white)); color: var(--down); }
+.change__del .i { width: 14px; height: 14px; }
+.change__body { padding-right: 26px; }
+
+/* 26-09-16 지표 약어 툴팁 — 9/14 요구 「CPI 가 정확히 뭔지 알아야 한다」.
+   약어에 점선 밑줄을 둬서 올릴 수 있다는 걸 알리고, 올리면 정식 명칭과 뜻을 띄운다. */
+.abbr { position: relative; border-bottom: 1px dashed var(--ink-3); cursor: help; }
+.abbr::after {
+  content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 8px); z-index: 40;
+  transform: translateX(-50%); width: max-content; max-width: 260px; padding: 8px 10px;
+  border-radius: 8px; background: var(--ink); color: var(--white);
+  font-size: 12px; font-weight: 500; line-height: 1.5; letter-spacing: -.01em; white-space: normal; text-align: left;
+  opacity: 0; visibility: hidden; transition: opacity .12s ease;
+}
+.abbr::before {
+  content: ""; position: absolute; left: 50%; bottom: calc(100% + 3px); z-index: 40;
+  transform: translateX(-50%); border: 5px solid transparent; border-top-color: var(--ink);
+  opacity: 0; visibility: hidden; transition: opacity .12s ease;
+}
+.abbr:hover::after, .abbr:hover::before, .abbr:focus-visible::after, .abbr:focus-visible::before { opacity: 1; visibility: visible; }
+.table th .abbr::after, .table th .abbr::before { bottom: auto; top: calc(100% + 8px); }
+.table th .abbr::before { border-top-color: transparent; border-bottom-color: var(--ink); }
 
 /* ── ③ 결과 ─────────────────────────────────────────── */
 .results-head { display: flex; align-items: center; gap: 16px; }
@@ -375,6 +454,46 @@ button.tile:hover { border-color: var(--line-strong); box-shadow: 0 2px 8px rgba
 .trend .tobe-band { fill: var(--brand); opacity: .08; }
 .trend .event { stroke: var(--sec-orange); stroke-width: 1.5; stroke-dasharray: 4 4; }
 .trend .event-lbl { fill: var(--sec-orange); font-size: 11px; font-weight: 700; letter-spacing: 0; }
+/* 26-09-16 ① 지표 추이 — 선택 채널 패널 안. 선택 채널은 브랜드색 실선, 라인업 평균은 회색 점선.
+   (옛 구성) KPI 아래 폭 전체를 쓰는 카드(#baseTrendChart)에 있었고 선이 라인업 평균 한 줄이었다.
+   되살릴 땐 #baseTrendChart svg{height:220px} · .asis{stroke:var(--brand)} 두 줄이면 된다.
+   ③의 비교 차트는 AS-IS 회색·TO-BE 브랜드 대비가 뜻을 가지므로 그대로 둔다.
+   패널은 스크롤을 따라다니므로(.side) 그리드 뒤쪽 채널을 골라도 여기서 바로 바뀐다 */
+/* 26-09-16 지표 선택·기간·값·차트·범례는 한 덩어리인데 낱개로 떠 있어 따로 놀았다(디자이너 지적).
+   테두리로 묶어 봤으나 선 한 겹이 더 늘어 채택되지 않았고, 간격만 좁혀 붙인다 —
+   묶는 div 는 .detail 의 gap 16px 이 이 다섯 줄 사이에 끼지 않게 하는 역할만 한다.
+   (옛 구성) .trendbox 에 border 1px · radius 10 · padding 10/12 를 줬다 */
+.trendbox { display: flex; flex-direction: column; gap: 4px; }
+.spark__ctl { display: flex; flex-direction: column; gap: 4px; }
+.spark__ctl .select, .spark__ctl .seg { width: 100%; }
+.spark__ctl .seg button { flex: 1; justify-content: center; }
+/* 26-09-16 (옛 배치) 값 두 개를 선 끝에 앉히려고 .spark__plot 오른쪽을 42px 비웠더니
+   차트만 짧아져 위 select·기간 버튼과 오른쪽 끝이 어긋났다. 값은 차트 위 한 줄로 올리고
+   차트는 카드 폭을 끝까지 쓴다 */
+/* 추이 묶음과 아래 지표 막대를 가르는 선. (옛 구성) 바깥 여백 14px 이 더 있었다 */
+.spark { margin: 0; padding-top: 4px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.spark__head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.spark__now { font-size: var(--title-1); font-weight: 800; color: var(--brand); letter-spacing: -.2px; }
+/* 26-09-16 (옛 구성) is-up 은 var(--graph-07), is-down 은 var(--down) 으로 칠했다.
+   is-up 초록이 아래 종합지수 막대의 초록과 같은 값이라 「평균보다 높다」와 「합산 지표」가 섞여 읽혔다.
+   색은 하나로 두고 방향은 ↑↓ 기호가 맡는다. 되살릴 땐 아래 두 줄의 color 를 되돌리면 된다 */
+.spark__gap { font-size: var(--body-3); font-weight: 600; color: var(--ink-3); }
+.spark__gap.is-up, .spark__gap.is-down { color: var(--ink-3); }
+.spark__plot { position: relative; }
+.spark svg { width: 100%; height: 84px; display: block; }
+.spark .avgline { fill: none; stroke: var(--gray-400); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.spark .asis { fill: none; stroke: var(--brand); stroke-width: 2; }
+.spark__area { fill: url(#sparkFill); stroke: none; }
+/* stop-color 는 속성으로 쓰면 var() 가 먹지 않아 CSS 로 준다 */
+#sparkFill stop { stop-color: var(--brand); }
+.spark__cap { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: var(--body-3); color: var(--ink-3); margin-top: 8px; }
+.spark__cap span { display: inline-flex; align-items: center; gap: 5px; }
+.spark__cap i { width: 14px; height: 2px; background: var(--brand); }
+.spark__cap i.avg { background: none; height: 0; border-top: 2px dashed var(--gray-400); }
+/* 26-09-16 차트 84px 에 설명 두 줄은 비중이 컸다. 범례와 한 줄로 합쳐 봤으나 232px 폭에 안 들어가
+   38px 두 줄로 접혔다 — 줄은 그대로 두고 (옛 문구) 「기준일 … · 모델 일일 배치 저장값」을 줄였다 */
+.spark__note { font-size: var(--body-3); color: var(--gray-400); margin-top: 4px; }
+.trend__dot { fill: var(--brand); stroke: var(--white); stroke-width: 2; }
 
 .compare { display: flex; flex-direction: column; gap: 16px; }
 .compare__row { display: grid; grid-template-columns: 140px 1fr 120px; gap: 16px; align-items: center; }
@@ -467,7 +586,7 @@ button.tile:hover { border-color: var(--line-strong); box-shadow: 0 2px 8px rgba
 }
 
 /* ── 26-09-14 KT 자체 시안(9/7) 블록 3종 ───────────────────────
-   기존 SVI/CPI/ZSI 결과 아래에 덧붙인 거시 총량·가치 등급, 그리고 결과 카드의 AS-IS/TO-BE/COMPARE 토글.
+   기존 SVI/CPI/ZPI 결과 아래에 덧붙인 거시 총량·가치 등급, 그리고 결과 카드의 AS-IS/TO-BE/COMPARE 토글.
    (옛 구성) 이 세 덩어리 없음 */
 .table--macro td { font-variant-numeric: tabular-nums; }
 .table--macro td small { color: var(--ink-4); font-size: var(--body-3); font-weight: 400; }
