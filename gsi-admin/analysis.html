@@ -13585,7 +13585,8 @@ document.addEventListener('click', function (ev) {
     var f = function (d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
     h.textContent = '최근 1개월 동일 공통카테고리 편성 성과';
     var p = h.parentElement && h.parentElement.querySelector('p');
-    var txt = f(from) + ' ~ ' + f(to) + ' · ' + cat + '의 요일·시간대별 평균 성과입니다. 셀에 마우스를 올리면 개별 편성일자와 성과를 확인할 수 있습니다.';
+    /* 26-09-27 설명글 삭제 (디자이너) — 뒤 문장 「셀에 마우스를 올리면 개별 편성일자와 성과를 확인할 수 있습니다.」 뺌 */
+    var txt = f(from) + ' ~ ' + f(to) + ' · ' + cat + '의 요일·시간대별 평균 성과입니다.';
     if (p) p.textContent = txt;
     else { p = document.createElement('p'); p.className = 'text-sm text-muted-foreground'; p.textContent = txt; h.insertAdjacentElement('afterend', p); }
     var tab = Array.prototype.find.call(document.querySelectorAll('.ktsn > button'), function (b) { return b.textContent.trim() === '1개월 편성'; });
@@ -14022,7 +14023,8 @@ document.addEventListener('click', function (ev) {
         '<div class="p-5 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">' +
           '<div><h3 class="text-base font-semibold leading-none tracking-normal flex items-center gap-2">' + ICON +
             '체류시간 · 반복시청 분포</h3>' +
-          '<p class="text-sm text-muted-foreground">체류시간 분포와 반복시청가구수를 한 셀에서 함께 봅니다.</p></div>' +
+          /* 26-09-27 설명글 삭제 (디자이너) — (옛) '<p class="text-sm text-muted-foreground">체류시간 분포와 반복시청가구수를 한 셀에서 함께 봅니다.</p>' */
+          '</div>' +
           '<div class="ktc4-lg"><span><i style="background:' + VIO + '"></i>시청 체류 분포</span>' +
           '<span><i style="background:' + ORG + '"></i>시청부터 콜까지</span></div>' +
         '</div>' +
@@ -14432,8 +14434,8 @@ document.addEventListener('click', function (ev) {
             /* 26-08-25 — 원본 히트맵을 화면에서 뺐으므로 '(안)' 표기를 떼고 원본과 같은 이름을 쓴다 */
             '최근 1개월 동일 공통카테고리 편성 성과</h3>' +
           '<p class="text-sm text-muted-foreground mt-2">' + src.querySelector('p').textContent.trim() +
-            /* 원본 부제가 '…있습니다.' 로 끝나 가운뎃점을 붙이면 '니다. ·' 가 된다 — 문장으로 잇는다 */
-            ' 탭을 나누지 않고 한 칸에서 위는 시청, 아래는 콜을 함께 봅니다.</p></div>' +
+            /* 26-09-27 설명글 삭제 (디자이너) — (옛) 뒤에 ' 탭을 나누지 않고 한 칸에서 위는 시청, 아래는 콜을 함께 봅니다.' 를 붙였었다 */
+            '</p></div>' +
           sw(SC) + '</div>' +
         '</div>' +
         '<div class="p-5 pt-5"><div class="overflow-x-auto pb-24 lg:overflow-visible">' +
@@ -14444,9 +14446,9 @@ document.addEventListener('click', function (ev) {
               '<span><u>콜</u>' + ramp(ROSE) + '</span>' +
               '<span>편성 없음<i style="background:#F8FAFC;border:1px dashed #E2E8F0"></i></span>' +
             '</div>' +
-            '<div class="text-xs text-slate-500">' +
-              (SC === 'all' ? '타사 포함(자사 포함 전체 홈쇼핑사)' : '자사 성과') +
-              ' · 값은 동일 요일/시간대의 평균 · 칸을 누르면 호버창이 고정돼 편성을 담을 수 있습니다</div>' +
+            /* 26-09-27 설명글 삭제 (디자이너) — (옛) 범례 아래 한 줄:
+               '<div class="text-xs text-slate-500">' + (SC === 'all' ? '타사 포함(자사 포함 전체 홈쇼핑사)' : '자사 성과') +
+               ' · 값은 동일 요일/시간대의 평균 · 칸을 누르면 호버창이 고정돼 편성을 담을 수 있습니다</div>' */
           '</div>' +
         '</div>' +
       '</div>';
@@ -14538,6 +14540,34 @@ document.addEventListener('click', function (ev) {
     .observe(document.body, { childList: true, subtree: true });
   setTimeout(build, 1400);
   setTimeout(build, 4200);
+})();
+</script>
+
+<script id="gsiDescHideJs">
+/* 26-09-27 설명글 삭제 (디자이너) — 아래 카드 부제는 KT React 번들이 그리는 글이라 번들은 두고 화면에서만 숨긴다.
+   글 앞부분으로 찾아 hidden 을 건다. 되돌리려면 이 블록만 지운다. (옛 값) 모두 표시 */
+(function () {
+  var HEADS = [
+    '선택한 일반채널별로 어떤 프로그램에서 유입/유출이 발생했는지',   // 채널/프로그램별 유입유출 상세
+    '홈쇼핑사별 같은 시간대 기준의 편성 성과를',                      // 동일시간대 17개사 편성 성과
+    '기준으로 시청자수는 좌측 축, 콜 수는 우측 축을',                 // 시청/콜/유입/재핑 통합 분석 (앞에 프로그램명)
+    '선택한 일반채널과 홈쇼핑사 기준 유입은 양수',                     // 유입/유출 채널별 분단위 상세
+    '지속 시청 가구수를 라인으로 비교합니다',                           // 지속시청가구수 분단위 상세
+    '시청 시작 후 콜까지 걸린 시간을 동일 버킷으로',                    // 체류·콜 버킷 (앞에 프로그램명)
+    '연령대별 성별 구성을 비교합니다',                                  // 고객 분포 (앞에 프로그램명)
+    '양의 y축은 전체 유입, 음의 y축은 전체 유출'                        // 순유입
+  ];
+  function hide() {
+    document.querySelectorAll('p.text-muted-foreground').forEach(function (p) {
+      if (p.hidden) return;
+      var t = p.textContent;
+      if (HEADS.some(function (h) { return t.indexOf(h) !== -1; })) p.hidden = true;
+    });
+  }
+  var t = null;
+  hide();
+  new MutationObserver(function () { clearTimeout(t); t = setTimeout(hide, 80); })
+    .observe(document.body, { childList: true, subtree: true, characterData: true });
 })();
 </script>
 

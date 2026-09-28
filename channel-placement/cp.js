@@ -125,9 +125,27 @@ function mountIcons(root = document) {
   });
 }
 
+const AUDIENCE_COLS = [['viewers', '시청자수 (명)'], ['watchSeconds', '시청초시간 (초)']];
+const countFormat = new Intl.NumberFormat('ko-KR');
+const formatCount = n => Number.isFinite(n) ? countFormat.format(Math.round(n)) : '—';
+function sampleAudience(name, no) {
+  const h = hash(name + '-audience-' + no), viewers = 15000 + h % 485000;
+  return { viewers, watchSeconds: viewers * (180 + h % 3420) };
+}
+function audienceOf(c) {
+  const fallback = sampleAudience(c.name, c.originalNo ?? c.no);
+  return Object.fromEntries(AUDIENCE_COLS.map(([key]) => [key, Number.isFinite(c[key]) ? c[key] : fallback[key]]));
+}
+function audienceCells(c) {
+  const values = audienceOf(c);
+  return AUDIENCE_COLS.map(([key]) => `<td class="audience-cell">${formatCount(values[key])}</td>`).join('');
+}
+function audienceComparison(p) {
+  return AUDIENCE_COLS.map(([key]) => `<td class="audience-cell">${p.beforeNo === '신규' ? '—' : formatCount(audienceOf(p.src)[key])} → ${formatCount(p.after[key])}</td>`).join('');
+}
 /* ── 채널 마스터 → 기준 라인업 ─────────────────────────── */
 const base = window.CP_CHANNELS.map(([g, name, no], i) => {
-  const h = hash(name + no), c = { id: 'ch-' + i, g, name, no, originalNo: no };
+  const h = hash(name + no), c = { id: 'ch-' + i, g, name, no, originalNo: no, ...sampleAudience(name, no) };
   // seed[0]=0 이면 시프트 없이 원값(부호 없는 32bit) — `h >> 0` 은 부호 있는 정수로 바뀌어 KT 초안과 값이 달라진다
   METRICS.forEach(m => { c[m.key] = val(m.seed[0] ? h >> m.seed[0] : h, m.seed[1], m.seed[2]); });
   c.composite = composite(c);
@@ -143,16 +161,24 @@ let work = base.map(x => ({ ...x }));
 let changes = [], swapScenarios = [];
 let selectedId = DEFAULT_SELECTED, swapTargetId = null, selectionPhase = 'counterpart', autoApplyPending = false, mode = 'swap';
 let hasResults = false, resultRun = null, failOnce = URL_STATE === 'fail';
+/* 26-09-20 결과가 「없는 것」과 「변경안이 바뀌어 지워진 것」을 빈 화면에서 구분하려고 둔다 */
+let resultsStale = false;
 const pages = { current: 1, scenario: 1, results: 1 };
 const views = { current: 'grid', scenario: 'grid', results: 'grid' };
 const sorts = { current: { key: 'order', dir: 'asc' }, scenario: { key: 'order', dir: 'asc' }, results: { key: 'order', dir: 'asc' } };
-let trend = { days: 7, metric: 'composite' };
+let trend = { days: 7, metric: 'composite', channelId: null };
+let trendRunKey = null;
 let history = [];
 try { history = URL_STATE === 'empty' ? [] : JSON.parse(localStorage.getItem(STORE.history) || '[]'); } catch (e) { history = []; }
 /* 26-09-16 상태 어휘가 성공·실패 둘로 줄어, 예전 브라우저에 남은 이력을 맞춰 준다 (9/14 요구).
    임시·취소는 실행 기록이 아니므로 버린다 — 이력은 「한 번 돌린 결과」만 남긴다. */
 history = history.filter(h => h.status === '완료' || h.status === '성공' || h.status === '실패')
-                 .map(h => (h.status === '완료' ? { ...h, status: '성공' } : h));
+                 .map(h => (h.status === '완료' ? { ...h, status: '성공' } : h))
+                 /* 26-09-20 옛 판에 저장된 기록에 details·scenario 가 없으면 이력 팝업이 통째로 안 열렸다
+                    (renderHistory 의 h.details.slice 에서 멈춘다). 빠진 칸만 채워 읽는다 — 값을 지어내지 않는다 */
+                 .map(h => ({ ...h, details: Array.isArray(h.details) ? h.details : [],
+                                    scenario: Array.isArray(h.scenario) ? h.scenario : [],
+                                    type: h.type || '시뮬레이션 실행', summary: h.summary || '' }));
 
 /* ── 토스트 ───────────────────────────────────────────── */
 let toastTimer;
@@ -226,9 +252,21 @@ function showPanel(n) {
 }
 
 /* ── 변경 메타(타일·표 배지) ───────────────────────────── */
+/* 26-09-20 한 자리를 여러 번 바꾸면 changes 에 그 자리 기록이 여러 줄 쌓인다.
+   개수·목록·등급은 「자리당 한 줄」이어야 하므로 대표 기록 하나만 고른다.
+   고르는 우선순위는 원래 배지(changeMeta)가 쓰던 것 그대로다 — 마지막 교환 > 신규 > PP사 변경 > 마지막 기록 */
+function pickChange(list) {
+  return list.slice().reverse().find(x => x.type === 'swap') || list.find(x => x.type === 'new') || list.find(x => x.type === 'pp') || list[list.length - 1];
+}
+function oncePerSlot(list) {
+  const bySlot = new Map();
+  list.forEach(x => { const a = bySlot.get(x.id) || []; a.push(x); bySlot.set(x.id, a); });
+  return Array.from(bySlot.values()).map(pickChange);
+}
 function changeMeta(c) {
   const own = changes.filter(x => x.id === c.id);
-  const ch = own.slice().reverse().find(x => x.type === 'swap') || own.find(x => x.type === 'new') || own.find(x => x.type === 'pp') || own[own.length - 1];
+  /* 26-09-20 (옛 코드) 같은 우선순위를 여기 직접 적어 뒀다 — pickChange 로 합쳐 결과 쪽과 한 규칙을 쓰게 했다 */
+  const ch = pickChange(own);
   if (!ch) return { cls: '', label: '', badge: '' };
   /* 26-09-16 시나리오 1 — 번호는 그대로고 그 자리의 PP사만 바뀐 채널 */
   if (ch.type === 'pp') return { cls: 'is-pp', label: 'PP사 변경', badge: 'is-pp' };
@@ -254,7 +292,7 @@ function scenarioRole(c) {
 }
 function tile(c, opts = {}) {
   const meta = opts.scenario ? changeMeta(c) : { cls: '', label: '' };
-  const role = opts.scenario ? scenarioRole(c) : '';
+  const role = opts.scenario && !opts.readonly ? scenarioRole(c) : '';
   const roleLabel = role === 'is-role-target' ? '첫 채널 선택 중' : role === 'is-role-counterpart' ? '맞바꿀 채널' : '';
   const badge = roleLabel ? `<span class="tile__badge" style="--pair:var(--brand)">${roleLabel}</span>` : meta.label ? `<span class="tile__badge">${meta.label}</span>` : '';
   /* 26-09-14 KT 시안 뷰 토글 — 결과 카드만 값 표기를 바꾼다. asis=현재값 · tobe=예측값 · compare=현재→미래.
@@ -265,8 +303,8 @@ function tile(c, opts = {}) {
   const dual = opts.after && vv === 'compare' && opts.before !== undefined && opts.lift
     ? `<span class="tile__dual">${f1(opts.before)} <i>→</i> ${f1(opts.after.composite)}</span>` : '';
   const lift = opts.lift !== undefined && vv !== 'asis' ? `<span class="tile__lift ${opts.lift > 0 ? 'is-up' : opts.lift < 0 ? 'is-down' : ''}">${opts.lift ? signed(opts.lift) : f1(score)}</span>` : '';
-  const tag = opts.readonly ? 'div' : 'button';
-  return `<${tag} ${opts.readonly ? '' : 'type="button"'} class="tile ${!opts.scenario && !opts.readonly && selectedId === c.id ? 'is-selected' : ''} ${meta.cls} ${role}" style="--genre:${genreColor(c.g)}" data-id="${c.id}" title="${esc(c.name)} · ${c.g}">
+  const tag = opts.readonly && !opts.selectable ? 'div' : 'button';
+  return `<${tag} ${tag === 'button' ? 'type="button"' : ''} ${opts.selectable ? `aria-pressed="${trend.channelId === c.id}" aria-label="${esc(c.name)} ${c.no}번 이벤트 전후 추이 보기"` : ''} class="tile ${opts.selectable && trend.channelId === c.id ? 'is-result-selected' : ''} ${!opts.scenario && !opts.readonly && selectedId === c.id ? 'is-selected' : ''} ${meta.cls} ${role}" style="--genre:${genreColor(c.g)}" data-id="${c.id}" title="${esc(c.name)} · ${c.g}">
     <div class="tile__top"><span class="tile__no">${c.no}</span>${lift || `<span class="tile__score">${f1(score)}</span>`}</div>
     <div class="tile__name">${esc(c.name)}</div>
     <div class="tile__genre">${dual || c.g}</div>${badge}
@@ -311,7 +349,7 @@ function filtered() {
   const list = base.filter(c => (g === 'all' || c.g === g) && (!q || c.name.toLowerCase().includes(q) || String(c.no).includes(q)));
   return list.sort((a, b) => sort === 'scoreDesc' ? b.composite - a.composite : sort === 'scoreAsc' ? a.composite - b.composite : ord(a.no) - ord(b.no));
 }
-const currentCols = () => [['order', '순서'], ['no', '번호'], ['name', '채널명'], ['genre', '장르'], ...ALL_METRICS.map(m => [m.key, abbr(m)])];
+const currentCols = () => [['order', '순서'], ['no', '번호'], ['name', '채널명'], ['genre', '장르'], ...AUDIENCE_COLS, ...ALL_METRICS.map(m => [m.key, abbr(m)])];
 function channelSortVal(c, key, meta = { label: '' }) {
   if (key === 'order') return ord(c.no);
   if (key === 'no') return c.no;
@@ -325,7 +363,7 @@ function renderChannels() {
   const { start, end } = pageWindow('current', list.length);
   $('#channelGrid').innerHTML = list.slice(start, end).map(c => tile(c)).join('');
   const tb = $('#channelTable');
-  tb.innerHTML = tableList.slice(start, end).map((c, i) => `<tr class="${selectedId === c.id ? 'is-selected' : ''}" data-id="${c.id}"><td>${start + i + 1}</td><td><b>${c.no}</b></td><td><b>${esc(c.name)}</b></td><td><i class="genre-dot" style="background:${genreColor(c.g)}"></i>${c.g}</td>${ALL_METRICS.map(m => `<td><span class="bar"><i style="width:${c[m.key]}%"></i></span>${f1(c[m.key])}</td>`).join('')}</tr>`).join('');
+  tb.innerHTML = tableList.slice(start, end).map((c, i) => `<tr class="${selectedId === c.id ? 'is-selected' : ''}" data-id="${c.id}"><td>${start + i + 1}</td><td><b>${c.no}</b></td><td><b>${esc(c.name)}</b></td><td><i class="genre-dot" style="background:${genreColor(c.g)}"></i>${c.g}</td>${audienceCells(c)}${ALL_METRICS.map(m => `<td><span class="bar"><i style="width:${c[m.key]}%"></i></span>${f1(c[m.key])}</td>`).join('')}</tr>`).join('');
   renderHead('current', currentCols(), tb);
   /* 26-09-16 (옛 코드) $('#totalChannelLabel').textContent = `전체 ${base.length}개 · 현재 조건 ${list.length}개 · 100개씩 조회`;
      — KPI 「조회 채널」 카드와 같은 말이라 마크업째 뺐다(index.html 같은 날짜 주석). */
@@ -381,7 +419,7 @@ function sparkline(c) {
       </svg>
     </div>
     <div class="spark__cap"><span><i></i>이 채널</span><span><i class="avg"></i>라인업 평균</span></div>
-    <div class="spark__note">기준일 ${fmtDate(ymd(yesterday()))} · 전날</div>
+    <div class="spark__note">기준일 ${fmtDate($('#baseDate').value || ymd(yesterday()))} · 예시 추이</div>
   </div>`;
 }
 function renderDetail() {
@@ -402,7 +440,7 @@ function renderDetail() {
 function selectChannel(id) { selectedId = id; renderChannels(); }
 function resetAll() {
   /* 26-09-16 (옛 코드) ops 를 비우지 않아 초기화 뒤에도 옛 작업이 재생 대상으로 남았다 */
-  selectedId = DEFAULT_SELECTED; work = base.map(x => ({ ...x })); changes = []; swapScenarios = []; ppScenarios = []; ops = []; autoApplyPending = false; hasResults = false; resultRun = null;
+  selectedId = DEFAULT_SELECTED; work = base.map(x => ({ ...x })); changes = []; swapScenarios = []; ppScenarios = []; ops = []; autoApplyPending = false; hasResults = false; resultRun = null; resultsStale = false;
   pages.current = pages.scenario = pages.results = 1;
   $('#channelSearch').value = ''; $('#genreFilter').value = 'all'; $('#sortOrder').value = 'channel';
   renderChannels(); renderBuilder(); renderScenario(); renderResults();
@@ -535,6 +573,7 @@ function primPp(slotId, srcId) {
   const oldName = slot.name, oldG = slot.g, ppNo = ppScenarios.length + 1;
   slot.name = src.name; slot.g = src.g;
   ALL_METRICS.forEach(m => { slot[m.key] = src[m.key]; });
+  Object.assign(slot, audienceOf(src));
   const home = homeNeighbor(slot.no);
   changes.push({ id: slot.id, no: slot.no, before: oldName, after: src.name, type: 'pp', ppNo });
   ppScenarios.push({ slotId: slot.id, no: slot.no, oldName, oldG, newName: src.name, newG: src.g,
@@ -546,6 +585,7 @@ function applyPpChange() {
   const r = primPp($('#ppSlot').value, $('#ppNew').value);
   if (!r) { toast('바꿀 채널과 가져올 PP사를 다르게 고르세요.'); return; }
   ops.push({ kind: 'pp', slotId: r.slot.id, srcId: r.src.id });
+  staleResults();
   selectedId = r.slot.id; pageFor('scenario', r.slot.id, work);
   renderBuilder(); renderScenario();
   toast(`${r.slot.no}번을 ${r.oldName} 에서 ${r.src.name}${ro(r.src.name)} 바꿨습니다.`);
@@ -568,6 +608,8 @@ function primSwap(aId, bId) {
   slotA.name = nameB; slotA.g = gB;
   slotB.name = nameA; slotB.g = gA;
   ALL_METRICS.forEach(m => { const t = slotA[m.key]; slotA[m.key] = slotB[m.key]; slotB[m.key] = t; });
+  const audienceA = audienceOf(slotA), audienceB = audienceOf(slotB);
+  Object.assign(slotA, audienceB); Object.assign(slotB, audienceA);
   /* before·after 는 이제 번호가 아니라 그 자리에 앉았던·앉은 채널서비스ID 다 */
   const pair = [{ id: slotA.id, no: slotA.no, before: nameA, after: nameB, type: 'swap', swapNo, swapRole: 'target' }, { id: slotB.id, no: slotB.no, before: nameB, after: nameA, type: 'swap', swapNo, swapRole: 'counterpart' }];
   changes.push(...pair);
@@ -580,6 +622,7 @@ function applySwap() {
   if (!r) { toast('첫 채널과 맞바꿀 채널을 선택하세요.'); return; }
   const { pair, swapNo, source, target, a, b } = r;
   ops.push({ kind: 'swap', aId: source.id, bId: target.id });
+  staleResults();
   /* 26-09-16 (옛 코드) 교환 한 건마다 '임시' 이력을 남겼다. 9/14 요구 정리에서 이력은 실행 결과만,
      상태는 성공·실패 둘뿐으로 정리됐다 — 작업중·취소·임시는 넣지 않는다. 변경 누적은 왼쪽 「변경안」이 보여준다. */
   swapTargetId = null; selectionPhase = 'target';
@@ -589,7 +632,7 @@ function applySwap() {
 function addNewChannel(preset, opId) {
   /* 26-09-16 신규 채널도 한도 10건 — 넘으면 이미 추가한 신규 건을 지우고 다시 넣는다 */
   if (!preset && changes.filter(x => x.type === 'new').length >= MAX_NEW) {
-    toast(`신규 채널 추가는 한 시나리오에서 최대 ${MAX_NEW}건까지 가능합니다. 추가한 신규 채널을 지우고 다시 넣으세요.`); return;
+    toast(`신규 채널 추가는 한 시나리오에서 최대 ${MAX_NEW}건까지 가능합니다. 추가한 신규 채널을 지우고 다시 넣으세요.`); return null;
   }
   const name = preset ? preset.name : $('#newName').value.trim(),
         g = preset ? preset.g : $('#newGenre').value,
@@ -598,6 +641,8 @@ function addNewChannel(preset, opId) {
         similar = byId(preset ? preset.similarId : $('#similarChannel').value, work);
   /* 26-09-16 (옛 코드) 네 가지 상황에 같은 문구 하나를 띄웠다 — 채널명을 제대로 넣고 번호만 틀려도
      「채널명과 …」가 떠서 어디를 고쳐야 할지 알 수 없었다. 거부하는 조건은 그대로 두고 문구만 나눈다. */
+  /* 26-09-20 (옛 코드) 막을 때 그냥 return 했다 — 재생(preset) 중에 실패하면 부르는 쪽이 그 사실을
+     알 수 없어 없는 채널의 변경 건이 변경안에만 남았다. 성공하면 id, 막으면 null 을 돌려준다 */
   if (!name || posText === '' || !Number.isInteger(pos) || pos < 0 || pos > 999 || !similar) {
     if (!preset) {
       toast(!name ? '신규 채널명을 입력하세요.'
@@ -606,7 +651,7 @@ function addNewChannel(preset, opId) {
         : (pos < 0 || pos > 999) ? `채널 번호는 0~999 사이여야 합니다. (입력값 ${pos})`
         : '가장 유사한 기준 채널을 선택하세요.');
     }
-    return;
+    return null;
   }
   /* 26-09-16 KT 확인 — 이미 쓰는 번호에 신규를 넣으면 그 자리 채널을 「바꾼다」. 뒤를 밀지 않는다.
      (옛 동작) 19번에 넣으면 19번 신규 · 20번 옛채널 · 21번… 으로 뒤 채널이 전부 한 칸씩 밀렸다.
@@ -627,18 +672,23 @@ function addNewChannel(preset, opId) {
   const ratio = { svi: .92, cpi: .95, zpi: .9 };
   METRICS.forEach(m => { fresh[m.key] = +(similar[m.key] * (ratio[m.key] || .93)).toFixed(1); });
   fresh.composite = composite(fresh);
+  const similarAudience = audienceOf(similar);
+  fresh.viewers = Math.round(similarAudience.viewers * .9);
+  fresh.watchSeconds = Math.round(similarAudience.watchSeconds * .9);
   work.push(fresh); work.sort((a, b) => ord(a.no) - ord(b.no));
   /* 26-09-16 (옛 형태) before:'신규', after: pos(번호). 세 시나리오의 기록을
      「no = 자리 번호 · before/after = 그 자리의 채널서비스ID」로 통일하면서 바꿨다 */
   const entries = [{ id, no: pos, before: replaced ? replaced.name : '신규', after: name, type: 'new', replacedName: replaced ? replaced.name : '' }];
   changes.push(...entries);
   selectedId = id; pageFor('scenario', id, work);
-  if (preset) return;                                   /* 재생 중 — 기록·안내 없이 상태만 되살린다 */
+  if (preset) return id;                                /* 재생 중 — 기록·안내 없이 상태만 되살린다 */
   ops.push({ kind: 'new', id, name, g, pos, similarId: similar.id });
   $('#newName').value = ''; $('#newPosition').value = '';
   renderBuilder(); renderScenario();
+  staleResults();
   toast(replaced ? `${pos}번을 ${replaced.name} 에서 신규 채널 「${name}」${ro(name)} 바꿨습니다.`
     : `${pos}번에 신규 채널 「${name}」을 추가했습니다.`);
+  return id;
 }
 
 /* ══════════ 변경 건별 취소 — 26-09-16 9/14 요구 ══════════
@@ -647,33 +697,54 @@ function addNewChannel(preset, opId) {
 function rebuildFromOps() {
   const list = ops.slice();
   work = base.map(x => ({ ...x })); changes = []; swapScenarios = []; ppScenarios = []; ops = [];
+  /* 26-09-20 (옛 코드) 재생에 실패한 건을 말없이 버렸다(신규는 반대로 실패해도 ops 에 남겨 유령 행이 됐다).
+     앞 건을 취소하면 그 자리를 쓰던 뒷건이 같이 사라지는데 아무 안내가 없어 변경안 개수만 줄어 보였다.
+     빠진 건을 모아 돌려주고, 부르는 쪽(removeOp)이 사용자에게 알린다 */
+  const dropped = [];
   list.forEach(op => {
-    if (op.kind === 'pp') { if (primPp(op.slotId, op.srcId)) ops.push(op); }
-    else if (op.kind === 'swap') { if (primSwap(op.aId, op.bId)) ops.push(op); }
-    else { addNewChannel({ name: op.name, g: op.g, pos: op.pos, similarId: op.similarId }, op.id); ops.push(op); }
+    if (op.kind === 'pp') { if (primPp(op.slotId, op.srcId)) ops.push(op); else dropped.push(op); }
+    else if (op.kind === 'swap') { if (primSwap(op.aId, op.bId)) ops.push(op); else dropped.push(op); }
+    else if (addNewChannel({ name: op.name, g: op.g, pos: op.pos, similarId: op.similarId }, op.id)) ops.push(op);
+    else dropped.push(op);
   });
   if (!byId(selectedId, work)) selectedId = DEFAULT_SELECTED;
   swapTargetId = null; selectionPhase = 'counterpart'; autoApplyPending = false;
+  if (hasResults) resultsStale = true;
   hasResults = false; resultRun = null;
+  return dropped;
 }
 function removeOp(index) {
   if (index < 0 || index >= ops.length) return;
   const gone = ops[index];
   ops.splice(index, 1);
-  rebuildFromOps();
+  const dropped = rebuildFromOps();
   renderBuilder(); renderScenario(); renderResults();
+  /* 26-09-20 함께 사라진 건을 말해 준다 — 지우는 것 자체는 그대로 두고 안내만 붙였다(디자이너 결정) */
+  const KIND = { swap: '교환', pp: 'PP사 변경', new: '신규 채널' };
+  const also = dropped.length
+    ? ` 이 자리를 쓰던 ${Array.from(new Set(dropped.map(o => KIND[o.kind] || '변경'))).join('·')} ${dropped.length}건도 함께 취소되었습니다.`
+    : '';
   /* 26-09-16 (옛 코드) kind 가 'pp' 인 시나리오 1 항목까지 신규로 읽어 「신규 채널 「undefined」」 가 떴다 */
-  toast(gone.kind === 'swap' ? '교환 한 건을 취소했습니다.'
+  toast((gone.kind === 'swap' ? '교환 한 건을 취소했습니다.'
     : gone.kind === 'pp' ? 'PP사 변경 한 건을 취소했습니다.'
-    : `신규 채널 「${gone.name}」을 취소했습니다.`);
+    : `신규 채널 「${gone.name}」을 취소했습니다.`) + also);
+}
+/* 26-09-20 변경안이 바뀌면 이전 실행 결과는 더 이상 그 변경안의 결과가 아니다.
+   전체 초기화(resetAll·clearScenario)와 건별 취소(rebuildFromOps)는 이미 결과를 내리고 있었고
+   「추가」 경로만 빠져 있어, 실행 뒤 교환을 더 넣어도 옛 결과가 완료 표시를 단 채 남았다.
+   빠진 구멍만 메운다 — 결과를 내리는 규칙 자체는 원래 있던 것이다 */
+function staleResults() {
+  if (!hasResults) return;
+  hasResults = false; resultRun = null; resultsStale = true;
+  renderResults();
 }
 function clearScenario() {
-  work = base.map(x => ({ ...x })); changes = []; swapScenarios = []; ppScenarios = []; ops = []; autoApplyPending = false; hasResults = false; resultRun = null;
+  work = base.map(x => ({ ...x })); changes = []; swapScenarios = []; ppScenarios = []; ops = []; autoApplyPending = false; hasResults = false; resultRun = null; resultsStale = false;
   selectedId = DEFAULT_SELECTED; swapTargetId = null; selectionPhase = 'counterpart'; pages.scenario = pages.results = 1;
   renderBuilder(); renderScenario(); renderResults();
   toast('임시 변경안을 초기화했습니다.');
 }
-const scenarioCols = () => [['order', '순서'], ['no', '번호'], ['name', '채널명'], ['genre', '장르'], ['change', '변경 구분'], ...ALL_METRICS.map(m => [m.key, abbr(m)])];
+const scenarioCols = () => [['order', '순서'], ['no', '번호'], ['name', '채널명'], ['genre', '장르'], ...AUDIENCE_COLS, ['change', '변경 구분'], ...ALL_METRICS.map(m => [m.key, abbr(m)])];
 function renderScenario() {
   const yes = changes.length > 0;
   $('#runBtn').disabled = !yes;
@@ -687,7 +758,7 @@ function renderScenario() {
     const meta = changeMeta(c), role = scenarioRole(c);
     const label = role === 'is-role-target' ? '선택 중 · 첫 채널' : role === 'is-role-counterpart' ? '선택 중 · 맞바꿀 채널' : meta.label || '변경 없음';
     const cls = role ? 'is-role' : meta.badge || 'is-none';
-    return `<tr data-id="${c.id}"><td>${start + i + 1}</td><td><b>${c.no}</b></td><td><b>${esc(c.name)}</b></td><td><i class="genre-dot" style="background:${genreColor(c.g)}"></i>${c.g}</td><td><span class="rolebadge ${cls}">${label}</span></td>${ALL_METRICS.map(m => `<td>${m.key === 'composite' ? `<b>${f1(c[m.key])}</b>` : f1(c[m.key])}</td>`).join('')}</tr>`;
+    return `<tr data-id="${c.id}"><td>${start + i + 1}</td><td><b>${c.no}</b></td><td><b>${esc(c.name)}</b></td><td><i class="genre-dot" style="background:${genreColor(c.g)}"></i>${c.g}</td>${audienceCells(c)}<td><span class="rolebadge ${cls}">${label}</span></td>${ALL_METRICS.map(m => `<td>${m.key === 'composite' ? `<b>${f1(c[m.key])}</b>` : f1(c[m.key])}</td>`).join('')}</tr>`;
   }).join('');
   renderHead('scenario', scenarioCols(), tb);
   setView('scenario', views.scenario);
@@ -755,7 +826,7 @@ function failRun() {
 function completeRun() {
   clearInterval(runTick);
   $$('#runStages li').forEach(li => { li.className = 'is-done'; }); $('#runBar').style.width = '100%';
-  hasResults = true;
+  hasResults = true; resultsStale = false;
   resultRun = { time: Date.now(), baseDate: $('#baseDate').value, changes: changes.map(x => ({ ...x })), swapScenarios: swapScenarios.map(x => ({ ...x })), ppScenarios: ppScenarios.map(x => ({ ...x })), work: work.map(x => ({ ...x })) };
   const entry = recordHistory('시뮬레이션 실행', changes, `${changes.filter(x => x.type !== 'shift').length}개 채널 변경 · 기준일 ${fmtDate(resultRun.baseDate)}`, '성공', resultRun);
   resultRun.id = entry.id;
@@ -765,11 +836,18 @@ function closeRun() { runToken++; clearInterval(runTick); $('#runModal').hidden 
 
 /* ══════════ ③ 결과 ══════════ */
 function projection(c, run = resultRun) {
-  const before = byId(c.id, base), ch = run.changes.find(x => x.id === c.id);
+  /* 26-09-20 이 한 줄에 고친 것이 둘이다.
+     (옛 코드) byId(c.id, base) — 신규 채널이 들어선 자리는 id 가 바뀌어 변경 전을 못 찾았다 (KT 수정본). 자리(번호)로 한 번 더 찾는다.
+     (옛 코드) run.changes.find(...) — 그 자리의 첫 기록만 집어, 내려받는 CSV 의 변경 구분이 최종 상태가 아니라 처음 것으로 나갔다.
+     배지·목록과 같은 대표 기록(pickChange)을 쓴다 */
+  const before = byId(c.id, base) || base.find(x => x.no === c.no), ch = pickChange(run.changes.filter(x => x.id === c.id));
   const lift = ch ? (ch.type === 'shift' ? .35 : 1.3 + (hash(c.name) % 24) / 10) : 0;
   const after = {};
   METRICS.forEach(m => { after[m.key] = +(c[m.key] * (1 + lift * m.liftFactor)).toFixed(2); });
   after.composite = +METRICS.reduce((s, m) => s + after[m.key] * m.weight, 0).toFixed(2);
+  /* 26-09-20 KT 추가 — 지수 Lift 를 시청자수·시청초시간 예상값으로도 환산해 둔다 */
+  const audience = audienceOf(c);
+  AUDIENCE_COLS.forEach(([key]) => { after[key] = Math.round(audience[key] * (1 + lift / 100)); });
   return { c, src: before || c, beforeNo: before ? before.no : '신규', beforeName: before ? before.name : '신규 입점', lift, ciLow: lift ? lift - .8 : 0, ciHigh: lift ? lift + 1 : 0, after, change: ch };
 }
 function lineupImpact(run = resultRun) {
@@ -778,18 +856,31 @@ function lineupImpact(run = resultRun) {
 }
 function renderResults() {
   $('#noResults').hidden = hasResults; $('#resultsContent').hidden = !hasResults;
-  if (!hasResults) return;
+  /* 26-09-20 결과가 왜 없는지 구분해 말한다 — 애초에 안 돌린 것과 변경안을 고쳐 내려간 것은 다르다 */
+  if (!hasResults) {
+    const em = $('#noResults');
+    em.querySelector('strong').textContent = resultsStale ? '변경안이 바뀌어 이전 결과를 내렸습니다' : '시뮬레이션 결과가 없습니다';
+    em.querySelector('span').textContent = resultsStale ? '바뀐 변경안으로 다시 실행하세요.' : '배치 변경 시나리오를 만든 뒤 시뮬레이션을 실행하세요.';
+    return;
+  }
   const run = resultRun, impact = lineupImpact(run);
+  const runKey = String(run.id || run.time);
+  if (trendRunKey !== runKey) { trend.channelId = null; trendRunKey = runKey; }
   $('#resultTitle').textContent = `시나리오 결과 · PP사 변경 ${(run.ppScenarios || []).length}건 · 교환 ${run.swapScenarios.length}쌍 · 신규 ${run.changes.filter(x => x.type === 'new').length}건`;
   $('#resultMeta').textContent = `기준일자 ${fmtDate(run.baseDate)} · 실행 ${fmtTime(run.time)} · 결과는 브라우저에 저장됩니다`;
   renderCond(run);
   $('#totalLift').textContent = `+${f1(impact)}%`;
   $('#totalCi').textContent = `95% 신뢰구간 +${f1(impact - 1.1)}% ~ +${f1(impact + 1.3)}%`;
+  const overallAbsolute = rateAmounts(avg('composite'), impact, 2);
+  $('#totalAbsolute').textContent = `지수 환산 ${formatAbsolute(overallAbsolute.before, 2)} → ${formatAbsolute(overallAbsolute.after, 2)}점 (${signedAbsolute(overallAbsolute.delta, 2)}점)`;
+  $('#totalAbsoluteCi').textContent = `95% 구간 환산 ${formatAbsolute(overallAbsolute.before * (1 + (impact - 1.1) / 100), 2)} ~ ${formatAbsolute(overallAbsolute.before * (1 + (impact + 1.3) / 100), 2)}점`;
   /* 26-09-16 (옛 코드) run.changes.slice(0, 10) — 앞 10건만 그렸다. 직접 변경이 12건이면 2건이
      말없이 빠지고 「10개 영향」이라는 틀린 숫자가 떴다. 교환은 한 쌍이 2건이라 10쌍이면 절반이 사라진다.
      자를 이유가 없어 전부 그린다(최대 40건 = PP 10 + 교환 10쌍 20 + 신규 10).
      byId 가 못 찾는 기록은 건너뛴다 — 시나리오 3 으로 지워진 자리를 가리킬 수 있다. */
-  const affected = run.changes.map((x, i) => { const c = byId(x.id, run.work); return c ? { ...x, c, lift: x.type === 'shift' ? (.2 + (i % 4) * .14) : (1.3 + (hash(c.name) % 24) / 10) } : null; }).filter(Boolean);
+  /* 26-09-20 (옛 코드) run.changes 를 그대로 셌다 — 한 자리를 두 번 바꾸면 같은 채널이 두 줄로 나오고
+     「N개 영향」도 그만큼 부풀었다. 자리당 대표 기록 하나만 센다(oncePerSlot) */
+  const affected = oncePerSlot(run.changes).map((x, i) => { const c = byId(x.id, run.work); return c ? { ...x, c, lift: x.type === 'shift' ? (.2 + (i % 4) * .14) : (1.3 + (hash(c.name) % 24) / 10) } : null; }).filter(Boolean);
   $('#improvedCount').textContent = affected.length + '개';
   $('#declinedCount').textContent = '0개';
   /* 26-09-14 0개일 때는 색을 빼고 회색으로 — 하락이 없는데 빨갛게 강조돼 읽는 사람이 멈칫한다 */
@@ -812,8 +903,8 @@ function renderResults() {
   $('#impactList').innerHTML = affected.map(x => {
     const meta = changeMetaIn(x.c, run);
     const v = viewDelta(x.c, x.lift);
-    return `<div class="impact__row ${meta.badge}"><div class="impact__name"><strong>${esc(x.c.name)}</strong><span>${x.c.g} · ${meta.label || '인접 영향'} · 95% CI ${f1(x.lift - .8)}~${f1(x.lift + 1)}%</span>
-      <span class="impact__view">시청자수 +${v.viwr}% · 시청초시간 +${v.stm}%</span></div><div class="impact__pos">${x.no ?? x.c.no}번 · ${esc(String(x.before))} → <b>${esc(String(x.after))}</b></div><span class="impact__lift">+${f1(x.lift)}%</span></div>`;
+    return `<div class="impact__row ${meta.badge}" data-trend-id="${x.c.id}" role="button" tabindex="0" aria-label="${esc(x.c.name)} 이벤트 전후 추이 보기"><div class="impact__name"><strong>${esc(x.c.name)}</strong><span>${x.c.g} · ${meta.label || '인접 영향'} · 95% CI ${f1(x.lift - .8)}~${f1(x.lift + 1)}% · 환산 ${liftRange(x.c, x.lift - .8, x.lift + 1).map(n => formatAbsolute(n, 2)).join('~')}점</span>
+      </div><div class="impact__pos">${x.no ?? x.c.no}번 · ${esc(String(x.before))} → <b>${esc(String(x.after))}</b></div><span class="impact__lift">+${f1(x.lift)}%</span>${impactAbsoluteTable(x.c, v, x.lift)}</div>`;
   }).join('');
 
   renderZones(run);
@@ -831,6 +922,31 @@ function renderResults() {
    (옛 구성) 「UV · PV · 체류시간」 세 칸을 냈는데 PV(시청 횟수)에 해당하는 출력 컬럼이 명세에 없어
    화면에만 존재하는 값이 됐다. 되살릴 땐 pv: +(uv * (.72 + seed * .5)).toFixed(1) 한 줄이면 된다.
    숫자는 자리표시 더미 — Lift 를 씨앗 삼아 채널마다 다른 비율로 흩뜨린 값이고, 실산식은 모델링 담당이 정한다. */
+// % 표시를 유지하면서 같은 비율로 환산한 기준값·예상값·증감을 함께 제공한다.
+function rateAmounts(before, rate, digits = 0) {
+  const b = +before.toFixed(digits), after = +(b * (1 + rate / 100)).toFixed(digits);
+  return { before: b, after, delta: +(after - b).toFixed(digits), rate, digits };
+}
+function formatAbsolute(value, digits = 0) { return Number(value).toLocaleString('ko-KR', { minimumFractionDigits: digits, maximumFractionDigits: digits }); }
+function signedAbsolute(value, digits = 0) { return (value > 0 ? '+' : '') + formatAbsolute(value, digits); }
+function rateCells(value, rate, digits = 0) {
+  const a = rateAmounts(value, rate, digits), cls = a.delta > 0 ? 'is-up' : a.delta < 0 ? 'is-down' : '';
+  return `<td>${formatAbsolute(a.before, digits)}</td><td><b>${formatAbsolute(a.after, digits)}</b></td><td class="${cls}">${signedAbsolute(a.delta, digits)}</td><td class="${cls}">${signed(rate)}</td>`;
+}
+function liftRange(c, low, high) { return [c.composite * (1 + low / 100), c.composite * (1 + high / 100)].map(v => +v.toFixed(2)); }
+function impactAbsoluteTable(c, rates, lift) {
+  const a = audienceOf(c);
+  return `<div class="impact-absolute-wrap"><table class="impact-absolute"><thead><tr><th>지표</th><th>기준값</th><th>예상값</th><th>증감</th><th>변화율</th></tr></thead><tbody>
+    <tr><th>시청자수 (명)</th>${rateCells(a.viewers, rates.viwr)}</tr>
+    <tr><th>시청초시간 (초)</th>${rateCells(a.watchSeconds, rates.stm)}</tr>
+    <tr><th>종합지수 Lift (점)</th>${rateCells(c.composite, lift, 2)}</tr>
+  </tbody></table></div>`;
+}
+function zoneAbsoluteCells(r) {
+  const a = audienceOf(r.c);
+  return rateCells(a.viewers, r.viwr) + rateCells(a.watchSeconds, r.stm);
+}
+
 function viewDelta(c, lift) {
   const seed = (hash(c.name + 'uv') % 100) / 100;
   const viwr = +(lift * (.78 + seed * .5)).toFixed(1);
@@ -885,9 +1001,9 @@ function renderZones(run) {
   zones.forEach(z => { if (z.homeId) z.rows.sort((a, b) => (b.c.id === z.homeId) - (a.c.id === z.homeId)); });
   el.innerHTML = zones.length ? zones.map(z => `<div class="zone">
     <div class="zone__head"><b>${z.no}번 ${esc(z.name)}</b><span>${esc(z.why)}</span><span class="zone__range">${z.rows.length ? `${z.rows[0].c.no}번 ~ ${z.rows[z.rows.length - 1].c.no}번` : '인접 채널 없음'}</span></div>
-    <table class="zone__tbl"><thead><tr><th>번호</th><th>채널명</th><th>거리</th><th>시청자수</th><th>시청초시간</th></tr></thead>
+    <div class="zone-table-scroll"><table class="zone__tbl"><thead><tr><th rowspan="2" scope="col">번호</th><th rowspan="2" scope="col">채널명</th><th rowspan="2" scope="col">거리</th><th colspan="4" scope="colgroup">시청자수 (명)</th><th colspan="4" scope="colgroup">시청초시간 (초)</th></tr><tr>${['시청자수','시청초시간'].map(() => '<th scope="col">기준값</th><th scope="col">예상값</th><th scope="col">증감</th><th scope="col">변화율</th>').join('')}</tr></thead>
     <tbody>${z.rows.map(r => `<tr class="${r.c.id === z.homeId ? 'is-home' : ''}"><td>${r.c.no}</td><td>${esc(r.c.name)}${r.c.id === z.homeId ? '<span class="zone__tag">기준 홈쇼핑</span>' : ''}</td><td>${r.d > 0 ? '+' : ''}${r.d}</td>
-      <td class="is-up">+${r.viwr}%</td><td class="is-up">+${r.stm}%</td></tr>`).join('')}</tbody></table>
+      ${zoneAbsoluteCells(r)}</tr>`).join('')}</tbody></table></div>
   </div>`).join('') : '<div class="changes__empty">직접 바뀐 채널이 없어 주위 영향을 낼 구간이 없습니다.</div>';
 }
 
@@ -903,7 +1019,11 @@ function renderCond(run) {
   run.changes.filter(x => x.type === 'new').forEach(x => { parts.push(`${label(x.id)} 신규 편성`); });
   const shifts = run.changes.filter(x => x.type === 'shift').length;
   el.innerHTML = parts.length
-    ? `<b>테스트 조건</b> ${parts.map(esc).join(' · ')}${shifts ? ` <small>(번호 순차 이동 ${shifts}개 포함)</small>` : ''}`
+    /* 26-09-20 (옛 코드) `${parts.map(esc).join(' · ')}` — 조건 여러 건이 한 줄에 이어붙어
+       어디서 끊기는지 안 보였다(검토 의견). 글자는 그대로 두고 건마다 span 으로 감싸
+       CSS 가 끊어 보일 수 있게만 바꾼다. 가운뎃점은 cp.css 의 .cond__item + .cond__item::before
+       가 그려서 지금 화면과 똑같이 나온다 — 라이브 모양은 그대로다. */
+    ? `<b>테스트 조건</b> ${parts.map(p => `<span class="cond__item">${esc(p)}</span>`).join('')}${shifts ? ` <small>(번호 순차 이동 ${shifts}개 포함)</small>` : ''}`
     : '<b>테스트 조건</b> 변경 없음';
 }
 
@@ -921,7 +1041,9 @@ function renderMacro(impact) {
 /* 주요 채널 가치 등급 변동 — KT 자체 시안(9/7)의 Asset Value.
    변경 영향 채널만 종합지수 전→후로 등급을 다시 매긴다 */
 function renderGrades(run) {
-  const rows = run.changes.slice(0, 8).map(x => {
+  /* 26-09-20 (옛 코드) run.changes.slice(0, 8) — 같은 자리가 두 번 들어가면 한 채널이 두 장 뜨고
+     그중 한 장은 옛 변경 기준으로 설명됐다. 자리당 한 줄로 줄인 뒤 8건을 자른다 */
+  const rows = oncePerSlot(run.changes).slice(0, 8).map(x => {
     const c = byId(x.id, run.work); if (!c) return null;
     const p = projection(c, run), gb = gradeOf(p.src.composite), ga = gradeOf(p.after.composite);
     const moved = gb !== ga;
@@ -946,7 +1068,7 @@ function changeMetaIn(c, run) {
 /* 26-09-16 (옛 구성) ['before','변경 전'] ['after','변경 후'] 는 **채널번호** 두 칸이었다.
    세 시나리오 모두 번호를 고정하고 채널서비스ID 만 바꾸게 되면서 두 칸이 늘 같은 값이 돼
    「번호 한 칸 + 변경 전 채널 / 변경 후 채널」로 바꿨다. */
-const resultCols = () => [['order', '순서'], ['no', '번호'], ['before', '변경 전 채널'], ['name', '변경 후 채널'], ['genre', '장르'], ['change', '변경 구분'], ...ALL_METRICS.map(m => [m.key, `${abbr(m)} 전→후`]), ['lift', 'Lift'], ['ci', '95% CI']];
+const resultCols = () => [['order', '순서'], ['no', '번호'], ['before', '변경 전 채널'], ['name', '변경 후 채널'], ['genre', '장르'], ...AUDIENCE_COLS.map(([key, label]) => [key, label.replace(' (', ' 전→후 (')]), ['change', '변경 구분'], ...ALL_METRICS.map(m => [m.key, `${abbr(m)} 전→후`]), ['lift', 'Lift'], ['liftAbsolute', 'Lift 환산 기준→예상 (점)'], ['liftDelta', 'Lift 환산 증감 (점)'], ['ci', '95% CI'], ['ciAbsolute', '95% CI 환산 (점)']];
 function resultSortVal(row, key) {
   const { c, p } = row;
   if (key === 'order') return ord(c.no);
@@ -957,6 +1079,9 @@ function resultSortVal(row, key) {
   if (key === 'change') return changeGroupIn(c);
   if (key === 'lift') return p.lift;
   if (key === 'ci') return p.ciLow;
+  if (key === 'liftAbsolute') return rateAmounts(c.composite, p.lift, 2).after;
+  if (key === 'liftDelta') return rateAmounts(c.composite, p.lift, 2).delta;
+  if (key === 'ciAbsolute') return liftRange(c, p.ciLow, p.ciHigh)[0];
   return p.after[key] ?? '';
 }
 function changeGroupIn(c) { const saved = changes; changes = resultRun.changes; const g = changeGroup(c); changes = saved; return g; }
@@ -968,46 +1093,68 @@ function renderResultsChannels() {
   const { start, end } = pageWindow('results', list.length);
   /* 26-09-16 (옛 코드) $('#resultsChannelCount').textContent = `전체 ${list.length}개 · 변경 …개`; — 마크업째 뺐다 */
   const saved = changes; changes = run.changes;
-  $('#resultsGrid').innerHTML = rows.slice(start, end).map(({ c, p }) => tile(c, { scenario: true, readonly: true, after: p.after, before: p.src.composite, lift: p.lift })).join('');
+  $('#resultsGrid').innerHTML = rows.slice(start, end).map(({ c, p }) => tile(c, { scenario: true, readonly: true, selectable: true, after: p.after, before: p.src.composite, lift: p.lift })).join('');
   changes = saved;
   const tb = $('#resultsTable');
-  tb.innerHTML = tableRows.slice(start, end).map(({ c, p, meta }, i) => `<tr data-id="${c.id}"><td>${start + i + 1}</td><td><b>${c.no}</b></td><td>${esc(p.beforeName)}</td><td><b>${esc(c.name)}</b></td><td><i class="genre-dot" style="background:${genreColor(c.g)}"></i>${c.g}</td><td><span class="rolebadge ${meta.badge || 'is-none'}">${meta.label || '변경 없음'}</span></td>${ALL_METRICS.map(m => `<td>${m.key === 'composite' ? '<b>' : ''}${f1(p.src[m.key])} → ${f1(p.after[m.key])}${m.key === 'composite' ? '</b>' : ''}</td>`).join('')}<td class="${p.lift > 0 ? 'is-up' : ''}">${p.lift ? signed(p.lift) : '—'}</td><td>${p.lift ? `${f1(p.ciLow)}~${f1(p.ciHigh)}%` : '—'}</td></tr>`).join('');
+  tb.innerHTML = tableRows.slice(start, end).map(({ c, p, meta }, i) => `<tr data-id="${c.id}" tabindex="0" aria-selected="${trend.channelId === c.id}" class="${trend.channelId === c.id ? 'is-selected' : ''}" aria-label="${esc(c.name)} ${c.no}번 이벤트 전후 추이 보기"><td>${start + i + 1}</td><td><b>${c.no}</b></td><td>${esc(p.beforeName)}</td><td><b>${esc(c.name)}</b></td><td><i class="genre-dot" style="background:${genreColor(c.g)}"></i>${c.g}</td>${audienceComparison(p)}<td><span class="rolebadge ${meta.badge || 'is-none'}">${meta.label || '변경 없음'}</span></td>${ALL_METRICS.map(m => `<td>${m.key === 'composite' ? '<b>' : ''}${f1(p.src[m.key])} → ${f1(p.after[m.key])}${m.key === 'composite' ? '</b>' : ''}</td>`).join('')}<td class="${p.lift > 0 ? 'is-up' : ''}">${p.lift ? signed(p.lift) : '—'}</td><td class="audience-cell">${formatAbsolute(c.composite, 2)} → ${formatAbsolute(rateAmounts(c.composite, p.lift, 2).after, 2)}</td><td class="audience-cell">${signedAbsolute(rateAmounts(c.composite, p.lift, 2).delta, 2)}</td><td>${p.lift ? `${f1(p.ciLow)}~${f1(p.ciHigh)}%` : '—'}</td><td class="audience-cell">${p.lift ? liftRange(c, p.ciLow, p.ciHigh).map(v => formatAbsolute(v, 2)).join(' ~ ') : '—'}</td></tr>`).join('');
   renderHead('results', resultCols(), tb);
   setView('results', views.results);
 }
 
 /* 이벤트 전/후 추이 — AS-IS 실측선(더미)과 TO-BE 예측선. 이벤트(변경 적용 시점) 왼쪽은 둘이 같고 오른쪽부터 갈라진다 */
-function renderTrend() {
-  if (!hasResults) return;
-  /* 26-09-14 오른쪽 여백 16 은 카드 안 패딩 24 보다 좁아 마지막 날 신뢰구간 음영이 카드 끝에 닿았다: (옛 값) padR = 16 */
-  const el = $('#trendChart'), W = Math.max(480, el.clientWidth), H = 260, padL = 44, padR = 28, padT = 16, padB = 32;
-  const N = trend.days, m = ALL_METRICS.find(x => x.key === trend.metric), baseV = avg(m.key), impact = lineupImpact() * (m.key === 'composite' ? 1 : METRICS.find(x => x.key === m.key).lineupLift);
-  const seed = hash(m.key + N);
-  const pts = [];
-  for (let d = -N; d <= N; d++) {
-    const noise = ((hash(String(seed + d)) % 100) / 100 - .5) * baseV * .008;
-    const asis = baseV + noise + Math.sin(d / (N / 2.5)) * baseV * .006;
-    const ramp = d <= 0 ? 0 : Math.min(1, d / Math.max(2, N * .3));
-    const tobe = d <= 0 ? asis : asis * (1 + impact / 100 * ramp);
-    pts.push({ d, asis, tobe, lo: tobe * (1 - .011 * ramp), hi: tobe * (1 + .013 * ramp) });
+function selectResultTrend(id, reveal = false) {
+  if (!hasResults || !resultRun) return;
+  if (id && !byId(id, resultRun.work)) return;
+  trend.channelId = id || null;
+  renderTrend(); renderResultsChannels();
+  if (reveal) {
+    const title = $('#resultTrendTitle');
+    title.closest('.card').scrollIntoView({ behavior: 'instant', block: 'start' });
+    title.focus({ preventScroll: true });
   }
-  const vals = pts.flatMap(p => [p.asis, p.hi, p.lo]), vmin = Math.min(...vals), vmax = Math.max(...vals), span = (vmax - vmin) || 1;
+}
+function renderTrend() {
+  if (!hasResults || !resultRun) return;
+  const c = trend.channelId ? byId(trend.channelId, resultRun.work) : null;
+  if (!c) trend.channelId = null;
+  const p = c ? projection(c, resultRun) : null;
+  const isNew = p && p.beforeNo === '신규';
+  const m = ALL_METRICS.find(x => x.key === trend.metric), N = trend.days;
+  const baseV = p ? p.src[m.key] : avg(m.key);
+  const impact = lineupImpact() * (m.key === 'composite' ? 1 : METRICS.find(x => x.key === m.key).lineupLift);
+  const afterV = p ? p.after[m.key] : baseV * (1 + impact / 100);
+  const channelLabel = c ? `${c.no}번 ${c.name}` : '전체 라인업 평균';
+  $('#resultTrendChannel').innerHTML = '<option value="">전체 라인업 평균</option>' + resultRun.work.slice().sort((a,b) => ord(a.no)-ord(b.no)).map(x => `<option value="${esc(x.id)}">${x.no} · ${esc(x.name)}</option>`).join('');
+  $('#resultTrendChannel').value = trend.channelId || '';
+  $('#resultTrendTitle').textContent = `이벤트 전/후 추이 비교 · ${channelLabel}`;
+  $('#resultTrendDescription').textContent = c ? (isNew ? '신규 빈 번호 · 변경 전 데이터 없음 · 변경 후 예상 추이' : `${c.no}번 기준: ${p.beforeName} → ${c.name}`) : '전체 라인업 평균 · 채널을 선택하면 개별 추이로 전환합니다.';
+  $('#resultTrendSummary').innerHTML = `<span><b>${esc(m.label)}</b> · 기준일 ${fmtDate(resultRun.baseDate)}</span><span>변경 전 <b>${isNew ? '—' : f1(baseV)}</b> → 변경 후 예상 <b>${f1(afterV)}</b></span><span class="sub">예시 추이 · 음영은 설명용 예상 구간입니다.</span>`;
+  const el = $('#trendChart'), W = Math.max(480, el.clientWidth), H = 260, padL = 44, padR = 28, padT = 16, padB = 32;
+  const seed = hash((c ? c.name + c.no : 'lineup') + m.key + N), pts = [];
+  for (let d = -N; d <= N; d++) {
+    const noise = d === 0 || d === N ? 0 : (((hash(String(seed + d)) % 100) / 100 - .5) * baseV * .008 + Math.sin(d / (N / 2.5)) * baseV * .006);
+    const asis = isNew ? null : baseV + noise;
+    const ramp = d <= 0 ? 0 : Math.min(1, d / Math.max(2, N * .3));
+    const tobe = isNew ? (d < 0 ? null : afterV + noise) : asis + (afterV - baseV) * ramp;
+    pts.push({ d, asis, tobe, lo: tobe === null ? null : tobe * (1 - .011 * ramp), hi: tobe === null ? null : tobe * (1 + .013 * ramp) });
+  }
+  const vals = pts.flatMap(p => [p.asis, p.hi, p.lo]).filter(v => v !== null), vmin = Math.min(...vals), vmax = Math.max(...vals), span = (vmax - vmin) || 1;
   const x = d => padL + ((d + N) / (2 * N)) * (W - padL - padR);
   const y = v => padT + (1 - (v - (vmin - span * .15)) / (span * 1.3)) * (H - padT - padB);
-  const path = key => pts.map((p, i) => `${i ? 'L' : 'M'}${x(p.d).toFixed(1)},${y(p[key]).toFixed(1)}`).join(' ');
+  const path = key => pts.filter(p => p[key] !== null).map((p, i) => `${i ? 'L' : 'M'}${x(p.d).toFixed(1)},${y(p[key]).toFixed(1)}`).join(' ');
   const band = pts.filter(p => p.d >= 0);
   const bandPath = band.map((p, i) => `${i ? 'L' : 'M'}${x(p.d).toFixed(1)},${y(p.hi).toFixed(1)}`).join(' ') + ' ' + band.slice().reverse().map(p => `L${x(p.d).toFixed(1)},${y(p.lo).toFixed(1)}`).join(' ') + ' Z';
   const ticks = 4, yTicks = Array.from({ length: ticks + 1 }, (_, i) => vmin - span * .15 + (span * 1.3) * i / ticks);
   const step = N === 7 ? 1 : N === 30 ? 5 : 15;
   const xTicks = []; for (let d = -N; d <= N; d += step) xTicks.push(d);
-  el.innerHTML = `<div class="trend__legend"><span><i></i>AS-IS 실측</span><span><i class="tobe"></i>TO-BE 예측</span><span><i class="event"></i>이벤트(변경 적용)</span><span>음영 = 95% 신뢰구간</span></div>
-  <svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="이벤트 전후 ${m.label} 추이">
+  el.innerHTML = `<div class="trend__legend">${isNew ? '<span>변경 전 데이터 없음</span>' : '<span><i></i>AS-IS 기준 추이</span>'}<span><i class="tobe"></i>TO-BE 예상 추이</span><span><i class="event"></i>이벤트(변경 적용)</span><span>이벤트 전후 각 ${N}일</span></div>
+  <svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(channelLabel)} 이벤트 전후 ${N}일 ${m.label} 추이 · ${isNew ? '변경 전 없음' : f1(baseV)} → ${f1(afterV)}">
     ${yTicks.map(v => `<line class="grid" x1="${padL}" x2="${W - padR}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}"/><text class="axis" x="${padL - 8}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${v.toFixed(1)}</text>`).join('')}
     ${xTicks.map(d => `<text class="axis" x="${x(d).toFixed(1)}" y="${H - 10}" text-anchor="middle">${d === 0 ? '이벤트' : d > 0 ? `+${d}일` : `${d}일`}</text>`).join('')}
     <path class="tobe-band" d="${bandPath}"/>
     <line class="event" x1="${x(0).toFixed(1)}" x2="${x(0).toFixed(1)}" y1="${padT}" y2="${H - padB}"/>
     <text class="event-lbl" x="${(x(0) + 6).toFixed(1)}" y="${padT + 12}">변경 적용</text>
-    <path class="asis" d="${path('asis')}"/>
+    ${isNew ? '' : `<path class="asis" d="${path('asis')}"/>`}
     <path class="tobe" d="${path('tobe')}"/>
   </svg>`;
 }
@@ -1021,7 +1168,8 @@ function saveHistory() {
 /* 26-09-16 상태는 성공·실패 둘뿐 (9/14 요구). scenario 는 실패 건을 그대로 다시 돌리기 위한 재생 정보다. */
 function recordHistory(type, entries, summary, status = '성공', run = null) {
   const details = entries.map(x => { const c = byId(x.id, work) || byId(x.id, base); return { no: x.no ?? (c ? c.no : ''), name: c ? c.name : '미확인 채널', genre: c ? c.g : '', before: x.before, after: x.after, changeType: x.type }; });
-  const item = { id: Date.now(), time: new Date().toISOString(), type, summary, status, details, scenario: ops.map(o => ({ ...o })), run: run ? { time: run.time, baseDate: run.baseDate, changes: run.changes, swapScenarios: run.swapScenarios, work: run.work } : null };
+  /* 26-09-20 baseDate 추가 — 실패 기록에는 run 이 없어 기준일자가 어디에도 남지 않았다(재배치가 오늘 값으로 돌았다) */
+  const item = { id: Date.now(), time: new Date().toISOString(), baseDate: $('#baseDate').value, type, summary, status, details, scenario: ops.map(o => ({ ...o })), run: run ? { time: run.time, baseDate: run.baseDate, changes: run.changes, swapScenarios: run.swapScenarios, ppScenarios: run.ppScenarios, work: run.work } : null };
   history.unshift(item); saveHistory();
   return item;
 }
@@ -1049,6 +1197,9 @@ function rerunFromHistory(id) {
   if (!h || !h.scenario || !h.scenario.length) { toast('다시 돌릴 변경안이 남아 있지 않습니다.'); return; }
   ops = h.scenario.map(o => ({ ...o }));
   rebuildFromOps();
+  /* 26-09-20 「실패한 실행을 그대로 다시 돌린다」는 요구대로 그때의 기준일자로 되돌린다.
+     (옛 코드) 날짜를 손대지 않아 그 사이 입력창을 바꿔 뒀으면 다른 날짜로 돌았다 */
+  if (h.baseDate) $('#baseDate').value = h.baseDate;
   $('#historyModal').hidden = true;
   renderBuilder(); renderScenario(); showPanel('scenario');
   runSimulation();
@@ -1093,11 +1244,16 @@ function downloadReport(run = resultRun) {
   const beforeAvg = {}, afterAvg = {};
   ALL_METRICS.forEach(m => { beforeAvg[m.key] = avg(m.key); afterAvg[m.key] = projections.reduce((s, p) => s + p.after[m.key], 0) / projections.length; });
   const overall = lineupImpact(run), rows = [];
-  rows.push(['채널배치 시뮬레이션 전체 보고서'], ['기준일자', fmtDate(run.baseDate)], ['실행 일시', fmtTime(run.time)], ['다운로드 일시', new Date().toLocaleString('ko-KR')], ['채널 수', run.work.length], ['변경 채널 수', run.changes.length], ['전체 종합지수 Lift(%)', overall.toFixed(2)], []);
+  rows.push(['채널배치 시뮬레이션 전체 보고서'], ['기준일자', fmtDate(run.baseDate)], ['실행 일시', fmtTime(run.time)], ['다운로드 일시', new Date().toLocaleString('ko-KR')], ['시청 지표 안내', '시청자수·누적 시청초시간은 예시 데이터이며, 변경 후는 예시 기준값에 Lift를 적용한 가정입니다.'], ['채널 수', run.work.length], ['변경 채널 수', run.changes.length], ['전체 종합지수 Lift(%)', overall.toFixed(2)], []);
   rows.push(['[전체 지표 변화]'], ['지표', '변경 전', '변경 후 예상', '증감', 'Lift(%)', '95% CI 하한(%)', '95% CI 상한(%)']);
   ALL_METRICS.forEach(m => { const d = afterAvg[m.key] - beforeAvg[m.key], lift = beforeAvg[m.key] ? d / beforeAvg[m.key] * 100 : 0; rows.push([m.label, beforeAvg[m.key].toFixed(2), afterAvg[m.key].toFixed(2), d.toFixed(2), lift.toFixed(2), (lift - 1.1).toFixed(2), (lift + 1.3).toFixed(2)]); });
-  rows.push([], ['[전체 채널 세부 지표]'], ['채널번호', '변경 전 채널', '변경 후 채널', '장르', '변경유형', ...ALL_METRICS.flatMap(m => [`${m.label}(전)`, `${m.label}(후)`, `${m.label} 증감`]), '예상 Lift(%)', '95% CI 하한(%)', '95% CI 상한(%)']);
-  projections.sort((a, b) => ord(a.c.no) - ord(b.c.no)).forEach(p => rows.push([p.c.no, p.beforeName, p.c.name, p.c.g, p.change ? p.change.type : '변경없음', ...ALL_METRICS.flatMap(m => [p.src[m.key].toFixed(2), p.after[m.key].toFixed(2), (p.after[m.key] - p.src[m.key]).toFixed(2)]), p.lift.toFixed(2), p.ciLow.toFixed(2), p.ciHigh.toFixed(2)]));
+  rows.push([], ['[전체 채널 세부 지표]'], ['채널번호', '변경 전 채널', '변경 후 채널', '장르', '변경유형', '시청자수(전,명,예시)', '시청자수(후,명,예상)', '시청초시간(전,초,예시)', '시청초시간(후,초,예상)', ...ALL_METRICS.flatMap(m => [`${m.label}(전)`, `${m.label}(후)`, `${m.label} 증감`]), '예상 Lift(%)', '95% CI 하한(%)', '95% CI 상한(%)', 'Lift 환산 기준(점)', 'Lift 환산 예상(점)', 'Lift 환산 증감(점)', '95% CI 환산 하한(점)', '95% CI 환산 상한(점)']);
+  projections.sort((a, b) => ord(a.c.no) - ord(b.c.no)).forEach(p => rows.push([p.c.no, p.beforeName, p.c.name, p.c.g, p.change ? p.change.type : '변경없음', ...AUDIENCE_COLS.flatMap(([key]) => [p.beforeNo === '신규' ? '' : audienceOf(p.src)[key], p.after[key]]), ...ALL_METRICS.flatMap(m => [p.src[m.key].toFixed(2), p.after[m.key].toFixed(2), (p.after[m.key] - p.src[m.key]).toFixed(2)]), p.lift.toFixed(2), p.ciLow.toFixed(2), p.ciHigh.toFixed(2), p.c.composite, rateAmounts(p.c.composite, p.lift, 2).after, rateAmounts(p.c.composite, p.lift, 2).delta, ...(p.lift ? liftRange(p.c, p.ciLow, p.ciHigh) : ['', ''])]));
+  rows.push([], ['[채널별 시청 영향률 환산]'], ['채널번호', '채널명', '시청자수 기준(명)', '시청자수 예상(명)', '시청자수 증감(명)', '시청자수 변화율(%)', '시청초시간 기준(초)', '시청초시간 예상(초)', '시청초시간 증감(초)', '시청초시간 변화율(%)']);
+  run.changes.forEach((change, i) => { const c = byId(change.id, run.work); if (!c) return; const lift = change.type === 'shift' ? .2 + (i % 4) * .14 : 1.3 + (hash(c.name) % 24) / 10, v = viewDelta(c, lift), a = audienceOf(c); rows.push([c.no, c.name, ...[['viewers',v.viwr],['watchSeconds',v.stm]].flatMap(([key,pct]) => { const r=rateAmounts(a[key],pct); return [r.before,r.after,r.delta,r.rate]; })]); });
+  rows.push([], ['[주위 ±5 채널 영향률 환산]'], ['변경 지점 번호', '변경 지점 채널', '영향 채널 번호', '영향 채널명', '거리', '시청자수 기준(명)', '시청자수 예상(명)', '시청자수 증감(명)', '시청자수 변화율(%)', '시청초시간 기준(초)', '시청초시간 예상(초)', '시청초시간 증감(초)', '시청초시간 변화율(%)']);
+  const direct = run.changes.filter(x => x.type !== 'shift'), excluded = new Set(direct.map(x => x.id)), seen = new Set();
+  direct.forEach(change => { const anchor = byId(change.id, run.work); if (!anchor || seen.has(anchor.no)) return; seen.add(anchor.no); zoneRows(anchor.no, run, excluded).forEach(r => { const a=audienceOf(r.c); rows.push([anchor.no,anchor.name,r.c.no,r.c.name,r.d,...[['viewers',r.viwr],['watchSeconds',r.stm]].flatMap(([key,pct])=>{const x=rateAmounts(a[key],pct);return [x.before,x.after,x.delta,x.rate];})]); }); });
   rows.push([], ['[변경 내역]'], ['채널번호', '장르', '변경 전 채널', '변경 후 채널', '변경유형']);
   run.changes.forEach(x => { const c = byId(x.id, run.work); rows.push([x.no ?? (c ? c.no : ''), c ? c.g : '', x.before, x.after, x.type]); });
   rows.push([], ['[변경 히스토리]'], ['일시', '유형', '상태', '요약', '채널번호', '장르', '변경 전 채널', '변경 후 채널', '변경유형']);
@@ -1133,6 +1289,12 @@ function bind() {
   $('#downloadBtn').addEventListener('click', () => downloadReport());
   /* 26-09-16 (옛 코드) 여기서 #baseTrendMetric 의 option 을 채우고 #baseTrendPeriod 와 함께 리스너를 한 번 걸었다.
      두 컨트롤이 선택 채널 패널 안으로 들어가 renderDetail 이 매번 다시 그리므로 option·리스너 모두 sparkControls 쪽에서 맡는다. */
+  $('#resultTrendChannel').addEventListener('change', e => selectResultTrend(e.target.value));
+  ['#resultsGrid', '#resultsTable', '#impactList'].forEach(selector => {
+    const container = $(selector);
+    container.addEventListener('click', e => { const target = e.target.closest('[data-id], [data-trend-id]'); if (target) selectResultTrend(target.dataset.trendId || target.dataset.id, true); });
+    container.addEventListener('keydown', e => { const target = e.target.closest('tr[data-id], [data-trend-id]'); if (target && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); selectResultTrend(target.dataset.trendId || target.dataset.id, true); } });
+  });
   $('#trendMetric').addEventListener('change', e => { trend.metric = e.target.value; renderTrend(); });
   $$('#trendPeriod button').forEach(b => b.addEventListener('click', () => { trend.days = +b.dataset.days; $$('#trendPeriod button').forEach(x => x.classList.toggle('is-on', x === b)); renderTrend(); }));
   let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { renderTrend(); }, 120); });
@@ -1162,7 +1324,7 @@ function bind() {
      요구서 F-1 「전날까지의 지표를 본다」와 맞춘다. 기준일자는 기록·표기용이라 지표 계산에는 쓰이지 않는다. */
   $('#baseDate').value = ymd(yesterday());
   $('#baseDate').max = ymd(yesterday());
-  $('#baseDate').addEventListener('change', e => { toast(`기준일자를 ${fmtDate(e.target.value)} 로 바꿨습니다. 다음 실행부터 이 날짜의 채널 메타데이터를 사용합니다.`); });
+  $('#baseDate').addEventListener('change', e => { if (!e.target.value || e.target.value > ymd(yesterday())) { e.target.value = ymd(yesterday()); toast('기준일자는 전날까지 선택하세요.'); } else { toast(`기준일자를 ${fmtDate(e.target.value)}로 바꿨습니다. 현재 화면은 예시 데이터입니다.`); } renderDetail(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('#historyModal').hidden = true; } });
 }
 function init() {
@@ -1175,3 +1337,4 @@ function init() {
 }
 init();
 })();
+

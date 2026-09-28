@@ -1,0 +1,438 @@
+@charset "utf-8";
+/* ══════════════════════════════════════════════════════════════════════
+   ③ KT 디자인 킷 적용 — 시험판(ds.html) 전용 되돌리기 레이어
+   26-09-20 작성 · 26-09-21 주제별로 재정리
+
+   라이브(index.html · cp.css)는 건드리지 않는다. 여기서 모양이 확정되면 cp.css 로 접는다.
+   불러오는 순서: ui_style.css(킷) → tokens.css → cp.css → 이 파일.
+   그래서 이 파일이 하는 일은 하나다 — **우리 옛 모양을 걷어내고 킷 값으로 되돌린다.**
+
+   원칙
+     · 킷에 값이 있으면 킷 값을 쓴다. 없으면 왜 그 값인지를 주석에 남긴다.
+     · 바꾼 자리마다 `(옛 값)` 을 적는다 — 언제든 되돌릴 수 있어야 한다.
+     · 색은 「읽어야 할 것」에만 남긴다. 킷 화면 6개 실측 결과 조작부에 브랜드색을
+       쓰는 곳은 거의 없다(통계·시청행태·시스템관리 0건, 대시보드 1건, 편성표 4건).
+       버튼은 짙은 남색 #313B4B, 활성 탭은 굵은 검정. LNB 보라 바탕만 킷 원본대로 둔다.
+
+   차례
+     1. 토큰           2. 글꼴        3. 셸·바탕      4. 페이지 머리
+     5. 단계 탭        6. 버튼        7. 카드·글자    8. 표
+     9. 타일·배지·칩  10. 오버레이   11. Lift 카드   12. 빈 상태
+   ══════════════════════════════════════════════════════════════════════ */
+
+
+/* ══ 1. 토큰 ═══════════════════════════════════════════════════════════
+   cp.css 의 --brand 는 화면 전체를 보라로 칠했다 — 버튼도 탭도 표머리도.
+   --brand 는 「상태·결과」 전용으로 좁히고 조작부용 무채색을 따로 둔다. */
+:root {
+  --ui-ink: #313B4B;          /* KT 주버튼 바탕 (킷 화면 실측) */
+  --ui-ink-hover: #232B38;
+  /* (걷어냄 26-09-21) --kt-blue #5A64FF · --ui-line-strong #111 —
+     선언만 해 놓고 어디서도 쓰지 않았다. 필요해지면 킷에서 다시 가져온다. */
+}
+
+
+/* ══ 2. 글꼴 — 킷이 부르는 Pretendard 파일이 아직 없다 ═════════════════
+   킷 ui_common.css:206~232 이 ../../font/Pretendard/*.woff 넉 장을 선언하는데
+   KT 에게서 폰트를 아직 못 받아 _ds-kt/resource/font/Pretendard/ 가 비어 있다.
+   여기서 @font-face 로 덮어 보았으나 첫 요청이 이미 나간 뒤라 콘솔 404 가 한 개 남았다(26-09-21 실측).
+   그래서 CSS 가 아니라 배포 쪽에서 푼다 — netlify.toml 이 그 경로를 같은 글꼴의 공개 CDN 으로 중계한다.
+   폰트 파일을 리포에 넣지 않은 이유는 넉 장이 4.4MB 라서다.
+   **KT 가 폰트를 주면 그 폴더에 넣고 netlify.toml 의 중계 블록을 지운다.** */
+
+
+/* ══ 3. 셸·바탕 ═══════════════════════════════════════════════════════
+   킷 셸의 뿌리도 class="layout" 이라 cp.css:238 의 우리 2단 그리드가 거기 잘못 걸렸다.
+   (증상) #container 가 1fr 로 줄어 본문이 1347px 에 갇히고, 킷 .contents-area 의
+   min-width:1536px 이 튀어나와 본문 오른쪽이 잘렸다. 뿌리에서만 되돌린다. */
+#layout.layout { display: block; grid-template-columns: none; gap: 0; }
+
+/* 우리 2단 그리드는 이름만 .cp-split 으로 옮겨 그대로 쓴다 (cp.css:238·580·634 와 같은 값) */
+.cp-split { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; align-items: start; }
+.cp-split > * { min-width: 0; }
+.side { position: sticky; top: 24px; }   /* (옛 값) calc(var(--topbar-h) + 24px) — 상단바가 없어졌다 */
+
+@media (max-width: 1600px) {             /* cp.css:580 이 .layout 에만 걸려 있어 여기 옮겨 적는다 */
+  .cp-split { grid-template-columns: minmax(0, 1fr) 280px; }
+}
+
+/* 옆으로 굴리면 회색 바탕이 중간에 끊겼다 — 킷 .contents-area 는 1536px 인데
+   회색을 칠한 .layout 은 body 최소폭(1366px)까지만 늘어나 170px 이 흰 띠로 남았다.
+   body 최소폭을 킷에 맞추고 회색을 body 에도 깐다. */
+body { min-width: 1536px; background: #F1F3F9; }   /* (옛 값) min-width 1366px · 배경 #F8F9FF */
+
+/* 콘텐츠 안쪽 여백은 킷이 준다 — 우리 좌우 여백만 덜어낸다 */
+.page-wrap {
+  padding: 24px 0 48px;                                  /* (옛 값) 24px 32px 48px */
+  --shadow-card: 5px 10px 20px rgba(0, 0, 0, 0.03);      /* (옛 값) 10px 20px 15px rgba(0,0,0,.04) — 킷 .page-body-box */
+}
+
+
+/* ══ 4. 페이지 머리 ═══════════════════════════════════════════════════
+   킷 .page-head-box 는 왼쪽(아이콘+탭)만 있고 오른쪽 칸이 없다. 우리 조작부를 넣으려고 오른쪽을 편다. */
+.page-head-area .page-head-box { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.page-head-area .page-head-box .conts-right { display: flex; align-items: center; gap: 12px; }
+.page-head-area .page-head-info { color: #111; }   /* (옛 값) tokens.css 의 --ink #1D1D1D 가 새어 들어왔다 — 킷 실측은 #111 */
+.page-head-area .page-desc { margin: 10px 0 0; color: var(--ink-3); font-size: var(--body-2); }
+
+/* 붙박이 머리 높이 136px, 설명줄 아래끝도 정확히 136px 이라 본문이 글자에 딱 붙어 지나갔다.
+   킷 머리는 정보줄 40 + 흰 상자 68 = 108 이 전부이고 설명줄이 없어 생긴 일이다. */
+.page-head-area { padding-bottom: 16px; }   /* (옛 값) 0 */
+
+/* 기준일자 — 킷에 대응 부품이 없어 킷 인풋 규격(모서리 6 · 선 #D6DDE9)에 맞춰 짠다 */
+.cp-date { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px;
+           border: 1px solid var(--line); border-radius: 6px; background: var(--white); }
+.cp-date__lbl { color: var(--ink-3); font-size: var(--body-1); font-weight: 600; }   /* (옛 값) 12px */
+.cp-date .input--date { height: 38px; border: 0; background: transparent; font-weight: 600; padding: 0; }
+
+
+/* ══ 5. 단계 탭 — 킷 .cm-tab.ty-main 모양, 우리 .step 훅 유지 ═════════
+   cp.js:246 이 .step 에 is-active·is-done 을 건다. 킷은 li.on 에 모양을 주므로
+   ds.js 가 is-active 를 li.on 으로 옮겨 준다 — 색·굵기는 킷이 직접 칠하게 두고
+   여기서는 cp.css 가 따라 붙인 여백·밑줄만 걷어낸다.
+   킷 실측(ui_common.css:3130): 평소 22px/500 #999, 활성 700 #111, 밑줄 없음. */
+.cm-tab.ty-main .cm-btn.step { padding: 0; gap: 0; }
+.cm-tab.ty-main .cm-btn.step::after { content: none; }   /* (옛 모양) cp.css 의 2px 밑줄 — 킷은 안 쓴다 */
+.cm-tab.ty-main .tab-list:not(.on) .cm-btn.step.is-done { color: #666; }   /* 「지나온 단계」는 킷에 없는 우리 상태 */
+
+
+/* ══ 6. 버튼 ══════════════════════════════════════════════════════════
+   (옛 값) .btn--primary { background: var(--brand) } — 보라 버튼. 킷 주버튼색으로 내린다.
+   높이는 킷이 정한 다섯 가지(32 · 34 · 36 · 44 · 48)만 쓴다 —
+   우리 화면엔 24·30·31·36·38·40·48·53 여덟 가지가 섞여 있었다. */
+.btn--primary { background: var(--ui-ink); border-color: var(--ui-ink); color: var(--white); }
+.btn--primary:hover:not(:disabled) { background: var(--ui-ink-hover); border-color: var(--ui-ink-hover); }
+
+.cm-btn.btn-solid.sty-02 { height: 32px; }   /* (옛 값) 40px — 킷 btn-solid 기본 */
+.btn--sm { height: 36px; }                   /* (옛 값) 40px — 킷 btn-solid.sz-m */
+.seg--sm button { height: 34px; }            /* (옛 값) 30px — 킷 btn-round.sz-s */
+.change__del { width: 32px; height: 32px; }  /* (옛 값) 24px — 킷 최소가 32. 누르기에 작았다 */
+
+/* 아이콘을 품은 킷 버튼만 아이콘이 글자보다 3px 위로 뜨고 간격이 0 이었다.
+   킷 .cm-btn 은 inline-block 이고(ui_common.css:421) 킷 버튼은 아이콘을 배경그림으로 넣지
+   글자 옆에 <svg> 를 두지 않아 이 조합의 규칙이 킷에 없다. 우리 .btn 계열은 이미 flex 라 멀쩡했다. */
+.cm-btn:has(> svg.i) { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+
+
+/* ══ 7. 카드·글자 크기 ════════════════════════════════════════════════
+   카드는 킷 .page-body-box 모양으로 — 라운드 10 · 좌우 여백 32 (킷 화면 31개가 쓴다).
+   우리 것은 라운드 12 · 여백 24 라 킷 화면에 놓으면 우리 카드만 떠 보였다. */
+.card { border-radius: 10px; }                            /* (옛 값) 12px */
+.card__head { padding: 24px 32px; flex-wrap: wrap; }      /* (옛 값) 18px 24px */
+.card__head--sub { padding: 20px 32px 4px; }              /* (옛 값) 14px 24px 4px */
+.card__body { padding: 24px 32px 32px; }                  /* (옛 값) 24px */
+.card__body--list { padding: 16px 32px 32px; }            /* (옛 값) 16px 24px 24px */
+/* flex-wrap 을 준 이유: 좌우 여백이 24→32 로 늘어 폭이 16px 줄자
+   ② 변경 조건 카드의 「PP사 변경 0/10 · 교환 1/10 · 신규 0/10 …」(275px)이 259px 칸에서 잘렸다.
+   말줄임으로 뒷말을 버리는 대신 줄을 바꾼다 — 추이 카드가 이미 같은 처리다(cp.css:645). */
+
+/* 글자 크기 — 킷이 가장 많이 쓰는 건 14px(규칙 62개)·16px(56개)이고 13px 25개, 12px 22개가 그 아래.
+   11px 은 킷 전체에 규칙이 **1개**뿐인데 우리 화면엔 650곳 있었다.
+   타일 10×10 과 표 안은 조밀한 게 맞으니 그대로 두고 그 **바깥**만 올린다.
+   .time·.user-info 는 킷이 직접 정한 12px 이라 손대지 않는다. */
+.card__head h2 { font-size: 20px; color: var(--ink); }   /* (옛 값) 18px · 보라 — 킷 .title 은 20/700 */
+.page-desc { font-size: var(--body-1); }                 /* (옛 값) 13px */
+.kpi__lbl { font-size: var(--body-1); }                  /* (옛 값) 13px */
+.kpi__cap { font-size: var(--body-2); }                  /* (옛 값) 12px */
+.status { font-size: var(--body-1); }                    /* (옛 값) 13px */
+.detail__kicker { font-size: var(--body-2); }            /* (옛 값) 12px */
+.detail__genre { font-size: var(--body-1); }             /* (옛 값) 13px */
+.hero__ci { font-size: var(--body-2); }                  /* (옛 값) 12px */
+.audience-note, .absolute-note, .spark__gap, .spark__note, .formula { font-size: var(--body-2); }  /* (옛 값) 12px */
+.badge { font-size: var(--body-3); }                     /* (옛 값) 11px */
+/* .card__head .sub 는 13px 로 두었다 — 14px 로 올렸더니 ② 변경 조건 카드 줄이 잘렸고(264 < 298),
+   킷도 카드 머리 보조설명에 13px 을 쓴다(규칙 25개). 읽기 문제는 아래 색 교정으로 이미 풀렸다. */
+
+/* 읽어야 할 글자에 보조용 회색을 쓰고 있었다 — --ink-4 = --gray-400 = #7A8490 은
+   흰 바탕 대비 3.80:1 로 본문 기준(4.5) 미달인데 타일 장르·Lift 숫자·카드 보조설명 220곳이 이 색이었다.
+   한 칸 진한 킷 색(--gray-500 #58606A, 5.6:1)으로 옮긴다 — 킷 밖으로 나가지 않는다.
+   (그 결과 --ink-3 과 --ink-4 가 같아진다. 단계를 다시 나눌 일이 생기면 --ink-3 을 --gray-600 으로 올린다) */
+.contents { --ink-4: var(--gray-500); }   /* (옛 값) var(--gray-400) #7A8490 — 3.80:1 */
+/* 초록 #1B926F(3.90:1)는 고치지 않았다 — 킷 초록 넷(#00EEAE·#06C090·#12DB91·#1B926F) 중
+   가장 진한 것이 이미 이 값이라 기준을 맞추려면 킷 밖의 색을 만들어야 한다. 판단 대기. */
+
+/* 색을 덜어내는 곳 — KT 화면에 놓았을 때 튀는 것만. 결과 숫자는 건드리지 않는다.
+   남기는 색: .hero__val(예상 Lift) · .kpi__val.is-up/.is-down · .tile.is-selected ·
+   .impact__lift · .zone__tbl td.is-up · .impact-absolute 의 증감 · 정렬 중인 컬럼 */
+.tag, .tag--soft { background: var(--gray-100); color: var(--ink-3); }   /* (옛 값) 보라 배경·보라 글자 */
+
+
+/* ══ 8. 표 ════════════════════════════════════════════════════════════
+   킷 .cm-table.ty-select.sz-s 규격: 머리 58px · 행 45px · 글자 13px · 첫 칸 왼쪽 여백 16px.
+   우리 옛 값은 머리 40 · 행 41 · 글자 14 였다. 100행 기준 약 400px 길어지는 대신
+   .table-scr-pack 이 머리행을 고정해 17컬럼 결과 표에서 컬럼명이 계속 보인다. */
+.table-scr-pack { max-height: 720px; }
+.table-scr-pack .cm-table table thead th { position: sticky; top: 0; z-index: 2; }
+.table-wrap { overflow: visible; }   /* 킷 래퍼 안으로 들어가며 옛 폭 지정이 두 겹이 됐다 */
+
+.cm-table .table th { background: #F8F9FD; color: #333; font-size: 14px; font-weight: 700;
+                      height: 58px; padding: 9px 12px; border-bottom: 1px solid #ECEEF4; }
+.cm-table .table td { color: #333; border-bottom: 1px solid #ECEEF4; }
+.cm-table.sz-s .table th { font-size: 13px; padding: 13px 4px; }
+.cm-table.sz-s .table td { font-size: 13px; padding: 13px 4px; }
+.cm-table.sz-s .table th:first-child, .cm-table.sz-s .table td:first-child { padding-left: 16px; }
+
+.cm-table .table th button { font: inherit; color: inherit; }        /* 정렬 버튼도 킷 th 글자를 물려받는다 */
+.cm-table .table th button.is-on { color: var(--brand); }            /* 정렬 중인 컬럼만 색 — 상태 표시 */
+.cm-table .table tbody tr:hover td { background: #F8F9FD; }
+.cm-table .table tbody tr.is-selected td { background: var(--brand-tint); }   /* 킷 ty-select 의 tr.on 자리 */
+
+/* ── 가로 스크롤 막대 — 세 영역을 같은 규격으로 ────────────────────
+   맥 기본 막대는 굴릴 때만 잠깐 나타나 마우스 사용자가 잡을 것이 없다.
+   킷은 ::-webkit-scrollbar 를 손봐 늘 보이게 하는 방식을 이미 쓴다(ui_common.css:3892 —
+   5px · 손잡이 #ECEEF4 · 모서리 6). 세로 기준이라 가로 높이가 빠져 있어 그 값을 채운다.
+   높이 10px — 5px 은 마우스로 집기 어렵다. 손잡이 #ECEEF4 는 흰 바탕에서 거의 안 보여
+   홈 #ECEEF4 · 손잡이 #7A8490 으로 뒤집었다(둘 다 킷 색).
+   **표준 속성 scrollbar-width/-color 는 쓰지 않는다** — 크롬에서 이 둘이 있으면
+   ::-webkit-scrollbar 크기 지정을 무시하고 기본 15px 로 돌아간다(26-09-20 실측). 킷도 안 쓴다. */
+.zone-table-scroll,
+.table-scr-pack,
+.impact-absolute-wrap { overflow-x: scroll; }
+.zone-table-scroll::-webkit-scrollbar,
+.table-scr-pack::-webkit-scrollbar,
+.impact-absolute-wrap::-webkit-scrollbar { height: 10px; }
+.zone-table-scroll::-webkit-scrollbar-track,
+.table-scr-pack::-webkit-scrollbar-track,
+.impact-absolute-wrap::-webkit-scrollbar-track { background: #ECEEF4; border-radius: 6px; }
+.zone-table-scroll::-webkit-scrollbar-thumb,
+.table-scr-pack::-webkit-scrollbar-thumb,
+.impact-absolute-wrap::-webkit-scrollbar-thumb { background-color: #7A8490; border-radius: 6px; }
+
+/* ── 주위 ±5 영향표: 앞 3칸 고정 ───────────────────────────────────
+   옆으로 굴리면 번호·채널명·거리가 같이 사라져 어느 채널 줄인지 알 수 없었다.
+   고정하려면 칸 너비가 정해져 있어야 해서 세 칸만 폭을 못 박는다.
+   폭은 314개 채널 이름 분포로 잡았다 — 중앙값 84 · 상위 10% 109 · 상위 5% 116 · 최대 155.
+   채널명 128px 이면 96~97% 가 들어가고 나머지는 말줄임으로 넘긴다.
+   번호 64(가장 긴 "999"가 53px) · 거리 56(머리글 「거리」 기준).
+   킷에는 고정칸 패턴이 없다 — 여기서 새로 만든 것이다.
+   머리 첫 줄의 앞 3칸은 rowspan 이라 tr:first-child 로 집는다(둘째 줄 앞 3칸은 숫자 칸). */
+.zone__tbl thead tr:first-child th:nth-child(-n+3),
+.zone__tbl tbody td:nth-child(-n+3) { position: sticky; background: var(--white); }
+.zone__tbl thead tr:first-child th:nth-child(1),
+.zone__tbl tbody td:nth-child(1) { left: 0; width: 64px; min-width: 64px; }        /* (옛 값) 76px */
+.zone__tbl thead tr:first-child th:nth-child(2),
+.zone__tbl tbody td:nth-child(2) { left: 64px; width: 128px; min-width: 128px;     /* (옛 값) left 76 · 156px */
+  max-width: 128px; overflow: hidden; text-overflow: ellipsis; }
+.zone__tbl thead tr:first-child th:nth-child(3),
+.zone__tbl tbody td:nth-child(3) { left: 192px; width: 56px; min-width: 56px;      /* (옛 값) left 232 · 72px */
+  box-shadow: 1px 0 0 var(--line); }                                                /* 고정 구간이 끝난다는 표시 */
+.zone__tbl thead tr:first-child th:nth-child(-n+3) { z-index: 3; background: var(--surface); }
+.zone__tbl tbody td:nth-child(-n+3) { z-index: 1; }
+.zone__tbl tbody tr.is-home td:nth-child(-n+3) { background: color-mix(in srgb, var(--brand) 5%, var(--white)); }
+
+/* ── 결과 표: 칸 폭을 칸마다 지정 ──────────────────────────────────
+   숫자가 옆 칸 배지 위로 올라탔다. 배지가 넘친 게 아니라 `table-layout: fixed` 라
+   17칸이 전부 142px 로 똑같이 잘렸고, 「시청초시간 전→후」는
+   "598,427,200 → 598,427,200" 이라 199px 이 필요했다 — 넘친 57px 이 옆 칸으로 흘렀다.
+   아래 값은 머리글과 모든 행을 재서 나온 필요폭 + 여유. 합계 1964px 로 가로 이동 거리도 줄었다. */
+[data-view-panel="results:table"] .table { min-width: 1964px; }   /* (옛 값) 2420px */
+[data-view-panel="results:table"] .table thead th:nth-child(1)  { width: 60px; }    /* 순서 */
+[data-view-panel="results:table"] .table thead th:nth-child(2)  { width: 56px; }    /* 번호 */
+[data-view-panel="results:table"] .table thead th:nth-child(3)  { width: 168px; }   /* 변경 전 채널 — 가장 긴 이름 기준 */
+[data-view-panel="results:table"] .table thead th:nth-child(4)  { width: 168px; }   /* 변경 후 채널 */
+[data-view-panel="results:table"] .table thead th:nth-child(5)  { width: 104px; }   /* 장르 */
+[data-view-panel="results:table"] .table thead th:nth-child(6)  { width: 140px; }   /* 시청자수 전→후 */
+[data-view-panel="results:table"] .table thead th:nth-child(7)  { width: 210px; }   /* 시청초시간 전→후 — 가장 긴 칸 */
+[data-view-panel="results:table"] .table thead th:nth-child(8)  { width: 170px; }   /* 변경 구분 — 배지 */
+[data-view-panel="results:table"] .table thead th:nth-child(9)  { width: 88px; }    /* SVI */
+[data-view-panel="results:table"] .table thead th:nth-child(10) { width: 88px; }    /* CPI */
+[data-view-panel="results:table"] .table thead th:nth-child(11) { width: 88px; }    /* ZPI */
+[data-view-panel="results:table"] .table thead th:nth-child(12) { width: 108px; }   /* 종합지수 */
+[data-view-panel="results:table"] .table thead th:nth-child(13) { width: 56px; }    /* Lift */
+[data-view-panel="results:table"] .table thead th:nth-child(14) { width: 152px; }   /* Lift 환산 기준→예상 */
+[data-view-panel="results:table"] .table thead th:nth-child(15) { width: 118px; }   /* Lift 환산 증감 */
+[data-view-panel="results:table"] .table thead th:nth-child(16) { width: 72px; }    /* 95% CI */
+[data-view-panel="results:table"] .table thead th:nth-child(17) { width: 118px; }   /* 95% CI 환산 */
+
+
+/* ══ 9. 타일·배지·칩 ══════════════════════════════════════════════════
+   타일 배지 글자가 잘렸다. 실측: 타일 87px · 안쪽 63px 인데 배지가 필요로 하는 폭은
+   「교환 1 · 첫 채널」66px, 「교환 1 · 맞바꿀 채널」83px — 한 줄로는 어느 쪽도 못 들어간다.
+   cp.css:259 가 text-overflow: ellipsis 를 걸어 뒀지만 그 요소가 inline-flex 라
+   말줄임이 걸리지 않고 글자가 그냥 잘렸다(「맞바꿀 채…」가 아니라 「맞바꿀」에서 뚝).
+   여백·자간을 줄여도 20px 이 모자라 두 줄을 허용한다.
+   글자는 cp.js 가 만든다 — 라이브와 같은 파일이라 문구는 건드리지 않는다. */
+.tile__badge {
+  display: block;                 /* (옛 값) inline-flex — 말줄임이 안 먹던 원인 */
+  width: 100%; box-sizing: border-box;
+  height: auto; min-height: 18px; /* (옛 값) height: 18px */
+  padding: 2px 6px;               /* (옛 값) 0 6px */
+  line-height: 1.3;
+  white-space: normal;            /* (옛 값) nowrap */
+  word-break: keep-all;           /* 낱말 안에서 끊지 않는다 */
+  text-align: center;
+  text-overflow: clip;            /* (옛 값) ellipsis — 두 줄이 되면 쓸 일이 없다 */
+}
+
+.rolebadge { border-radius: 4px; font-size: 12px; }                   /* 킷 .tbl-badge 모양 */
+.kpi__lbl .tag { height: 20px; padding: 0 7px; border-radius: 4px; }  /* (옛 값) 24px / 0 10px / 6px — Lift 카드 머리 배지만 */
+
+/* 「테스트 조건」이 한 줄로 이어져 어디서 끊기는지 안 보였다
+   (「8번 ↔ 999번 … · 21번 ↔ 28번 … · 29번 ↔ 999번 …」이 한 덩어리로 읽혔다).
+   cp.js 가 건마다 .cond__item 으로 감싸도록 바꿨고(라이브 글자는 cp.css 가 그대로 되살린다),
+   시험판에서는 건마다 칩으로 끊는다. */
+.cond { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; }
+.cond b { margin-right: 4px; }                          /* (옛 값) 10px — 이제 gap 이 있다 */
+.cond__item { padding: 3px 10px; border-radius: 4px;
+              background: var(--white); border: 1px solid var(--line); color: var(--ink-2); }
+.cond__item + .cond__item::before { content: none; }    /* cp.css 의 가운뎃점 대신 칩으로 끊는다 */
+
+
+/* ══ 10. 오버레이 — 겹침 순서·토스트·팝업 닫기 ════════════════════════
+   킷이 쌓는 층: .container 100 · .lnb 600 · .page-head-area 600 ·
+   팝업 1000 · 알럿/토스트 3000 · 로딩 4000.
+   우리 값은 툴팁 40 · 모달 80 · 토스트 90 이라 **본문(100)보다도 아래**였다 —
+   「시뮬레이션 실행」을 눌러도 연산 모달이 카드 뒤에 숨고, 보라 LNB 와 페이지 머리가 딤 위로 튀어나왔다. */
+.modal-backdrop { z-index: 1000; }                        /* (옛 값) 80 — 킷 팝업 층 */
+[data-tip]::after, [data-tip]::before { z-index: 700; }   /* (옛 값) 40 — 킷 머리(600) 위로 */
+
+/* 안내 띠가 고를 채널을 덮었다. cp.css:575 는 화면 아래 한가운데(bottom 32 · left 50%)에 띄우는데
+   1706×900 에서 재면 617,836 에 457×44 로 떠서 채널 타일 9장 위에 정확히 얹힌다 —
+   고르라고 말하면서 고를 것을 가린 셈이다. 위로 올리면 덮는 게 페이지 제목·설명·Today 도장 3개뿐이고
+   그 셋은 누를 것이 아니다(같은 방법으로 재측정).
+   색·모서리는 킷 토스트(.layout-alert.ty-toast — #313B4B · r16)로 맞춘다. */
+.toast {
+  z-index: 3000;                                 /* (옛 값) 90 — 킷 알럿/토스트 층 */
+  top: 96px; bottom: auto;                       /* (옛 값) bottom: 32px */
+  transform: translate(-50%, -12px);             /* (옛 값) translate(-50%, 12px) — 아래서 올라오던 것을 위에서 내려오게 */
+  background: #313B4B;                           /* (옛 값) var(--ink) #1D1D1D */
+  border-radius: 16px;                           /* (옛 값) 8px */
+}
+.toast.is-show { transform: translate(-50%, 0); }
+
+/* 팝업 닫기 버튼은 KT 가이드에 규격이 있다 —
+   .popup-close 가 팝업 안 오른쪽 위 24px 자리에 24×24, icon_close.png 한 장
+   (ui_layout.css:1706 · ui_common.css:836). 네모 배경도 모서리도 호버 박스도 없다.
+   우리 것은 36×36 · 모서리 8 · 호버 때 연보라 네모 · 16px 아이콘으로 전부 우리가 만든 값이었다. */
+.modal { position: relative; }
+.modal .iconbtn {
+  position: absolute; right: 24px; top: 24px; margin-left: 0;
+  width: 24px; height: 24px;                    /* (옛 값) 36×36 */
+  border-radius: 0;                             /* (옛 값) 8px */
+  background: url(../_ds-kt/resource/image/layout/icon_close.png) center / 24px no-repeat;
+}
+.modal .iconbtn:hover { background: url(../_ds-kt/resource/image/layout/icon_close.png) center / 24px no-repeat; }
+.modal .iconbtn > svg { display: none; }        /* 킷 그림을 쓰므로 우리 svg 는 숨긴다 */
+.modal__head { padding-right: 60px; }           /* 절대배치된 닫기 자리를 비운다 */
+
+
+/* ══ 11. Lift 카드 ════════════════════════════════════════════════════
+   회색 바탕에 묻혔다. 옛 값은 brand 10% → 흰색 그라데이션인데 실측하면
+     · 연보라 끝 #F0ECFF 대 페이지 바탕 #F1F3F9 = 1.04:1
+     · 그냥 흰 카드 대 같은 바탕            = 1.11:1
+   즉 색을 넣은 쪽이 흰색보다 **덜** 구분됐다 — 보라와 회색의 밝기가 같아서다.
+   흰색으로 빠지는 그라데이션을 없애고 한 가지 색으로 올린다. brand 18%(#E4DDFF) → 바탕과 1.18:1.
+   안의 글자도 확인했다: 44px 보라 숫자 4.23:1(큰 글자 기준 3:1), 본문 회색 5.4:1. */
+.hero { background: color-mix(in srgb, var(--brand) 18%, var(--white)); }
+/* (옛 값) linear-gradient(135deg, color-mix(in srgb, var(--brand) 10%, var(--white)), var(--white)) */
+
+/* 카드 아래 세 줄이 너무 떠 있었다 — 12~13px 글자인데 줄 사이가
+   6px(카드 flex gap) + 18px 줄상자 = 24px 피치. 세 줄만 붙인다(큰 숫자와 첫 줄 사이 6px 은 유지). */
+.hero__ci + .hero__ci { margin-top: -4px; }   /* 6px → 2px */
+
+/* 「교환 진행」 띠가 흰 바탕과 구분되지 않았다 — 실측 #F8F9FF 대 흰색 = 1.05:1 로 사실상 같은 색.
+   킷 연회색 #ECEEF4(1.16:1)로 바꾸고, 색만으로는 약하므로 아래 선을 하나 긋는다
+   (킷 표 머리도 배경+아래선을 같이 쓴다). */
+.flow__head { background: #ECEEF4; border-bottom: 1px solid var(--line); }   /* (옛 값) var(--gray-100) #F8F9FF */
+
+
+/* ══ 12. 빈 상태 ══════════════════════════════════════════════════════
+   킷 .board-empty 는 아이콘 + 20px/600/#666 을 세로 가운데에 놓는다.
+   우리 빈 상태는 점선 테두리에 글자만 12·16·32px 로 제각각이었다 — 킷 글자 규격으로 맞춘다. */
+.changes__empty, .history__empty, .empty-line { font-size: 20px; font-weight: 600; color: #666; }
+.changes__empty { padding: 32px 12px; }      /* (옛 값) 20px 12px — 글자가 커진 만큼 */
+.empty strong, .empty-side strong { font-size: 20px; font-weight: 600; color: #666; }
+
+
+/* ══ 13. 26-09-26 KT 수정사항 반영 ══════════════════════════════════════
+   요구 원문 9항목 — 7×7 그리드 · 시청UV/체류시간 · 채널번호 범위 · ① 카드 삭제 ·
+   ③ Lift 카드 2장 · 채널별 변화 · 섹션 2개 삭제. 옛 값은 줄마다 적었다. */
+
+/* 그리드 7×7 — (옛 값) cp.css:243 repeat(10, …). 사용자 지정 범위에서도 7열 고정, 행만 늘고 준다 */
+.channel-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+
+/* 타일 안 시청UV · 체류시간 두 줄 — 라벨 왼쪽, 값 오른쪽 */
+.tile__aud { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; padding-top: 6px; border-top: 1px dashed var(--line); }
+.tile__aud span { display: flex; align-items: baseline; gap: 2px; font-size: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; }
+.tile__aud em { font-style: normal; color: var(--ink-4); margin-right: auto; padding-right: 6px; }
+.tile__aud small { font-size: 11px; color: var(--ink-4); }
+.tile__aud i { font-style: normal; color: var(--ink-4); padding: 0 2px; }
+
+/* 채널번호 범위 바 — 단계 탭 아래, 세 페이지 공통 */
+.range-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px;   /* 아래 간격은 .page-wrap 의 flex gap 24 가 준다 */ padding: 12px 20px;
+             background: var(--white); border: 1px solid var(--line); border-radius: 12px; }
+.range-bar__lbl { font-size: var(--body-1); font-weight: 700; color: var(--ink); margin-right: 4px; }
+.range-bar__inputs { display: inline-flex; align-items: center; gap: 8px; }
+.range-bar__sep { color: var(--ink-4); }
+.range-bar .input--num { width: 110px; height: 36px; font-variant-numeric: tabular-nums; }
+.range-bar .input--num.is-error { border-color: var(--down); box-shadow: 0 0 0 1px var(--down) inset; }
+.range-bar__state { margin-left: auto; font-size: var(--body-2); color: var(--ink-3); }
+.range-bar__state b { color: var(--brand); margin-right: 4px; }
+.range-bar__msg { flex-basis: 100%; margin: 0; font-size: var(--body-2); font-weight: 600; color: var(--down); }
+.range-bar .btn:disabled { opacity: .4; pointer-events: none; }
+
+/* 범위에 채널이 없을 때 — 그리드 자리·표 한 행 모두 같은 안내 */
+.range-empty { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 56px 24px; text-align: center; color: var(--ink-3); font-size: var(--body-2); }
+.range-empty .i { width: 32px; height: 32px; color: var(--line-strong); }
+.range-empty strong { font-size: 20px; font-weight: 600; color: #666; }   /* 12절 빈 상태 규격 */
+.range-empty .btn { margin-top: 8px; }
+.cm-table .table tr.is-empty td { background: var(--white) !important; cursor: default; }
+
+/* ③ 상단 카드 — Lift 2장 + 개선·하락 2장. (옛 값) cp.css:630 1.25fr repeat(3, 1fr) — Lift 1장 + kpi 3장 */
+.results-top { grid-template-columns: 1.35fr 1.35fr 1fr 1fr; }
+.hero--aud { gap: 8px; }
+.hero--aud .hero__val { font-size: 40px; }
+.hero__rows { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 0; }
+.hero__rows > div { display: flex; flex-direction: column; gap: 2px; }
+.hero__rows dt { font-size: 12px; color: var(--ink-3); }
+.hero__rows dd { margin: 0; font-size: var(--title-2); font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.hero__rows dd b { font-weight: 700; }
+.hero__rows dd small { font-size: 12px; font-weight: 400; color: var(--ink-3); margin-left: 2px; }
+.hero__rows dd.is-up { color: var(--graph-07); }
+.hero__rows dd.is-down { color: var(--down); }
+
+/* 채널별 변화 — Lift 알약 두 개(시청UV · 체류시간). 신규 채널은 회색 「산출 불가」 */
+.impact__lifts { display: inline-flex; gap: 6px; }
+.impact__lift.is-na { background: var(--gray-100); color: var(--ink-3); font-weight: 600; }
+.impact-absolute td.is-na { color: var(--ink-3); }
+/* 폭 전체를 쓰게 되어(전체 지표 변화 삭제) 채널 두 개씩 나란히 — 한 줄에 하나면 표가 1,200px 넘게 늘어진다 */
+.impact { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.impact-absolute { min-width: 0; }
+
+/* 등급 변동 — 폭 전체가 되어 두 줄 칸으로(거시 총량 삭제) */
+.grades--cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; }
+
+/* 선택 채널 패널 — 시청 지표 막대는 지수 막대와 색을 달리한다 */
+.score--aud .score__track i { background: var(--graph-01); }
+.spark__now small { font-size: var(--body-2); font-weight: 600; margin-left: 2px; color: var(--ink-3); }
+
+/* ── 결과 표 칸 폭 재배정 (26-09-26, KT 「전체 채널 결과 표가 꼬였다」) ──────────
+   §8 의 칸 폭은 **자리 번호(nth-child)** 로 걸려 있다. 이번에 지수 순서를 종합→SVI→CPI→ZPI 로 바꾸고
+   시청자수·시청초시간을 UV·체류로 바꾸면서 칸 내용이 자리를 옮겼는데 폭은 옛 자리에 남아
+   ① 9번째(이제 종합지수, 필요 102px)에 SVI 몫 88px, 12번째(이제 ZPI)에 종합지수 몫 108px
+   ② 6·7번째(UV·체류, 값이 짧아짐)에 옛 큰 숫자 몫 140·210px 이 남아 숫자가 머리글에서 멀리 떨어져 보였다.
+   ③ 숫자 칸은 값이 오른쪽 정렬인데 머리글은 왼쪽이라 위아래가 어긋났다.
+   아래 폭 = 각 칸 머리글·모든 행 자연폭 실측 + 여유 (채널명은 §8 의 최장 이름 기준 168 유지). */
+[data-view-panel="results:table"] .table { min-width: 1848px; }                   /* (옛 값) 1964px */
+[data-view-panel="results:table"] .table thead th:nth-child(6)  { width: 124px; }  /* 시청UV 전→후 — (옛) 140 */
+[data-view-panel="results:table"] .table thead th:nth-child(7)  { width: 140px; }  /* 체류시간 전→후 — (옛) 210 */
+[data-view-panel="results:table"] .table thead th:nth-child(8)  { width: 148px; }  /* 변경 구분 — (옛) 170. 가장 긴 배지 「교환 1 · 맞바꿀 채널」 */
+[data-view-panel="results:table"] .table thead th:nth-child(9)  { width: 112px; }  /* 종합지수 — (옛 자리 12), 굵은 값 실측 102 + 여유 */
+[data-view-panel="results:table"] .table thead th:nth-child(10),
+[data-view-panel="results:table"] .table thead th:nth-child(11),
+[data-view-panel="results:table"] .table thead th:nth-child(12) { width: 88px; }   /* SVI·CPI·ZPI — 실측 79 (머리글 scrollWidth 가 커 보이는 건 숨은 툴팁 ::after 때문, 실제 넘침 아님) */
+[data-view-panel="results:table"] .table thead th:nth-child(14) { width: 148px; }  /* Lift 환산 기준→예상 — (옛) 152 */
+[data-view-panel="results:table"] .table thead th:nth-child(15),
+[data-view-panel="results:table"] .table thead th:nth-child(17) { width: 116px; }  /* 증감 · CI 환산 — (옛) 118 */
+[data-view-panel="results:table"] .table thead th:nth-child(16) { width: 68px; }   /* 95% CI — (옛) 72 */
+/* 오른쪽 정렬 숫자 칸(UV·체류·Lift 환산 2·CI 환산)은 머리글도 오른쪽으로 */
+[data-view-panel="results:table"] .table thead th:is(:nth-child(6), :nth-child(7), :nth-child(14), :nth-child(15), :nth-child(17)) { text-align: right; }
+/* 오른쪽 정렬된 체류 칸 바로 뒤라 「변경 구분」이 붙어 보인다 — 왼쪽 숨 24px */
+[data-view-panel="results:table"] .cm-table .table :is(th, td):nth-child(8) { padding-left: 24px; }  /* .cm-table.sz-s 의 13px 4px 보다 세게 */
+
+/* ── 카드 왼쪽 색 띠 제거 (26-09-26, 디자이너 「왼쪽 라인에 컬러 들어간 거 별로」) ─────────
+   cp.css 의 .change(② 변경안) · .impact__row(③ 채널별 변화) · .grade(③ 등급 변동) 가
+   border-left: 3px solid 색 으로 카드를 구분했다. 네 변을 같은 1px 선으로 되돌린다.
+   교환 쌍 색 구분은 번호 원(.change__no)·역할 칩(.change__role)이 이미 들고 있어 정보는 안 준다. */
+.change, .impact__row, .grade { border-left: 1px solid var(--line); }   /* (옛 값) 3px solid var(--pair) · var(--gray-300) */
+.grade.is-moved { border-left-color: var(--line); }                      /* (옛 값) var(--brand) — 연보라 바탕은 유지 */

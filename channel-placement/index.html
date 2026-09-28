@@ -116,6 +116,7 @@
         </div>
       </div>
       <div class="card__body card__body--list">
+        <div class="audience-note">시청자수·시청초시간은 예시 데이터입니다. 시청초시간은 누적 시청시간(초)이며, 실제 집계 기간·데이터 연동은 미설정입니다.</div>
         <div class="grid-wrap" data-view-panel="current:grid"><div class="channel-grid" id="channelGrid"></div></div>
         <div class="table-wrap" data-view-panel="current:table" hidden><table class="table"><thead></thead><tbody id="channelTable"></tbody></table></div>
       </div>
@@ -229,6 +230,7 @@
         </div>
       </div>
       <div class="card__body card__body--list">
+        <div class="audience-note">시청자수·시청초시간은 예시 데이터입니다. 시청초시간은 누적 시청시간(초)이며, 실제 집계 기간·데이터 연동은 미설정입니다.</div>
         <div class="grid-wrap" data-view-panel="scenario:grid"><div class="channel-grid" id="scenarioGrid"></div></div>
         <div class="table-wrap" data-view-panel="scenario:table" hidden><table class="table"><thead></thead><tbody id="scenarioTable"></tbody></table></div>
       </div>
@@ -263,7 +265,7 @@
       <div class="card hero">
         <div class="kpi__lbl">전체 라인업 종합지수 예상 Lift <span class="tag tag--soft">MODEL v0.9</span></div>
         <div class="hero__val" id="totalLift">+0.0%</div>
-        <div class="hero__ci" id="totalCi">95% 신뢰구간 —</div>
+        <div class="hero__ci" id="totalCi">95% 신뢰구간 —</div><div class="hero__ci" id="totalAbsolute"></div><div class="hero__ci" id="totalAbsoluteCi"></div>
       </div>
       <div class="card kpi"><div class="kpi__lbl">개선 예상 채널</div><div class="kpi__val is-up" id="improvedCount">0개</div><div class="kpi__cap">Lift 0% 초과</div></div>
       <div class="card kpi"><div class="kpi__lbl">하락 예상 채널</div><div class="kpi__val is-down" id="declinedCount">0개</div><div class="kpi__cap">Lift 0% 미만</div></div>
@@ -273,9 +275,11 @@
     <!-- 이벤트 전/후 추이 비교 — 변경 적용 시점을 이벤트로 두고 AS-IS 실측선과 TO-BE 예측선을 겹친다 -->
     <section class="card">
       <div class="card__head">
-        <h2>이벤트 전/후 추이 비교</h2>
-        <span class="sub">이벤트 = 채널 변경 적용 시점 · AS-IS 실측 · TO-BE 모델 예측</span>
+        <!-- 26-09-20 KT 추가 — 제목·설명이 선택 채널에 따라 바뀌므로 id 를 달고, 선택 시 여기로 포커스를 준다 -->
+        <h2 id="resultTrendTitle" tabindex="-1">이벤트 전/후 추이 비교 · 전체 라인업</h2>
+        <span class="sub" id="resultTrendDescription">채널을 선택하면 해당 채널의 이벤트 전후 추이를 비교합니다.</span>
         <div class="right">
+          <select class="select select--sm" id="resultTrendChannel" aria-label="결과 추이 채널"><option value="">전체 라인업 평균</option></select>
           <select class="select select--sm" id="trendMetric" aria-label="추이 지표"></select>
           <div class="seg seg--sm" id="trendPeriod" role="tablist">
             <button class="is-on" data-days="7" type="button">일주일</button>
@@ -285,6 +289,7 @@
         </div>
       </div>
       <div class="card__body">
+        <div id="resultTrendSummary" class="result-trend-summary" aria-live="polite"></div>
         <div class="trend" id="trendChart"></div>
       </div>
     </section>
@@ -296,7 +301,7 @@
       </section>
       <section class="card">
         <div class="card__head"><h2>채널별 변화</h2><span class="sub">직접 변경 · 인접 영향</span><span class="tag right" id="changeCountTag">0개 영향</span></div>
-        <div class="card__body"><div class="impact" id="impactList"></div></div>
+        <div class="card__body"><p class="absolute-note">절대값은 채널의 예시 기준값에 오른쪽 변화율을 적용한 환산값입니다. 종합지수 Lift 환산은 개별 지표를 합산한 모델 예상값과 구분합니다.</p><div class="impact" id="impactList"></div></div>
       </section>
     </div>
 
@@ -311,7 +316,7 @@
         <span class="sub">변경 지점 앞뒤 5개 채널의 재핑 영향 예측 · 시청자수 · 시청초시간</span>
         <span class="tag right" id="zoneCountTag">0개 구간</span>
       </div>
-      <div class="card__body"><div class="zones" id="zoneList"></div></div>
+      <div class="card__body"><p class="absolute-note">시청자수는 명, 시청초시간은 누적 초 기준입니다. 각 구간의 영향률을 예시 기준값에 적용한 값이며, 여러 구간의 중복 채널은 구간별 예상입니다.</p><div class="zones" id="zoneList"></div></div>
     </section>
 
     <!-- 26-09-14 KT 자체 시안(9/7)의 「거시 총량 가치 비교」·「주요 채널 가치 등급 변동」을 위 SVI/CPI/ZPI 결과 아래에 덧붙인다

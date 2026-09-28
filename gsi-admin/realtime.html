@@ -293,6 +293,14 @@ dialog:not(:has(.dialog-foot)) .dialog-body{padding-bottom:24px}                
 .kz4__card.is-new{border-color:#12DB91;background:rgba(255,255,255,.14)}
 .kz4__card.is-new .kz4__rate{color:#12DB91}
 .kz4__card.is-empty{grid-template-columns:1fr;justify-content:center;text-align:center;background:transparent;border:1px dashed rgba(255,255,255,.18);color:rgba(255,255,255,.45)}
+/* 26-09-27 설명글 삭제 (디자이너) — 요소는 JS 가 값을 채워 넣는 자리라 마크업은 두고 화면에서만 뺀다.
+   편성표: 머리 「1주 전 기록 기반」, 푸터 전체(기록·기준 요약 + 시연 시계).
+   커스터마이징: 관심·인접 탭 안내문, 알람 섹션 설명, 증감률·노출시간 도움말, 「알람 ON · …」 요약.
+   (옛 값) 모두 표시 — 되돌리려면 이 블록만 지운다 */
+.source-label, .widget-foot,
+#channels-panel > p, #interest-panel > p,
+.alarm-section__desc, .setting-help, .alarm-setting-summary { display: none !important; }
+.alarm-section__head { margin-bottom: 16px; }   /* 설명이 빠져 제목과 첫 줄이 0px 로 붙어서 — 옛 설명 아래 여백(16px)만 남긴다 */
 </style>
 </head>
 <body>
