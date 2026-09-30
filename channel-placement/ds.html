@@ -353,12 +353,13 @@
       <div class="card__head"><h2 id="resultSummaryTitle">전체 요약</h2></div>
       <div class="card__body">
     <div class="results-top">
+      <!-- 26-09-30 KT 요구 — 체류시간 → 분단위 시청률, 분단위 시청률을 첫 칸으로. (옛) 체류시간 카드 3장(dwellTotalLift · dwellImprovedCount · dwellDeclinedCount) -->
+      <div class="card hero audience-hero"><div class="kpi__lbl">전체 분단위 시청률 예상 Lift</div><div class="hero__val" id="ratingTotalLift">—</div><div class="hero__ci" id="ratingTotalValues"></div><div class="hero__ci" id="ratingTotalDelta"></div><div class="hero__ci">채널별 분단위 시청률의 평균</div></div>
       <div class="card hero audience-hero"><div class="kpi__lbl">전체 시청UV 예상 Lift</div><div class="hero__val" id="uvTotalLift">—</div><div class="hero__ci" id="uvTotalValues"></div><div class="hero__ci" id="uvTotalDelta"></div><div class="hero__ci">채널 UV 합산 · 중복 포함</div></div>
-      <div class="card hero audience-hero"><div class="kpi__lbl">전체 체류시간 예상 Lift</div><div class="hero__val" id="dwellTotalLift">—</div><div class="hero__ci" id="dwellTotalValues"></div><div class="hero__ci" id="dwellTotalDelta"></div><div class="hero__ci">채널별 평균 체류시간의 평균</div></div>
+      <div class="card kpi"><div class="kpi__lbl">분단위 시청률 상승 채널</div><div class="kpi__val is-up" id="ratingImprovedCount">0개</div></div>
+      <div class="card kpi"><div class="kpi__lbl">분단위 시청률 하락 채널</div><div class="kpi__val is-down" id="ratingDeclinedCount">0개</div></div>
       <div class="card kpi"><div class="kpi__lbl">시청 UV 상승 채널</div><div class="kpi__val is-up" id="improvedCount">0개</div></div>
       <div class="card kpi"><div class="kpi__lbl">시청 UV 하락 채널</div><div class="kpi__val is-down" id="declinedCount">0개</div></div>
-      <div class="card kpi"><div class="kpi__lbl">체류시간 상승 채널</div><div class="kpi__val is-up" id="dwellImprovedCount">0개</div></div>
-      <div class="card kpi"><div class="kpi__lbl">체류시간 하락 채널</div><div class="kpi__val is-down" id="dwellDeclinedCount">0개</div></div>
     </div>
 
           </div>

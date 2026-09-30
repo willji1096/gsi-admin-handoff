@@ -114,7 +114,14 @@ function mountIcons(root = document) {
   });
 }
 
-const AUDIENCE_COLS = [['viewUV', '시청UV (만)'], ['dwellHours', '체류시간 (시간)']];
+// 26-09-30 KT 요구 — 체류시간을 빼고 분단위 시청률(%)을 넣는다. 분단위 시청률을 모든 그리드·표·차트에서 첫 지표로 둔다
+// (옛) const AUDIENCE_COLS = [['viewUV', '시청UV (만)'], ['dwellHours', '체류시간 (시간)']];
+const AUDIENCE_COLS = [['minRating', '분단위 시청률 (%)'], ['viewUV', '시청UV (만)']];
+// 분단위 시청률은 비교를 위해 소수점 넷째 자리에서 반올림해 셋째 자리까지 표시한다 (예: 0.093%)
+const audienceDigits = key => key === 'minRating' ? 3 : 2;
+// 예시 환산 — 하루 총 시청초 ÷ 86,400초 = 분당 평균 시청자, ÷ 모수. 실데이터가 연동되면 c.minRating(%)을 우선 쓴다
+const RATING_UNIVERSE = 5000000;
+const minRatingOf = watchSeconds => watchSeconds / 86400 / RATING_UNIVERSE * 100;
 const countFormat = new Intl.NumberFormat('ko-KR');
 const formatCount = n => Number.isFinite(n) ? countFormat.format(Math.round(n)) : '—';
 function sampleAudience(name, no) {
@@ -128,11 +135,13 @@ function audienceOf(c) {
   const watchSeconds = Number.isFinite(c.watchSeconds) ? c.watchSeconds : fallback.watchSeconds;
   const viewUV = Number.isFinite(c.viewUV) ? c.viewUV : viewers / 10000;
   const dwellHours = Number.isFinite(c.dwellHours) ? c.dwellHours : (viewUV > 0 ? watchSeconds / (viewUV * 10000) / 3600 : 0);
-  return { viewers, watchSeconds, viewUV, dwellHours };
+  const minRating = Number.isFinite(c.minRating) ? c.minRating : minRatingOf(watchSeconds);
+  return { viewers, watchSeconds, viewUV, dwellHours, minRating };
 }
 const audienceDecimalFormat = new Intl.NumberFormat('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const ratingFormat = new Intl.NumberFormat('ko-KR', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 function formatAudience(key, value) {
-  return Number.isFinite(value) ? (key === 'viewUV' || key === 'dwellHours' ? audienceDecimalFormat.format(value) : formatCount(value)) : '—';
+  return Number.isFinite(value) ? (key === 'minRating' ? ratingFormat.format(value) : key === 'viewUV' || key === 'dwellHours' ? audienceDecimalFormat.format(value) : formatCount(value)) : '—';
 }
 function audienceCells(c) {
   const values = audienceOf(c);
@@ -144,7 +153,7 @@ function resultValue(p, key, mode = valueView) {
   return AUDIENCE_COLS.some(([k]) => k === key) ? audienceOf(c)[key] : c[key];
 }
 function resultValueText(p, key) {
-  const format = n => resultNumber(n);
+  const format = n => resultNumber(n, audienceDigits(key));
   return valueView === 'compare'
     ? `${format(resultValue(p, key, 'asis'))} → ${format(resultValue(p, key, 'tobe'))}`
     : format(resultValue(p, key));
@@ -155,7 +164,7 @@ function audienceComparison(p) {
 function tileAudience(c, opts) {
   const before = opts.beforeAudience || audienceOf(c), after = opts.after;
   const mode = after ? (valueView === 'scenario' ? 'tobe' : valueView) : 'asis';
-  return `<div class="tile__audience ${after && mode === 'compare' ? 'is-compare' : ''}">${[['viewUV','시청UV','만'],['dwellHours','체류시간','시간']].map(([key,label,unit]) => {
+  return `<div class="tile__audience ${after && mode === 'compare' ? 'is-compare' : ''}">${[['minRating','분단위 시청률','%'],['viewUV','시청UV','만']].map(([key,label,unit]) => { // (옛) [['viewUV','시청UV','만'],['dwellHours','체류시간','시간']]
     const b = opts.isNew ? '—' : formatAudience(key, before[key]);
     const a = after ? formatAudience(key, after[key]) : '';
     const value = mode === 'compare' ? `${b} → ${a}` : mode === 'asis' ? b : a;
@@ -186,7 +195,7 @@ let resultsStale = false;
 const pages = { current: 1, scenario: 1, results: 1 };
 const views = { current: 'grid', scenario: 'grid', results: 'table' };
 const sorts = { current: { key: 'order', dir: 'asc' }, scenario: { key: 'order', dir: 'asc' }, results: { key: 'order', dir: 'asc' } };
-let trend = { days: 7, metric: 'viewUV', channelId: null };
+let trend = { days: 7, metric: 'minRating', channelId: null }; // (옛) metric: 'viewUV'
 let trendRunKey = null;
 let history = [];
 try { history = URL_STATE === 'empty' ? [] : JSON.parse(localStorage.getItem(STORE.history) || '[]'); } catch (e) { history = []; }
@@ -432,8 +441,9 @@ function tile(c, opts = {}) {
 
 
 const DETAIL_METRICS = [
+  { key: 'minRating', label: '분단위 시청률', desc: '%', unit: '%', full: '분단위 시청률 (%)', tip: '분당 평균 시청자 ÷ 모수 · 예시 환산값', audience: true },
   { key: 'viewUV', label: '시청UV', desc: '만', unit: '만', full: '시청UV (만)', tip: '채널 시청UV · 예시 환산값', audience: true },
-  { key: 'dwellHours', label: '체류시간', desc: '시간 · 평균', unit: '시간', full: '평균 체류시간', tip: 'UV당 평균 체류시간 (시간)', audience: true },
+  // (옛) { key: 'dwellHours', label: '체류시간', desc: '시간 · 평균', unit: '시간', full: '평균 체류시간', tip: 'UV당 평균 체류시간 (시간)', audience: true },
   COMPOSITE, ...METRICS
 ];
 const detailValue = (c, m) => m.audience ? audienceOf(c)[m.key] : c[m.key];
@@ -444,7 +454,7 @@ function detailBar(c, m) {
   return Math.max(0, Math.min(100, detailValue(c, m) / max * 100));
 }
 const CURRENT_CHART_METRICS = DETAIL_METRICS.filter(m => m.audience);
-let baseTrend = { days: 7, metric: 'viewUV' };
+let baseTrend = { days: 7, metric: 'minRating' }; // (옛) metric: 'viewUV'
 const yesterday = () => { const d = new Date(); d.setDate(d.getDate() - 1); return d; };
 const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
@@ -464,13 +474,13 @@ function filtered() {
 }
 // Page 1 uses the reference display precision; underlying values stay unchanged across all pages.
 function currentAudienceNumber(key, value) {
-  return formatAbsolute(value, key === 'viewUV' ? 1 : 2);
+  return formatAbsolute(value, key === 'minRating' ? 3 : key === 'viewUV' ? 1 : 2);
 }
 function currentAudienceCells(c) {
   return AUDIENCE_COLS.map(([key]) => `<td class="audience-cell">${currentAudienceNumber(key, audienceOf(c)[key])}</td>`).join('');
 }
 function currentTileAudience(c) {
-  return `<div class="tile__aud">${[['viewUV','UV','만'],['dwellHours','체류','시간']].map(([key,label,unit]) => `<span><em>${label}</em>${currentAudienceNumber(key, audienceOf(c)[key])}<small>${unit}</small></span>`).join('')}</div>`;
+  return `<div class="tile__aud">${[['minRating','시청률','%'],['viewUV','UV','만']].map(([key,label,unit]) => `<span><em>${label}</em>${currentAudienceNumber(key, audienceOf(c)[key])}<small>${unit}</small></span>`).join('')}</div>`;
 }
 function currentEmptyPage() {
   const group = channelPageGroups(filtered())[pages.current - 1];
@@ -593,7 +603,7 @@ function renderDetail() {
       </div>`;
   bindSparkHover();
   const b = $('#detailToScenario'); if (b) b.addEventListener('click', () => startScenario('swap'));
-  const ms = $('#baseTrendMetric'); if (ms) ms.addEventListener('change', e => { baseTrend.metric = CURRENT_CHART_METRICS.some(m => m.key === e.target.value) ? e.target.value : 'viewUV'; renderDetail(); });
+  const ms = $('#baseTrendMetric'); if (ms) ms.addEventListener('change', e => { baseTrend.metric = CURRENT_CHART_METRICS.some(m => m.key === e.target.value) ? e.target.value : 'minRating'; renderDetail(); });
   $$('#baseTrendPeriod button').forEach(x => x.addEventListener('click', () => { baseTrend.days = +x.dataset.days === 30 ? 30 : 7; renderDetail(); }));
 }
 function selectChannel(id) { selectedId = id; renderChannels(); }
@@ -809,6 +819,7 @@ function addNewChannel(preset, opId) {
   fresh.watchSeconds = Math.round(similarAudience.watchSeconds * .9);
   fresh.viewUV = similarAudience.viewUV * .9;
   fresh.dwellHours = fresh.viewUV > 0 ? fresh.watchSeconds / (fresh.viewUV * 10000) / 3600 : 0;
+  fresh.minRating = minRatingOf(fresh.watchSeconds);
   work.push(fresh); work.sort((a, b) => ord(a.no) - ord(b.no));
   
   const entries = [{ id, no: pos, before: replaced ? replaced.name : '신규', after: name, type: 'new', replacedName: replaced ? replaced.name : '' }];
@@ -981,6 +992,7 @@ function projection(c, run = resultRun) {
     after.watchSeconds = Math.round(audience.watchSeconds * (1 + audienceRates.stm / 100));
     after.viewUV = audience.viewUV * (1 + audienceRates.viwr / 100);
     after.dwellHours = after.viewUV > 0 ? after.watchSeconds / (after.viewUV * 10000) / 3600 : 0;
+    after.minRating = minRatingOf(after.watchSeconds);
   }
   const p = { c, src: before || c, hasBefore: !!before, beforeNo: before ? before.no : '신규', beforeName: before ? before.name : '신규 입점', lift, ciLow: lift ? lift - .8 : 0, ciHigh: lift ? lift + 1 : 0, after, change: ch };
   cache.set(c.id, p);
@@ -993,30 +1005,31 @@ function lineupImpact(run = resultRun) {
 }
 function audienceLift(before, after) { return before > 0 ? (after / before - 1) * 100 : null; }
 // Round only displayed result metrics; keep channel numbers, counts and source values unchanged.
-function resultNumber(value) {
-  const rounded = reportNumber(value);
-  return rounded === '' ? '—' : formatAbsolute(Number(rounded), 2);
+function resultNumber(value, digits = 2) {
+  const rounded = reportNumber(value, digits);
+  return rounded === '' ? '—' : formatAbsolute(Number(rounded), digits);
 }
-function resultSigned(value) {
-  return (Number(reportNumber(value)) > 0 ? '+' : '') + resultNumber(value);
+function resultSigned(value, digits = 2) {
+  return (Number(reportNumber(value, digits)) > 0 ? '+' : '') + resultNumber(value, digits);
 }
 const liftText = rate => rate === null ? '산출 불가' : `${resultSigned(rate)}%`;
 function audienceRunSummary(run) {
   const projections = run.work.map(c => projection(c, run));
-  const before = { viewUV: 0, dwellHours: 0 }, after = { viewUV: 0, dwellHours: 0 };
+  // (옛) 두 번째 지표 = dwellHours(채널 평균 체류시간). 분단위 시청률도 같은 방식(채널 평균)으로 낸다
+  const before = { viewUV: 0, minRating: 0 }, after = { viewUV: 0, minRating: 0 };
   const baseline = run.baseline || base;
-  baseline.forEach(c => { const a = audienceOf(c); before.viewUV += a.viewUV; before.dwellHours += a.dwellHours; });
-  projections.forEach(p => { after.viewUV += p.after.viewUV; after.dwellHours += p.after.dwellHours; });
-  before.dwellHours /= baseline.length || 1; after.dwellHours /= projections.length || 1;
+  baseline.forEach(c => { const a = audienceOf(c); before.viewUV += a.viewUV; before.minRating += a.minRating; });
+  projections.forEach(p => { after.viewUV += p.after.viewUV; after.minRating += p.after.minRating; });
+  before.minRating /= baseline.length || 1; after.minRating /= projections.length || 1;
   return { before, after, projections, beforeCount: baseline.length, afterCount: projections.length };
 }
 function renderAudienceTotals(run) {
   const sum = audienceRunSummary(run);
-  for (const [key, prefix, unit, digits] of [['viewUV','uv','만',2],['dwellHours','dwell','시간',2]]) {
+  for (const [key, prefix, unit, digits] of [['minRating','rating','%',3],['viewUV','uv','만',2]]) { // (옛) ['dwellHours','dwell','시간',2]
     const b = sum.before[key], a = sum.after[key], rate = audienceLift(b,a);
     $(`#${prefix}TotalLift`).textContent = liftText(rate);
-    $(`#${prefix}TotalValues`).textContent = `${resultNumber(b)} → ${resultNumber(a)} ${unit}`;
-    $(`#${prefix}TotalDelta`).textContent = `증감 ${resultSigned(a-b)} ${unit}`;
+    $(`#${prefix}TotalValues`).textContent = `${resultNumber(b, digits)} → ${resultNumber(a, digits)} ${unit}`;
+    $(`#${prefix}TotalDelta`).textContent = `증감 ${resultSigned(a-b, digits)} ${unit}`;
   }
 }
 function channelAudienceComparison(p, key) {
@@ -1053,19 +1066,20 @@ function renderResults() {
   $('#declinedCount').textContent = declined + '개';
   $('#improvedCount').classList.toggle('is-up', improved > 0);
   $('#declinedCount').classList.toggle('is-down', declined > 0);
-  const dwellRates = run.work.map(c => channelAudienceComparison(projection(c, run), 'dwellHours').rate).filter(v => v !== null);
-  const dwellImproved = dwellRates.filter(v => v > .000001).length, dwellDeclined = dwellRates.filter(v => v < -.000001).length;
-  $('#dwellImprovedCount').textContent = dwellImproved + '개';
-  $('#dwellDeclinedCount').textContent = dwellDeclined + '개';
-  $('#dwellImprovedCount').classList.toggle('is-up', dwellImproved > 0);
-  $('#dwellDeclinedCount').classList.toggle('is-down', dwellDeclined > 0);
+  // (옛) 체류시간 상승·하락 채널 수(dwellHours · #dwellImprovedCount/#dwellDeclinedCount)
+  const ratingRates = run.work.map(c => channelAudienceComparison(projection(c, run), 'minRating').rate).filter(v => v !== null);
+  const ratingImproved = ratingRates.filter(v => v > .000001).length, ratingDeclined = ratingRates.filter(v => v < -.000001).length;
+  $('#ratingImprovedCount').textContent = ratingImproved + '개';
+  $('#ratingDeclinedCount').textContent = ratingDeclined + '개';
+  $('#ratingImprovedCount').classList.toggle('is-up', ratingImproved > 0);
+  $('#ratingDeclinedCount').classList.toggle('is-down', ratingDeclined > 0);
   $('#changeCountTag').textContent = affected.length + '개 영향';
   $('#impactList').innerHTML = affected.map(x => {
     const meta = changeMetaIn(x.c, run), p = projection(x.c, run);
-    const uv = channelAudienceComparison(p,'viewUV'), dwell = channelAudienceComparison(p,'dwellHours');
+    const uv = channelAudienceComparison(p,'viewUV'), rating = channelAudienceComparison(p,'minRating');
     return `<div class="impact__row ${meta.badge}" data-trend-id="${x.c.id}" role="button" tabindex="0" aria-label="${esc(x.c.name)} 이벤트 전후 추이 보기"><div class="impact__name"><strong>${esc(x.c.name)}</strong><span>${x.c.g} · ${meta.label || '인접 영향'}</span>
       </div><div class="impact__pos">${x.c.no}번 · ${esc(p.beforeName)} → <b>${esc(x.c.name)}</b></div>
-      <div class="audience-lift-pair"><span>시청UV Lift <b>${liftText(uv.rate)}</b></span><span>체류시간 Lift <b>${liftText(dwell.rate)}</b></span></div>${impactAbsoluteTable(p)}</div>`;
+      <div class="audience-lift-pair"><span>분단위 시청률 Lift <b>${liftText(rating.rate)}</b></span><span>시청UV Lift <b>${liftText(uv.rate)}</b></span></div>${impactAbsoluteTable(p)}</div>`;
   }).join('');
 
   renderZones(run);
@@ -1086,19 +1100,21 @@ function formatAbsolute(value, digits = 0) { return Number(value).toLocaleString
 function signedAbsolute(value, digits = 0) { return (value > 0 ? '+' : '') + formatAbsolute(value, digits); }
 function rateCells(value, rate, digits = 0) {
   const after = value * (1 + rate / 100), a = { before: value, after, delta: after - value }, cls = a.delta > 0 ? 'is-up' : a.delta < 0 ? 'is-down' : '';
-  return `<td>${resultNumber(a.before)}</td><td><b>${resultNumber(a.after)}</b></td><td class="${cls}">${resultSigned(a.delta)}</td><td class="${cls}">${liftText(rate)}</td>`;
+  return `<td>${resultNumber(a.before, digits)}</td><td><b>${resultNumber(a.after, digits)}</b></td><td class="${cls}">${resultSigned(a.delta, digits)}</td><td class="${cls}">${liftText(rate)}</td>`;
 }
 function liftRange(c, low, high) { return [c.composite * (1 + low / 100), c.composite * (1 + high / 100)].map(v => +v.toFixed(2)); }
 const dwellRate = (uvRate, secondsRate) => ((1 + secondsRate / 100) / (1 + uvRate / 100) - 1) * 100;
 function impactAbsoluteTable(p) {
-  return `<div class="impact-absolute-wrap"><table class="impact-absolute"><thead><tr><th>지표</th><th>변경 전</th><th>변경 후 예상</th><th>증감</th><th>Lift</th></tr></thead><tbody>${[['viewUV','시청UV Lift (만)',2],['dwellHours','체류시간 Lift (시간)',2]].map(([key,label,digits]) => {
+  return `<div class="impact-absolute-wrap"><table class="impact-absolute"><thead><tr><th>지표</th><th>변경 전</th><th>변경 후 예상</th><th>증감</th><th>Lift</th></tr></thead><tbody>${[['minRating','분단위 시청률 Lift (%)',3],['viewUV','시청UV Lift (만)',2]].map(([key,label,digits]) => { // (옛) ['dwellHours','체류시간 Lift (시간)',2]
     const v = channelAudienceComparison(p,key);
-    return `<tr><th>${label}</th><td>${resultNumber(v.before)}</td><td><b>${resultNumber(v.after)}</b></td><td>${v.delta === null ? '—' : resultSigned(v.delta)}</td><td>${liftText(v.rate)}</td></tr>`;
+    return `<tr><th>${label}</th><td>${resultNumber(v.before, digits)}</td><td><b>${resultNumber(v.after, digits)}</b></td><td>${v.delta === null ? '—' : resultSigned(v.delta, digits)}</td><td>${liftText(v.rate)}</td></tr>`;
   }).join('')}</tbody></table></div>`;
 }
 function zoneAbsoluteCells(r) {
   const a = audienceOf(r.c);
-  return rateCells(a.viewUV, r.viwr, 2) + rateCells(a.dwellHours, dwellRate(r.viwr, r.stm), 2);
+  // (옛) rateCells(a.viewUV, r.viwr, 2) + rateCells(a.dwellHours, dwellRate(r.viwr, r.stm), 2)
+  // 분단위 시청률은 총 시청초에 비례하므로 변화율 = stm
+  return rateCells(a.minRating, r.stm, 3) + rateCells(a.viewUV, r.viwr, 2);
 }
 
 function viewDelta(c, lift) {
@@ -1150,7 +1166,7 @@ function renderZones(run) {
   zones.forEach(z => { if (z.homeId) z.rows.sort((a, b) => (b.c.id === z.homeId) - (a.c.id === z.homeId)); });
   el.innerHTML = zones.length ? zones.map(z => `<div class="zone">
     <div class="zone__head"><b>${z.no}번 ${esc(z.name)}</b><span>${esc(z.why)}</span><span class="zone__range">${z.rows.length ? `${z.rows[0].c.no}번 ~ ${z.rows[z.rows.length - 1].c.no}번` : '인접 채널 없음'}</span></div>
-    <div class="zone-table-scroll"><table class="zone__tbl"><thead><tr><th rowspan="2" scope="col">번호</th><th rowspan="2" scope="col">채널명</th><th rowspan="2" scope="col">거리</th><th colspan="4" scope="colgroup">시청UV (만)</th><th colspan="4" scope="colgroup">체류시간 (시간)</th></tr><tr>${['시청UV','체류시간'].map(() => '<th scope="col">기준값</th><th scope="col">예상값</th><th scope="col">증감</th><th scope="col">변화율</th>').join('')}</tr></thead>
+    <div class="zone-table-scroll"><table class="zone__tbl"><thead><tr><th rowspan="2" scope="col">번호</th><th rowspan="2" scope="col">채널명</th><th rowspan="2" scope="col">거리</th><th colspan="4" scope="colgroup">분단위 시청률 (%)</th><th colspan="4" scope="colgroup">시청UV (만)</th></tr><tr>${['분단위 시청률','시청UV'].map(() => '<th scope="col">기준값</th><th scope="col">예상값</th><th scope="col">증감</th><th scope="col">변화율</th>').join('')}</tr></thead>
     <tbody>${z.rows.map(r => `<tr class="${r.c.id === z.homeId ? 'is-home' : ''}"><td>${r.c.no}</td><td>${esc(r.c.name)}${r.c.id === z.homeId ? '<span class="zone__tag">기준 홈쇼핑</span>' : ''}</td><td>${r.d > 0 ? '+' : ''}${r.d}</td>
       ${zoneAbsoluteCells(r)}</tr>`).join('')}</tbody></table></div>
   </div>`).join('') : '<div class="changes__empty">직접 바뀐 채널이 없어 주위 영향을 낼 구간이 없습니다.</div>';
@@ -1259,7 +1275,8 @@ function renderTrend() {
   const isNew = p && p.beforeNo === '신규';
   const m = CURRENT_CHART_METRICS.find(x => x.key === trend.metric) || CURRENT_CHART_METRICS[0], N = trend.days;
   trend.metric = m.key;
-  const chartValue = value => `${resultNumber(value)} ${m.unit}`;
+  const chartDigits = audienceDigits(m.key);
+  const chartValue = value => `${resultNumber(value, chartDigits)} ${m.unit}`;
   const summary = audienceRunSummary(resultRun);
   const divisorBefore = m.key === 'viewUV' ? summary.beforeCount : 1;
   const divisorAfter = m.key === 'viewUV' ? summary.afterCount : 1;
@@ -1296,7 +1313,7 @@ function renderTrend() {
   <div class="spark__plot">
   <div class="spark__tooltip" id="resultTrendTooltip" role="tooltip" hidden><strong></strong><span data-channel-value></span><span data-average-value></span></div>
   <svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" tabindex="0" aria-describedby="resultTrendTooltip" aria-label="${esc(channelLabel)} 이벤트 전후 ${N}일 (${fmtDate(dateAt(-N))}–${fmtDate(dateAt(N))}) ${m.label} 추이 · ${isNew ? '변경 전 없음' : chartValue(baseV)} → ${chartValue(afterV)}. 좌우 방향키로 날짜별 값 확인">
-    ${yTicks.map(v => `<line class="grid" x1="${padL}" x2="${W - padR}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}"/><text class="axis" x="${padL - 8}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${resultNumber(v)}</text>`).join('')}
+    ${yTicks.map(v => `<line class="grid" x1="${padL}" x2="${W - padR}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}"/><text class="axis" x="${padL - 8}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${resultNumber(v, chartDigits)}</text>`).join('')}
     <path class="tobe-band" d="${bandPath}"/>
     <line class="event" x1="${x(0).toFixed(1)}" x2="${x(0).toFixed(1)}" y1="${padT}" y2="${H - padB}"/>
     <text class="event-lbl" x="${(x(0) + 6).toFixed(1)}" y="${padT + 12}">변경 적용</text>
@@ -1404,13 +1421,13 @@ function downloadCsv(rows, name) {
   const a = document.createElement('a'), url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
   a.href = url; a.download = name; a.click(); URL.revokeObjectURL(url);
 }
-function reportNumber(value) {
+function reportNumber(value, digits = 2) {
   if (value === null || value === undefined || value === '') return '';
   const number = Number(value);
   if (!Number.isFinite(number)) return '';
-  const magnitude = Math.abs(number);
-  const rounded = Math.round((magnitude + Number.EPSILON * Math.max(1, magnitude)) * 100) / 100;
-  return (number < 0 && rounded ? -rounded : rounded).toFixed(2);
+  const magnitude = Math.abs(number), scale = 10 ** digits;
+  const rounded = Math.round((magnitude + Number.EPSILON * Math.max(1, magnitude)) * scale) / scale;
+  return (number < 0 && rounded ? -rounded : rounded).toFixed(digits);
 }
 function reportChangeType(type) {
   return ({ pp: '1채널PP사변경', swap: '2채널교환', new: '3신규채널입점', shift: '3신규채널입점' })[type] || '변경없음';
@@ -1418,18 +1435,18 @@ function reportChangeType(type) {
 function buildReportRows(run) {
   const projections = run.work.map(c => projection(c, run));
   const audienceSummary = audienceRunSummary(run), rows = [];
-  rows.push(['채널배치 시뮬레이션 보고서'], ['기준일자', fmtDate(run.baseDate)], ['실행 일시', fmtTime(run.time)], ['다운로드 일시', new Date().toLocaleString('ko-KR')], ['채널 수', run.work.length], ['변경 채널 수', run.changes.length], ['전체 시청UV Lift(%)', reportNumber(audienceLift(audienceSummary.before.viewUV,audienceSummary.after.viewUV))], ['평균 체류시간 Lift(%)', reportNumber(audienceLift(audienceSummary.before.dwellHours,audienceSummary.after.dwellHours))], []);
+  rows.push(['채널배치 시뮬레이션 보고서'], ['기준일자', fmtDate(run.baseDate)], ['실행 일시', fmtTime(run.time)], ['다운로드 일시', new Date().toLocaleString('ko-KR')], ['채널 수', run.work.length], ['변경 채널 수', run.changes.length], ['전체 시청UV Lift(%)', reportNumber(audienceLift(audienceSummary.before.viewUV,audienceSummary.after.viewUV))], ['평균 분단위 시청률 Lift(%)', reportNumber(audienceLift(audienceSummary.before.minRating,audienceSummary.after.minRating))], []); // (옛) 평균 체류시간 Lift(%)
   rows.push(['[시청 지표 변화]'],['지표','변경 전','변경 후 예상','증감','Lift(%)']);
-  [['viewUV','시청UV 합산(만)'],['dwellHours','채널 평균 체류시간(시간)']].forEach(([key,label]) => {
-    const b=audienceSummary.before[key], a=audienceSummary.after[key]; rows.push([label,...[b,a,a-b,audienceLift(b,a)].map(reportNumber)]);
+  [['minRating','채널 평균 분단위 시청률(%)',3],['viewUV','시청UV 합산(만)',2]].forEach(([key,label,digits]) => { // (옛) ['dwellHours','채널 평균 체류시간(시간)']
+    const b=audienceSummary.before[key], a=audienceSummary.after[key]; rows.push([label,...[b,a,a-b].map(v => reportNumber(v, digits)),reportNumber(audienceLift(b,a))]);
   });
   rows.push([], ['[변경 내역]'], ['채널번호', '장르', '변경 전 채널', '변경 후 채널', '변경유형']);
   run.changes.forEach(x => { const c = byId(x.id, run.work); rows.push([x.no ?? (c ? c.no : ''), c ? c.g : '', x.before, x.after, reportChangeType(x.type)]); });
-  rows.push([], ['[전체 채널 세부 지표]'], ['채널번호', '변경 전 채널', '변경 후 채널', '장르', '변경유형', '시청UV(전, 만)', '시청UV(후, 만)', '체류시간(전, 시간)', '체류시간(후, 시간)', '시청UV 합산(만) Lift(%)', '채널 평균 체류시간(시간) Lift(%)', ...TABLE_METRICS.flatMap(m => [`${m.label}(전)`, `${m.label}(후)`, `${m.label} 증감`])]);
-  projections.sort((a, b) => ord(a.c.no) - ord(b.c.no)).forEach(p => rows.push([p.c.no, p.beforeName, p.c.name, p.c.g, reportChangeType(p.change?.type), ...AUDIENCE_COLS.flatMap(([key]) => [p.hasBefore ? reportNumber(audienceOf(p.src)[key]) : '', reportNumber(p.after[key])]), ...['viewUV','dwellHours'].map(key => reportNumber(channelAudienceComparison(p,key).rate)), ...TABLE_METRICS.flatMap(m => [p.hasBefore ? reportNumber(p.src[m.key]) : '', reportNumber(p.after[m.key]), p.hasBefore ? reportNumber(p.after[m.key] - p.src[m.key]) : ''])]));
-  rows.push([], ['[주위 ±5 채널 영향률 환산]'], ['변경 지점 번호', '변경 지점 채널', '영향 채널 번호', '영향 채널명', '거리', '시청UV 기준(만)', '시청UV 예상(만)', '시청UV 증감(만)', '시청UV 변화율(%)', '체류시간 기준(시간)', '체류시간 예상(시간)', '체류시간 증감(시간)', '체류시간 변화율(%)']);
+  rows.push([], ['[전체 채널 세부 지표]'], ['채널번호', '변경 전 채널', '변경 후 채널', '장르', '변경유형', '분단위 시청률(전, %)', '분단위 시청률(후, %)', '시청UV(전, 만)', '시청UV(후, 만)', '분단위 시청률 Lift(%)', '시청UV Lift(%)', ...TABLE_METRICS.flatMap(m => [`${m.label}(전)`, `${m.label}(후)`, `${m.label} 증감`])]);
+  projections.sort((a, b) => ord(a.c.no) - ord(b.c.no)).forEach(p => rows.push([p.c.no, p.beforeName, p.c.name, p.c.g, reportChangeType(p.change?.type), ...AUDIENCE_COLS.flatMap(([key]) => [p.hasBefore ? reportNumber(audienceOf(p.src)[key], audienceDigits(key)) : '', reportNumber(p.after[key], audienceDigits(key))]), ...['minRating','viewUV'].map(key => reportNumber(channelAudienceComparison(p,key).rate)), ...TABLE_METRICS.flatMap(m => [p.hasBefore ? reportNumber(p.src[m.key]) : '', reportNumber(p.after[m.key]), p.hasBefore ? reportNumber(p.after[m.key] - p.src[m.key]) : ''])]));
+  rows.push([], ['[주위 ±5 채널 영향률 환산]'], ['변경 지점 번호', '변경 지점 채널', '영향 채널 번호', '영향 채널명', '거리', '분단위 시청률 기준(%)', '분단위 시청률 예상(%)', '분단위 시청률 증감(%)', '분단위 시청률 변화율(%)', '시청UV 기준(만)', '시청UV 예상(만)', '시청UV 증감(만)', '시청UV 변화율(%)']);
   const direct = run.changes.filter(x => x.type !== 'shift'), excluded = new Set(direct.map(x => x.id)), seen = new Set();
-  direct.forEach(change => { const anchor = byId(change.id, run.work); if (!anchor || seen.has(anchor.no)) return; seen.add(anchor.no); zoneRows(anchor.no, run, excluded).forEach(r => { const a=audienceOf(r.c); rows.push([anchor.no,anchor.name,r.c.no,r.c.name,r.d,...[['viewUV',r.viwr],['dwellHours',dwellRate(r.viwr,r.stm)]].flatMap(([key,pct])=>{const before=a[key], after=before*(1+pct/100);return [before,after,after-before,pct].map(reportNumber);})]); }); });
+  direct.forEach(change => { const anchor = byId(change.id, run.work); if (!anchor || seen.has(anchor.no)) return; seen.add(anchor.no); zoneRows(anchor.no, run, excluded).forEach(r => { const a=audienceOf(r.c); rows.push([anchor.no,anchor.name,r.c.no,r.c.name,r.d,...[['minRating',r.stm],['viewUV',r.viwr]].flatMap(([key,pct])=>{const before=a[key], after=before*(1+pct/100), d=audienceDigits(key);return [...[before,after,after-before].map(v => reportNumber(v, d)), reportNumber(pct)];})]); }); });
   return rows;
 }
 function downloadReport(run = resultRun) {
@@ -1526,7 +1543,7 @@ function bind() {
     container.addEventListener('click', e => { const target = e.target.closest('[data-id], [data-trend-id]'); if (target) selectResultTrend(target.dataset.trendId || target.dataset.id, true); });
     container.addEventListener('keydown', e => { const target = e.target.closest('tr[data-id], [data-trend-id]'); if (target && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); selectResultTrend(target.dataset.trendId || target.dataset.id, true); } });
   });
-  $('#trendMetric').addEventListener('change', e => { trend.metric = CURRENT_CHART_METRICS.some(m => m.key === e.target.value) ? e.target.value : 'viewUV'; renderTrend(); });
+  $('#trendMetric').addEventListener('change', e => { trend.metric = CURRENT_CHART_METRICS.some(m => m.key === e.target.value) ? e.target.value : 'minRating'; renderTrend(); });
   $$('#trendPeriod button').forEach(b => b.addEventListener('click', () => { trend.days = +b.dataset.days === 30 ? 30 : 7; $$('#trendPeriod button').forEach(x => x.classList.toggle('is-on', x === b)); renderTrend(); }));
   let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { renderTrend(); }, 120); });
 
