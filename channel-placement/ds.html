@@ -102,8 +102,10 @@
           <li class="open on">
             <a href="#"><span class="cm-ico ico-lnb broadcastchart"></span><span class="txt">채널배치</span></a>
             <span class="cm-ico ico-lnb-arrow"></span>
+            <!-- 26-10-05 KT 화면수정 1-① 상단 단계 탭 → 좌측 메뉴. (옛) <li class="on"><a href="#"><span class="txt">채널배치 시뮬레이터</span></a></li> -->
             <ul class="lnb-dep2">
-              <li class="on"><a href="#"><span class="txt">채널배치 시뮬레이터</span></a></li>
+              <li class="on"><a href="#" data-menu="current"><span class="txt">GTV 채널현황</span></a></li>
+              <li><a href="#" data-menu="scenario"><span class="txt">시뮬레이터</span></a></li>
             </ul>
           </li>
         </ul>
@@ -127,29 +129,23 @@
     <div class="time" id="todayStamp"></div>
     <div class="user-info"><b>시스템 관리자</b>님 환영합니다!</div>
   </div>
-  <div class="page-head-box">
+  <!-- 26-10-05 KT 화면수정 1-①·2·3 상단 단계 탭 박스 삭제 (단계 이동은 좌측 메뉴로).
+       기준일자 → 「조회일자」로 이름 바꿔 채널번호 범위 줄 오른쪽으로, 「기준 데이터 정상」 삭제, 실행 이력은 같은 줄로 옮김.
+  (옛) <div class="page-head-box">
     <div class="conts-left">
       <div class="cm-ico ico-page broadcastchart-fill"></div>
-      <div class="cm-tab ty-main">
-        <ul>
+      <div class="cm-tab ty-main"><ul>
           <li class="tab-list"><a href="#" class="cm-btn step is-active" data-step="current">1. 현재 채널 가치</a></li>
           <li class="tab-list"><a href="#" class="cm-btn step" data-step="scenario">2. 배치 변경 설계</a></li>
           <li class="tab-list"><a href="#" class="cm-btn step" data-step="results">3. 변경 전후 결과</a></li>
-        </ul>
-      </div>
+      </ul></div>
     </div>
     <div class="conts-right">
-      <label class="cp-date" for="baseDate">
-        <span class="cp-date__lbl">기준일자</span>
-        
-        <input class="input input--date" id="baseDate" type="date" aria-label="시뮬레이션 기준일자">
-      </label>
+      <label class="cp-date" for="baseDate"><span class="cp-date__lbl">기준일자</span><input class="input input--date" id="baseDate" type="date"></label>
       <span class="status" id="dataStatus"><i class="status__dot"></i>기준 데이터 정상</span>
-      
-        <button class="cm-btn btn-solid sty-02" id="historyBtn" type="button"><i data-ic="history"></i>실행 이력 <span class="badge" id="historyBadge">0</span></button>
+      <button class="cm-btn btn-solid sty-02" id="historyBtn" type="button"><i data-ic="history"></i>실행 이력 <span class="badge" id="historyBadge">0</span></button>
     </div>
-  </div>
-  
+  </div> -->
 </div>
 
 <main class="page-wrap">
@@ -167,6 +163,14 @@
     <button class="btn btn--sm btn--primary" id="rangeApplyBtn" type="submit">범위 적용</button>
     <button class="btn btn--sm btn--ghost" id="rangeResetBtn" data-reset-range type="button"><i data-ic="reset"></i>범위 초기화</button>
     <span class="range-bar__state channel-range__summary" id="rangeState"></span>
+    <!-- 26-10-05 KT 화면수정 1-② 상단에서 옮겨 옴 -->
+    <div class="range-bar__right">
+      <label class="cp-date" for="baseDate">
+        <span class="cp-date__lbl">조회일자</span>
+        <input class="input input--date" id="baseDate" type="date" aria-label="조회일자">
+      </label>
+      <button class="cm-btn btn-solid sty-02" id="historyBtn" type="button"><i data-ic="history"></i>실행 이력 <span class="badge" id="historyBadge">0</span></button>
+    </div>
     <p class="range-bar__msg channel-range__error" id="rangeMsg" role="alert"></p>
   </form>
 
@@ -231,7 +235,11 @@
         <span class="tag" id="mixTag">교환 0 · 신규 0</span>
       </div>
       <div class="card__body">
-        
+        <!-- 26-10-05 KT 화면수정 2-① 예측일자 추가 — 이 날짜 전날 기준 지표로 카드·표가 바뀐다(2-③) -->
+        <label class="cp-date cp-date--block" for="predictDate">
+          <span class="cp-date__lbl">예측일자</span>
+          <input class="input input--date" id="predictDate" type="date" aria-label="예측일자">
+        </label>
         <div class="mode-tabs mode-tabs--3" role="tablist">
           <button class="mode-tab" data-mode="pp" type="button"><i data-ic="edit"></i><b>시나리오 1 · 채널 PP사 변경</b><small>최대 10건</small></button>
           <button class="mode-tab is-on" data-mode="swap" type="button"><i data-ic="swap"></i><b>시나리오 2 · 채널 교환</b><small>최대 10쌍</small></button>
@@ -317,7 +325,8 @@
         </div>
       </div>
       <div class="card__body card__body--list">
-        <p class="sub" data-page-status="scenario" aria-live="polite"></p>
+        <!-- 26-10-05 KT 화면수정 2-③ 페이지 안내 옆에 「YYYY.MM.DD 기준 지표」 -->
+        <div class="page-status-row"><p class="sub" data-page-status="scenario" aria-live="polite"></p><span class="data-date-chip" id="scenarioDataDate"></span></div>
         
         <div class="grid-wrap" data-view-panel="scenario:grid"><div class="channel-grid" id="scenarioGrid"></div></div>
         
@@ -403,12 +412,13 @@
     </section>
 
     
+    <!-- 26-10-05 KT 화면수정 3-① 「주요 채널 가치 등급 변동」 섹션 삭제
     <div class="results-grid">
       <section class="card">
         <div class="card__head"><h2>주요 채널 가치 등급 변동</h2><span class="tag right" id="gradeCountTag">0개</span></div>
         <div class="card__body"><div class="grades" id="gradeList"></div></div>
       </section>
-    </div>
+    </div> -->
 
     
 
@@ -459,10 +469,10 @@
     <div class="run" id="runProgress">
       <i class="run__spin" data-ic="loader"></i>
       <h2 id="runTitle">시뮬레이션 연산 중</h2>
-      <p class="run__desc">기준일자 <b id="runBaseDate"></b></p>
+      <p class="run__desc">예측일자 <b id="runBaseDate"></b></p><!-- 26-10-05 (옛) 기준일자 -->
       <ol class="run__stages" id="runStages">
         <li data-stage="0"><i></i>요청 접수</li>
-        <li data-stage="1"><i></i>기준일자 데이터 준비</li>
+        <li data-stage="1"><i></i>기준 지표 준비</li>
         <li data-stage="2"><i></i>모델 연산</li>
         <li data-stage="3"><i></i>결과 저장</li>
       </ol>

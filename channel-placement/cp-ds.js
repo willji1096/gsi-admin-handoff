@@ -36,6 +36,10 @@ const ppCount = () => ppScenarios.length;
 const swapCount = () => swapScenarios.length;
 
 let ops = [];
+// 26-10-05 KT 화면수정 2-② 각 시나리오는 독립 실행 — 시나리오마다 변경안을 따로 들고, 실행은 지금 고른 시나리오 것만.
+// (옛) ops 하나에 PP사 변경·교환·신규를 섞어 한 번에 실행
+const opsByMode = { pp: [], swap: [], new: [] };
+const MODE_NAME = { pp: '시나리오 1 · 채널 PP사 변경', swap: '시나리오 2 · 채널 교환', new: '시나리오 3 · 신규 채널 입점' };
 
 let ppScenarios = [];
 const STORE = { history: 'cpHistory' };
@@ -180,6 +184,24 @@ const base = window.CP_CHANNELS.map(([g, name, no], i) => {
   Object.assign(c, audienceOf(c));
   return c;
 }).sort((a, b) => ord(a.no) - ord(b.no));
+// 26-10-05 KT 화면수정 2-③ 「해당 날짜 기준으로 지표 업데이트(종합지수·시청률·UV 등)」
+// 예시 데이터는 날짜마다 ±5% 안에서 일정하게 흔든다(같은 날짜 = 같은 값). 실데이터가 연동되면 applyDataDate 자리에서 그 날짜 지표를 불러온다
+base.forEach(c => { c.seed0 = { viewers: c.viewers, watchSeconds: c.watchSeconds, ...Object.fromEntries(METRICS.map(m => [m.key, c[m.key]])) }; });
+let dataDate = '';
+function applyDataDate(d) {
+  if (!d || d === dataDate) return false;
+  dataDate = d;
+  base.forEach(c => {
+    const wob = k => 1 + ((hash(c.name + c.no + d + k) % 101) - 50) / 1000;
+    METRICS.forEach(m => { c[m.key] = +Math.min(99.9, c.seed0[m.key] * wob(m.key)).toFixed(1); });
+    c.composite = composite(c);
+    c.viewers = Math.round(c.seed0.viewers * wob('uv'));
+    c.watchSeconds = Math.round(c.seed0.watchSeconds * wob('uv') * wob('ws'));
+    delete c.viewUV; delete c.dwellHours; delete c.minRating;
+    Object.assign(c, audienceOf(c));
+  });
+  return true;
+}
 const GENRES = [...new Set(base.map(c => c.g))];
 const byId = (id, list = base) => list.find(x => x.id === id);
 const avg = (k, list = base) => list.reduce((s, c) => s + c[k], 0) / list.length;
@@ -362,13 +384,18 @@ function pageFor(scope, id, list) {
 
 
 const STEPS = ['current', 'scenario', 'results'];
+// 26-10-05 KT 화면수정 1-① 상단 단계 탭 → 좌측 메뉴 「GTV 채널현황」(1) · 「시뮬레이터」(2·3)
+// (옛) .step[data-step] 에 is-active / is-done 을 걸었다
+function syncPanelData(n) {
+  if (n === 'results') return;   // 결과는 실행 때 찍어 둔 값
+  if (!applyDataDate(n === 'current' ? ($('#baseDate').value || ymd(yesterday())) : predictDataDate())) return;
+  refreshWork();
+  renderChannels(); renderBuilder(); renderScenario();
+}
 function showPanel(n) {
-  STEPS.forEach((x, i) => {
-    $('#' + x + 'Panel').classList.toggle('is-active', x === n);
-    const st = $(`.step[data-step="${x}"]`);
-    st.classList.toggle('is-active', x === n);
-    st.classList.toggle('is-done', i < STEPS.indexOf(n) || (x === 'results' && hasResults && n !== 'results'));
-  });
+  syncPanelData(n);
+  STEPS.forEach(x => { $('#' + x + 'Panel').classList.toggle('is-active', x === n); });
+  $$('#lnb [data-menu]').forEach(a => a.parentElement.classList.toggle('on', a.dataset.menu === (n === 'current' ? 'current' : 'scenario')));
   window.scrollTo(0, 0);
   if (n === 'results' && hasResults) renderTrend();   
 }
@@ -432,9 +459,9 @@ function tile(c, opts = {}) {
   const lift = opts.lift !== undefined && vv !== 'asis' ? `<span class="tile__lift ${opts.lift > 0 ? 'is-up' : opts.lift < 0 ? 'is-down' : ''}">${opts.lift ? signed(opts.lift) : f1(score)}</span>` : '';
   const tag = opts.readonly && !opts.selectable ? 'div' : 'button';
   return `<${tag} ${tag === 'button' ? 'type="button"' : ''} ${opts.selectable ? `aria-pressed="${trend.channelId === c.id}" aria-label="${esc(c.name)} ${c.no}번 이벤트 전후 추이 보기"` : ''} class="tile ${opts.selectable && trend.channelId === c.id ? 'is-result-selected' : ''} ${!opts.scenario && !opts.readonly && selectedId === c.id ? 'is-selected' : ''} ${meta.cls} ${role}" style="--genre:${genreColor(c.g)}" data-id="${c.id}" title="${esc(c.name)} · ${c.g}">
-    <div class="tile__top"><span class="tile__no">${c.no}</span>${lift || `<span class="tile__score">${scoreText}</span>`}</div>
+    <div class="tile__top"><span class="tile__no">${c.no}</span>${lift || `<span class="tile__score"><span class="tile__score-lbl" data-float-tip="${esc(COMPOSITE_TIP)}">종합지수</span><b>${scoreText}</b></span>`}</div>
     <div class="tile__name">${esc(c.name)}</div>
-    <div class="tile__genre">${dual || c.g}</div>${opts.current ? currentTileAudience(c) : tileAudience(c, opts)}${badge}
+    <div class="tile__genre">${dual || c.g}</div>${tileAudience(c, opts)}${badge}
   </${tag}>`;
 }
 
@@ -457,6 +484,11 @@ const CURRENT_CHART_METRICS = DETAIL_METRICS.filter(m => m.audience);
 let baseTrend = { days: 7, metric: 'minRating' }; // (옛) metric: 'viewUV'
 const yesterday = () => { const d = new Date(); d.setDate(d.getDate() - 1); return d; };
 const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+// 26-10-05 KT 화면수정 — 조회일자(GTV 채널현황) = 그날 지표, 예측일자(시뮬레이터) = 전날 기준 지표 (KT 예시: 예측일자 10-01 → 09.30 기준)
+const shiftDay = (s, n) => { const [y, m, d] = s.split('-').map(Number); return ymd(new Date(y, m - 1, d + n)); };
+const predictDay = () => $('#predictDate').value || ymd(new Date());
+const predictDataDate = () => shiftDay(predictDay(), -1);
+const COMPOSITE_TIP = '종합지수 · SVI(채널번호 가치)·CPI(콘텐츠 파워)·ZPI(재핑 파워) 세 지표를 평균한 값으로, 높을수록 채널 가치가 큽니다.';
 
 function trendSeries(endV, tag, metricKey, N) {
   const seed = hash('base' + tag + metricKey + N), out = [];
@@ -479,9 +511,7 @@ function currentAudienceNumber(key, value) {
 function currentAudienceCells(c) {
   return AUDIENCE_COLS.map(([key]) => `<td class="audience-cell">${currentAudienceNumber(key, audienceOf(c)[key])}</td>`).join('');
 }
-function currentTileAudience(c) {
-  return `<div class="tile__aud">${[['minRating','시청률','%'],['viewUV','UV','만']].map(([key,label,unit]) => `<span><em>${label}</em>${currentAudienceNumber(key, audienceOf(c)[key])}<small>${unit}</small></span>`).join('')}</div>`;
-}
+// 26-10-05 currentTileAudience(1페이지 카드 짧은 라벨 「시청률·UV」) 삭제 — 모든 카드가 tileAudience 양식
 function currentEmptyPage() {
   const group = channelPageGroups(filtered())[pages.current - 1];
   return `<div class="range-empty">${ic('search', 'i i--lg')}<strong>${channelPageRange ? esc(group.label) + '에 ' : ''}조회되는 채널이 없습니다</strong><span>${channelPageRange ? '범위·검색 조건을 변경하세요.' : '검색어나 장르 조건을 바꿔 보세요.'}</span>${channelPageRange ? '<button class="btn btn--sm btn--ghost" type="button" data-current-range-reset>범위 초기화</button>' : ''}</div>`;
@@ -599,10 +629,9 @@ function renderDetail() {
         <div class="trendbox">${sparkControls()}${sparkline(c)}</div>
         <div class="scores">${DETAIL_METRICS.map(m => `<div class="score ${m.audience ? 'score--aud' : m.key === 'composite' ? 'score--composite' : ''}"><div class="score__lbl"><span>${m.audience ? `${m.label} (${m.unit})` : `${abbr(m)} · ${m.desc}`}</span><b>${detailNumber(m, detailValue(c, m))}</b></div><div class="score__track"><i style="width:${detailBar(c, m)}%"></i></div></div>`).join('')}</div>
 
-        <button class="btn btn--primary btn--block" type="button" id="detailToScenario">이 채널로 시나리오 만들기</button>
+        <!-- 26-10-05 KT 화면수정 1-③ 삭제 (옛) <button class="btn btn--primary btn--block" type="button" id="detailToScenario">이 채널로 시나리오 만들기</button> -->
       </div>`;
   bindSparkHover();
-  const b = $('#detailToScenario'); if (b) b.addEventListener('click', () => startScenario('swap'));
   const ms = $('#baseTrendMetric'); if (ms) ms.addEventListener('change', e => { baseTrend.metric = CURRENT_CHART_METRICS.some(m => m.key === e.target.value) ? e.target.value : 'minRating'; renderDetail(); });
   $$('#baseTrendPeriod button').forEach(x => x.addEventListener('click', () => { baseTrend.days = +x.dataset.days === 30 ? 30 : 7; renderDetail(); }));
 }
@@ -611,6 +640,7 @@ function resetAll() {
   channelPageRange = null; syncPageRangeControls();
   
   selectedId = DEFAULT_SELECTED; work = base.map(x => ({ ...x })); changes = []; swapScenarios = []; ppScenarios = []; ops = []; autoApplyPending = false; hasResults = false; resultRun = null; resultsStale = false;
+  Object.keys(opsByMode).forEach(k => { opsByMode[k] = []; }); ops = opsByMode[mode];
   pages.current = pages.scenario = pages.results = 1;
   $('#channelSearch').value = ''; $('#genreFilter').value = 'all'; $('#sortOrder').value = 'channel';
   renderChannels(); renderBuilder(); renderScenario(); renderResults();
@@ -623,15 +653,32 @@ function startScenario(m = 'swap') {
   pageFor('scenario', selectedId, work);
   setMode(m); showPanel('scenario');
 }
+function paintMode(m) {
+  $$('.mode-tab').forEach(x => x.classList.toggle('is-on', x.dataset.mode === m));
+  $('#swapFields').hidden = m !== 'swap';
+  $('#newFields').hidden = m !== 'new';
+  $('#ppFields').hidden = m !== 'pp';
+}
+// 결과(resultRun)는 그대로 둔 채 지금 시나리오·날짜 기준으로 보드만 다시 짠다
+function refreshWork() {
+  const keep = { hasResults, resultRun, resultsStale };
+  rebuildFromOps();
+  ({ hasResults, resultRun, resultsStale } = keep);
+}
 function setMode(m) {
   const prev = mode; mode = m;
   if (m === 'new' || m === 'pp') { autoApplyPending = false; swapTargetId = null; }
   else if (prev !== 'swap') { swapTargetId = null; selectionPhase = 'counterpart'; }
-  $$('.mode-tab').forEach(x => x.classList.toggle('is-on', x.dataset.mode === m));
-  $('#swapFields').hidden = m !== 'swap';
-  $('#newFields').hidden = m !== 'new';
-  $('#ppFields').hidden = m !== 'pp';                 
+  if (prev !== m) { opsByMode[prev] = ops; ops = opsByMode[m]; refreshWork(); }
+  paintMode(m);
   renderBuilder(); renderScenario();
+}
+// 이력에서 불러올 때 — 옛 이력은 시나리오가 섞여 있을 수 있어 종류별로 나눠 담고, 첫 변경의 시나리오를 연다
+function loadScenarioOps(list) {
+  Object.keys(opsByMode).forEach(k => { opsByMode[k] = list.filter(o => o.kind === k).map(o => ({ ...o })); });
+  mode = (list[0] && opsByMode[list[0].kind]) ? list[0].kind : mode;
+  ops = opsByMode[mode];
+  paintMode(mode);
 }
 
 function renderBuilder() {
@@ -653,7 +700,8 @@ function renderBuilder() {
   const newCount = changes.filter(x => x.type === 'new').length;
   
   
-  $('#mixTag').textContent = `PP사 변경 ${ppCount()}/${MAX_PP} · 교환 ${swapCount()}/${MAX_SWAPS} · 신규 ${newCount}/${MAX_NEW}`;
+  // (옛) `PP사 변경 ${ppCount()}/${MAX_PP} · 교환 ${swapCount()}/${MAX_SWAPS} · 신규 ${newCount}/${MAX_NEW}` — 26-10-05 독립 실행이라 지금 시나리오 건수만
+  $('#mixTag').textContent = mode === 'pp' ? `PP사 변경 ${ppCount()}/${MAX_PP}` : mode === 'swap' ? `교환 ${swapCount()}/${MAX_SWAPS}` : `신규 ${newCount}/${MAX_NEW}`;
   const guide = $('#selectionGuide'), setStep = (id, st) => { $('#' + id).className = 'flow__step' + (st ? ' ' + st : ''); };
   const target = byId(selectedId, work), counter = byId(swapTargetId, work), count = swapCount();
   $('#swapFlowCount').textContent = `${count}/${MAX_SWAPS}건`;
@@ -847,6 +895,7 @@ function rebuildFromOps() {
     else if (addNewChannel({ name: op.name, g: op.g, pos: op.pos, similarId: op.similarId }, op.id)) ops.push(op);
     else dropped.push(op);
   });
+  opsByMode[mode] = ops;
   if (!byId(selectedId, work)) selectedId = DEFAULT_SELECTED;
   swapTargetId = null; selectionPhase = 'counterpart'; autoApplyPending = false;
   if (hasResults) resultsStale = true;
@@ -877,13 +926,15 @@ function staleResults() {
 }
 function clearScenario() {
   work = base.map(x => ({ ...x })); changes = []; swapScenarios = []; ppScenarios = []; ops = []; autoApplyPending = false; hasResults = false; resultRun = null; resultsStale = false;
+  opsByMode[mode] = ops;   // 26-10-05 지금 시나리오만 비운다
   selectedId = DEFAULT_SELECTED; swapTargetId = null; selectionPhase = 'counterpart'; pages.scenario = pages.results = 1;
   renderBuilder(); renderScenario(); renderResults();
-  toast('임시 변경안을 초기화했습니다.');
+  toast(`${MODE_NAME[mode]} 변경안을 초기화했습니다.`);
 }
 const scenarioCols = () => [['order', '순서'], ['no', '번호'], ['name', '채널명'], ['genre', '장르'], ...AUDIENCE_COLS, ['change', '변경 구분'], ...TABLE_METRICS.map(m => [m.key, abbr(m)])];
 function renderScenario() {
   const yes = changes.length > 0;
+  $('#scenarioDataDate').textContent = `${fmtDate(predictDataDate())} 기준 지표`;   // 26-10-05 KT 화면수정 2-③
   $('#runBtn').disabled = !yes;
   const list = work.slice().sort((a, b) => ord(a.no) - ord(b.no));
   const { start, items } = pageWindow('scenario', list);
@@ -936,7 +987,7 @@ function runSimulation() {
   if (!changes.length) { toast('먼저 변경안을 적용하세요.'); return; }
   const token = ++runToken, modal = $('#runModal'), stages = $$('#runStages li');
   $('#runProgress').hidden = false; $('#runFail').hidden = true;
-  $('#runBaseDate').textContent = fmtDate($('#baseDate').value);
+  $('#runBaseDate').textContent = `${fmtDate(predictDay())} · ${fmtDate(predictDataDate())} 기준 지표`; // (옛) fmtDate($('#baseDate').value)
   modal.hidden = false;
   runStart = Date.now();
   stages.forEach(li => { li.className = ''; });
@@ -957,14 +1008,14 @@ function runSimulation() {
 function failRun() {
   clearInterval(runTick);
   $('#runProgress').hidden = true; $('#runFail').hidden = false;
-  recordHistory('실행', changes, historySummary(changes, $('#baseDate').value), '실패');
+  recordHistory('실행', changes, historySummary(changes, predictDataDate()), '실패');
 }
 function completeRun() {
   clearInterval(runTick);
   $$('#runStages li').forEach(li => { li.className = 'is-done'; }); $('#runBar').style.width = '100%';
   hasResults = true; resultsStale = false;
   sorts.results = { ...sorts.scenario }; pages.results = pages.scenario;
-  resultRun = { baseline: base.map(x => ({ ...x })), sort: { ...sorts.scenario }, page: pages.scenario, range: channelPageRange ? { ...channelPageRange } : null, time: Date.now(), baseDate: $('#baseDate').value, changes: changes.map(x => ({ ...x })), swapScenarios: swapScenarios.map(x => ({ ...x })), ppScenarios: ppScenarios.map(x => ({ ...x })), work: work.map(x => ({ ...x })) };
+  resultRun = { baseline: base.map(x => ({ ...x })), sort: { ...sorts.scenario }, page: pages.scenario, range: channelPageRange ? { ...channelPageRange } : null, time: Date.now(), baseDate: predictDataDate(), predictDate: predictDay(), scenarioMode: mode, changes: changes.map(x => ({ ...x })), swapScenarios: swapScenarios.map(x => ({ ...x })), ppScenarios: ppScenarios.map(x => ({ ...x })), work: work.map(x => ({ ...x })) };
   const entry = recordHistory('실행', changes, historySummary(changes, resultRun.baseDate), '성공', resultRun);
   resultRun.id = entry.id;
   setTimeout(() => { $('#runModal').hidden = true; renderResults(); showPanel('results'); renderEntryNotice(); toast('시뮬레이션이 완료되었습니다.'); }, 350);
@@ -1055,8 +1106,10 @@ function renderResults() {
     const sort = sorts.results;
     $('#resultSortOrder').value = sort.key === 'order' ? 'channel' : sort.key === 'composite' ? (sort.dir === 'asc' ? 'scoreAsc' : 'scoreDesc') : 'custom';
   }
-  $('#resultTitle').textContent = `시나리오 결과 · PP사 변경 ${(run.ppScenarios || []).length}건 · 교환 ${run.swapScenarios.length}쌍 · 신규 ${run.changes.filter(x => x.type === 'new').length}건`;
-  $('#resultMeta').textContent = `기준일자 ${fmtDate(run.baseDate)} · 실행 ${fmtTime(run.time)}`;
+  // (옛) 세 시나리오 합산 제목 — 26-10-05 독립 실행이라 실행한 시나리오 이름
+  if (run.scenarioMode) $('#resultTitle').textContent = `${MODE_NAME[run.scenarioMode]} 결과`;
+  else $('#resultTitle').textContent = `시나리오 결과 · PP사 변경 ${(run.ppScenarios || []).length}건 · 교환 ${run.swapScenarios.length}쌍 · 신규 ${run.changes.filter(x => x.type === 'new').length}건`;
+  $('#resultMeta').textContent = `${run.predictDate ? `예측일자 ${fmtDate(run.predictDate)} · ` : ''}${fmtDate(run.baseDate)} 기준 지표 · 실행 ${fmtTime(run.time)}`; // (옛) `기준일자 … · 실행 …`
   renderCond(run);
   renderAudienceTotals(run);
   const affected = oncePerSlot(run.changes).map((x, i) => { const c = byId(x.id, run.work); return c && projection(c, run).change ? { ...x, c, lift: x.type === 'shift' ? (.2 + (i % 4) * .14) : (1.3 + (hash(c.name) % 24) / 10) } : null; }).filter(Boolean);
@@ -1083,7 +1136,7 @@ function renderResults() {
   }).join('');
 
   renderZones(run);
-  renderGrades(run);
+  // renderGrades(run);   26-10-05 KT 화면수정 3-① 섹션 삭제
 
   $('#trendMetric').innerHTML = CURRENT_CHART_METRICS.map(m => `<option value="${m.key}" ${m.key === trend.metric ? 'selected' : ''}>${m.label} · ${m.desc}</option>`).join('');
   renderTrend();
@@ -1213,7 +1266,8 @@ function changeMetaIn(c, run) {
   return changeMeta(c, run.changes, run.baseline || base);
 }
 
-const resultCols = () => [['order', '순서'], ['no', '번호'], ['before', '변경 전 채널'], ['name', '변경 후 채널'], ['genre', '변경 후 장르'], ...AUDIENCE_COLS, ['change', '변경 구분'], ...TABLE_METRICS.map(m => [m.key, abbr(m)])];
+// 26-10-05 KT 화면수정 3-② 종합지수·SVI·CPI·ZPI 컬럼 삭제 (옛) 끝에 ...TABLE_METRICS.map(m => [m.key, abbr(m)])
+const resultCols = () => [['order', '순서'], ['no', '번호'], ['before', '변경 전 채널'], ['name', '변경 후 채널'], ['genre', '변경 후 장르'], ...AUDIENCE_COLS, ['change', '변경 구분']];
 function resultSortVal(row, key) {
   const { c, p } = row;
   if (key === 'order') return ord(c.no);
@@ -1246,7 +1300,7 @@ function renderResultsChannels() {
   
 
   const tb = $('#resultsTable');
-  tb.innerHTML = tableRows.map(({ c, p, meta }, i) => `<tr data-id="${c.id}" tabindex="0" aria-selected="${trend.channelId === c.id}" class="${trend.channelId === c.id ? 'is-selected' : ''}" aria-label="${esc(c.name)} ${c.no}번 이벤트 전후 추이 보기"><td>${start + i + 1}</td><td><b>${c.no}</b></td><td>${esc(p.beforeName)}</td><td><b>${esc(c.name)}</b></td><td><i class="genre-dot" style="background:${genreColor(c.g)}"></i>${c.g}</td>${audienceComparison(p)}<td><span class="rolebadge ${meta.badge || 'is-none'}">${meta.label || '변경 없음'}</span></td>${TABLE_METRICS.map(m => `<td>${m.key === 'composite' ? '<b>' : ''}${resultValueText(p, m.key)}${m.key === 'composite' ? '</b>' : ''}</td>`).join('')}</tr>`).join('');
+  tb.innerHTML = tableRows.map(({ c, p, meta }, i) => `<tr data-id="${c.id}" tabindex="0" aria-selected="${trend.channelId === c.id}" class="${trend.channelId === c.id ? 'is-selected' : ''}" aria-label="${esc(c.name)} ${c.no}번 이벤트 전후 추이 보기"><td>${start + i + 1}</td><td><b>${c.no}</b></td><td>${esc(p.beforeName)}</td><td><b>${esc(c.name)}</b></td><td><i class="genre-dot" style="background:${genreColor(c.g)}"></i>${c.g}</td>${audienceComparison(p)}<td><span class="rolebadge ${meta.badge || 'is-none'}">${meta.label || '변경 없음'}</span></td></tr>`).join('');
   if (!items.length) {
     tb.innerHTML = `<tr><td colspan="${resultCols().length}" class="range-empty">조회되는 채널이 없습니다. 조회 조건을 변경하세요.</td></tr>`;
   }
@@ -1374,10 +1428,10 @@ function renderHistory() {
 function rerunFromHistory(id) {
   const h = history.find(x => x.id === id);
   if (!h || !h.scenario || !h.scenario.length) { toast('다시 돌릴 변경안이 남아 있지 않습니다.'); return; }
-  ops = h.scenario.map(o => ({ ...o }));
+  if (h.baseDate) $('#predictDate').value = shiftDay(h.baseDate, 1);   // (옛) $('#baseDate').value = h.baseDate
+  if (applyDataDate(predictDataDate())) renderChannels();
+  loadScenarioOps(h.scenario);
   rebuildFromOps();
-  
-  if (h.baseDate) $('#baseDate').value = h.baseDate;
   $('#historyModal').hidden = true;
   renderBuilder(); renderScenario(); showPanel('scenario');
   runSimulation();
@@ -1390,13 +1444,13 @@ function openResult(id) {
   changes = resultRun.changes.map(c => ({ ...c }));
   swapScenarios = (resultRun.swapScenarios || []).map(c => ({ ...c }));
   ppScenarios = (resultRun.ppScenarios || []).map(c => ({ ...c }));
-  ops = h.scenario.map(c => ({ ...c }));
+  loadScenarioOps(h.scenario);   // (옛) ops = h.scenario.map(c => ({ ...c }));
   autoApplyPending = false; swapTargetId = null; selectionPhase = 'target';
   sorts.scenario = { ...(resultRun.sort || { key: 'order', dir: 'asc' }) };
   sorts.results = { ...sorts.scenario };
   pages.scenario = pages.results = resultRun.page || 1;
   channelPageRange = resultRun.range || null; syncPageRangeControls();
-  if (h.baseDate) $('#baseDate').value = h.baseDate;
+  $('#predictDate').value = resultRun.predictDate || shiftDay(h.baseDate || predictDataDate(), 1);   // (옛) $('#baseDate').value = h.baseDate
   renderChannels(); renderBuilder(); renderScenario();
   renderResults(); showPanel('results');
 }
@@ -1547,7 +1601,7 @@ function bind() {
   $$('#trendPeriod button').forEach(b => b.addEventListener('click', () => { trend.days = +b.dataset.days === 30 ? 30 : 7; $$('#trendPeriod button').forEach(x => x.classList.toggle('is-on', x === b)); renderTrend(); }));
   let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { renderTrend(); }, 120); });
 
-  $$('.step').forEach(b => b.addEventListener('click', () => showPanel(b.dataset.step)));
+  $$('#lnb [data-menu]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); showPanel(a.dataset.menu); }));   // (옛) $$('.step') 단계 탭
   $$('.pager').forEach(p => {
     const scope = p.dataset.scope;
     $$('.pager__btn', p).forEach(b => b.addEventListener('click', () => { pages[scope] = (pages[scope] || 1) + (+b.dataset.dir); renderScope(scope); }));
@@ -1564,7 +1618,22 @@ function bind() {
   
   $('#baseDate').value = ymd(yesterday());
   $('#baseDate').max = ymd(yesterday());
-  $('#baseDate').addEventListener('change', e => { if (!e.target.value || e.target.value > ymd(yesterday())) { e.target.value = ymd(yesterday()); toast('기준일자는 전날까지 선택하세요.'); } else { staleResults(); toast(`기준일자를 ${fmtDate(e.target.value)}로 바꿨습니다. `); } renderDetail(); });
+  // 26-10-05 (옛) 기준일자 — 바꾸면 결과를 내렸다(staleResults). 이제 조회일자는 1화면 지표만 바꾼다
+  $('#baseDate').addEventListener('change', e => { if (!e.target.value || e.target.value > ymd(yesterday())) { e.target.value = ymd(yesterday()); toast('조회일자는 전날까지 선택하세요.'); } else toast(`${fmtDate(e.target.value)} 지표로 바꿨습니다.`); syncPanelData('current'); renderDetail(); });
+  $('#predictDate').value = ymd(new Date());
+  $('#predictDate').max = ymd(new Date());
+  $('#predictDate').addEventListener('change', e => { if (!e.target.value || e.target.value > ymd(new Date())) { e.target.value = ymd(new Date()); toast('예측일자는 오늘까지 선택하세요.'); } else { staleResults(); toast(`예측일자 ${fmtDate(e.target.value)} — ${fmtDate(predictDataDate())} 기준 지표로 바꿨습니다.`); } syncPanelData('scenario'); renderScenario(); });
+  // 종합지수 호버 설명 — 카드 안 overflow 에 잘리지 않게 body 에 띄운다
+  const tip = document.createElement('div'); tip.className = 'float-tip'; tip.setAttribute('role', 'tooltip'); tip.hidden = true; document.body.appendChild(tip);
+  document.addEventListener('mouseover', e => {
+    const t = e.target.closest('[data-float-tip]');
+    if (!t) { tip.hidden = true; return; }
+    tip.textContent = t.dataset.floatTip; tip.hidden = false;
+    const r = t.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+    tip.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width / 2 - w / 2)) + 'px';
+    tip.style.top = (r.top - h - 8 < 8 ? r.bottom + 8 : r.top - h - 8) + 'px';
+  });
+  ['scroll', 'click'].forEach(ev => window.addEventListener(ev, () => { tip.hidden = true; }, true));
   document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('#historyModal').hidden = true; } });
 }
 function init() {
@@ -1572,6 +1641,7 @@ function init() {
   $('#genreFilter').innerHTML += GENRES.map(g => `<option value="${g}">${g}</option>`).join('');
   $('#newGenre').innerHTML = GENRES.map(g => `<option value="${g}">${g}</option>`).join('');
   bind(); initResultSections();
+  applyDataDate($('#baseDate').value); work = base.map(x => ({ ...x }));   // 26-10-05 첫 화면 = 조회일자 지표
   renderChannels(); renderBuilder(); renderScenario(); renderResults(); renderHistory(); renderEntryNotice();
   ['current', 'scenario', 'results'].forEach(s => setView(s, views[s]));
 }

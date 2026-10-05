@@ -1076,3 +1076,58 @@ body { min-width: 1536px; background: #F1F3F9; }
       신규·PP사 변경은 테두리·배경색으로 이미 구분되므로 띠가 없어도 정보가 빠지지 않는다. */
 .tile::before { content: none; }   /* (KT 값) content:""; 3px 장르색 띠 · is-new/is-pp 는 색만 바꿈 */
 .tile { padding-left: 10px; }       /* (KT 값) 14px — 띠 자리만큼 비워 두던 것 */
+
+
+/* ══ 26-10-05 KT 화면수정 (gsi_채널배치_화면수정.pptx 3장) ═══════════════════ */
+/* 1-② 조회일자·실행 이력을 채널번호 범위 줄 오른쪽으로, 위아래 간격 축소 */
+#currentPanel .range-bar__right { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; }
+#currentPanel .range-bar__state { margin-left: 4px; }   /* (옛) auto — 오른쪽 끝은 이제 조회일자 묶음 */
+#currentPanel .range-bar .cp-date { height: 36px; }
+#currentPanel .range-bar .cp-date .input--date { height: 34px; }
+#currentPanel .range-bar #historyBtn { height: 36px; }
+#currentPanel .range-bar { margin: 0; }   /* (옛) 0 0 24px — 아래 간격은 패널 gap 이 준다 */
+#currentPanel .range-bar .cp-date .input--date { width: 132px; }
+.page-head-area { padding-bottom: 0; }           /* (옛) 16px — 단계 탭 박스가 빠지고 인사말 한 줄만 남음 */
+
+/* 2-① 예측일자 — 변경 조건 맨 위 한 줄 */
+.cp-date--block { display: flex; width: 100%; margin-bottom: 12px; }
+.cp-date--block .input--date { flex: 1; min-width: 0; }
+
+/* 2-③ 기준 지표 날짜 — 페이지 안내 줄 오른쪽 */
+.page-status-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.page-status-row .sub { margin: 0; }
+.data-date-chip { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 6px;
+                  background: var(--brand-tint, color-mix(in srgb, var(--brand) 8%, var(--white))); color: var(--brand);
+                  font-size: var(--body-2); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* 1-④·2-④ 모든 카드 양식 — 번호 · 「종합지수」 라벨 + 값 / 채널명 크게 / 장르 / 지표 두 줄 */
+.tile { gap: 2px; padding: 12px; }
+.tile__top { align-items: center; }
+.tile__no { font-size: 18px; line-height: 24px; }
+.tile__score { display: inline-flex; align-items: center; gap: 4px; color: var(--ink-3); font-size: 13px; }
+.tile__score b { font-weight: 600; color: var(--ink-2); }
+.tile__score-lbl { display: inline-flex; align-items: center; height: 18px; padding: 0 5px; border-radius: 4px;
+                   background: var(--gray-100, #F2F3F5); color: var(--ink-3); font-size: 10px; font-weight: 600; cursor: help; }
+.tile__name { margin-top: 4px; font-size: 15px; line-height: 20px; font-weight: 700; color: var(--ink); }
+.tile__genre { font-size: 12px; line-height: 16px; }
+.tile__audience { margin-top: 8px; padding-top: 8px; gap: 4px; }
+.tile__stat > span { font-size: 11px; }
+.tile__stat > b { font-size: 14px; font-weight: 700; color: var(--ink); }
+#currentPanel .tile { min-height: 0; }   /* (옛) 112px */
+
+/* 종합지수 호버 설명 — body 에 띄우는 말풍선 */
+.float-tip { position: fixed; z-index: 1000; max-width: 260px; padding: 8px 10px; border-radius: 6px; background: var(--ink, #1D1D1D);
+             color: var(--white); font-size: 12px; line-height: 18px; font-weight: 500; pointer-events: none; box-shadow: 0 4px 12px rgba(0, 0, 0, .16); }
+.float-tip[hidden] { display: none; }
+
+/* 3-② 결과 표 — 종합지수·SVI·CPI·ZPI 4칸이 빠져 12칸 → 8칸. 위 nth-child(9~12) 폭은 이제 걸릴 칸이 없다.
+   숫자 두 칸(분단위 시청률·시청UV)은 머리글도 오른쪽 정렬해 값 오른쪽 끝과 맞추고, 「변경 구분」은 왼쪽 24px 띄움 */
+[data-view-panel="results:table"] .table { min-width: 1180px; }   /* (옛) 1420px */
+[data-view-panel="results:table"] .table thead th:nth-child(3),
+[data-view-panel="results:table"] .table thead th:nth-child(4) { width: 200px; }   /* (옛) 168px */
+[data-view-panel="results:table"] .table thead th:nth-child(5) { width: 150px; }   /* (옛) 104px */
+[data-view-panel="results:table"] .table thead th:nth-child(6),
+[data-view-panel="results:table"] .table thead th:nth-child(7) { width: 200px; text-align: right; }   /* (옛) 160px · 왼쪽 */
+[data-view-panel="results:table"] .table thead th:nth-child(8) { width: auto; }
+[data-view-panel="results:table"] .cm-table .table th:nth-child(8),
+[data-view-panel="results:table"] .cm-table .table td:nth-child(8) { padding-left: 32px; }
