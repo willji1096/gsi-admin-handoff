@@ -1106,8 +1106,8 @@ body { min-width: 1536px; background: #F1F3F9; }
    라벨은 표 머리 「종합지수」와 같은 점선 밑줄(설명 툴팁 표시) */
 .tile__top { align-items: baseline; }   /* (옛) center */
 .tile__no { font-size: 18px; line-height: 24px; }
-.tile__score { display: inline-flex; align-items: baseline; gap: 4px; color: var(--ink-3); font-size: 13px; }
-.tile__score b { font-weight: 700; color: var(--ink-2); }   /* (옛) 600 */
+/* (옛·26-10-07 종합지수 위치 이동으로 미사용) .tile__score { display: inline-flex; align-items: baseline; gap: 4px; color: var(--ink-3); font-size: 13px; white-space: nowrap; flex: none; } */   /* 좁은 카드(시뮬레이터)에서 「종합지 / 수」로 꺾이던 것 */
+/* (옛) .tile__score b { font-weight: 700; color: var(--ink-2); } */
 .tile__score-lbl { color: var(--ink-4); font-size: 11px; font-weight: 500; border-bottom: 1px dashed var(--ink-4); cursor: help; }
 /* (옛) .tile__score-lbl { display: inline-flex; align-items: center; height: 18px; padding: 0 5px; border-radius: 4px;
                    background: var(--gray-100, #F2F3F5); color: var(--ink-3); font-size: 10px; font-weight: 600; } */
@@ -1142,3 +1142,80 @@ body { min-width: 1536px; background: #F1F3F9; }
 .board-run .notice[hidden] { display: none; }
 .board-run .notice__txt span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .board-run #historyBtn { margin-left: auto; flex: none; height: 36px; }   /* 「최근 결과 보기」(36)와 높이 맞춤 — GTV 채널현황에 있을 때도 36 */
+
+/* ══ 26-10-07 KT 요청 — 표 머리 두 단: 「시청 예측」(현재 + 예측) / 「채널 지수」(현재값) 묶음 ═══ */
+/* 머리 높이 58 → 윗단 28 + 아랫단 40 = 68. 아랫단은 윗단 높이만큼 내려서 붙는다(스크롤 고정) */
+.cm-table.sz-s .table thead tr:nth-child(2) th { height: 40px; padding-top: 0; padding-bottom: 0; top: 28px; }
+.cm-table.sz-s .table thead th[rowspan="2"] { height: 68px; }
+.cm-table.sz-s .table thead th.th-group { height: 28px; padding: 0 12px; text-align: left;   /* 가운데 정렬이면 가로 스크롤 표에서 「채널 지수」가 화면 밖으로 밀린다 */ font-size: 12px; white-space: nowrap; border-bottom: 0; }   /* 밑줄은 아래 inset 그림자 한 줄만 — 테두리까지 두면 선이 두 겹 */
+.th-group small { margin-left: 6px; font-size: 11px; font-weight: 500; color: var(--ink-4); }
+.th-group--pred { color: var(--brand) !important; }
+.th-group--idx { color: var(--ink-2) !important; }
+/* 선은 border 대신 inset 그림자 — 머리를 스크롤 고정(sticky)하면 표의 border 는 따라오지 않는다 */
+.cm-table.sz-s .table thead th.th-group--pred { box-shadow: inset 1px 0 0 var(--line), inset 0 -2px 0 var(--brand); }   /* 예측 = 브랜드색, 지수 = 무채색 */
+.cm-table.sz-s .table thead th.th-group--idx  { box-shadow: inset 1px 0 0 var(--line), inset 0 -2px 0 var(--ink-4); }
+.cm-table .table th.th--group-start { box-shadow: inset 1px 0 0 var(--line); }
+/* 본문까지 묶음 경계 세로선 — 칸 순서: 현재 표 = 순서·번호·채널명·장르·[예측 5~6]·[지수 7~], 변경 후 표 = …·[예측 5~6]·변경 구분 7·[지수 8~] */
+[data-view-panel="current:table"] .table tbody td:nth-child(5),
+[data-view-panel="current:table"] .table tbody td:nth-child(7),
+[data-view-panel="scenario:table"] .table tbody td:nth-child(5),
+[data-view-panel="scenario:table"] .table tbody td:nth-child(7),
+[data-view-panel="scenario:table"] .table tbody td:nth-child(8) { box-shadow: inset 1px 0 0 var(--line); }
+/* 경계선 양옆 숨 — 오른쪽 정렬 예측값이 선에 붙고, 지수 막대가 선에서 바로 시작하던 것 */
+/* 킷 `.cm-table.sz-s .table td { padding: 13px 4px }` 보다 세게 — 앞에 .cm-table.sz-s 를 붙인다 (26-10-07 처음엔 안 먹었다) */
+[data-view-panel="current:table"] .cm-table.sz-s .table tbody td:nth-child(6),
+[data-view-panel="scenario:table"] .cm-table.sz-s .table tbody td:nth-child(6) { padding-right: 16px; }
+[data-view-panel="current:table"] .cm-table.sz-s .table tbody td:nth-child(7),
+[data-view-panel="scenario:table"] .cm-table.sz-s .table tbody td:nth-child(7),
+[data-view-panel="scenario:table"] .cm-table.sz-s .table tbody td:nth-child(8),
+.cm-table.sz-s .table thead th.th--group-start { padding-left: 12px; }
+/* 예측 칸 숫자는 오른쪽 정렬 → 머리 글자도 오른쪽, 여백도 본문 칸과 같게 */
+.cm-table.sz-s .table thead th.th--pred { text-align: right; padding-left: 4px; }
+.cm-table.sz-s .table thead th.th--pred:has(+ th:not(.th--pred)) { padding-right: 16px; }
+/* 좁은 카드(오른쪽 선택 채널 패널이 있는 GTV 채널현황 · 1600px 에서 폭 127)에서 997 처럼 세 자리 번호면
+   「종합지수 49.7」이 카드 밖으로 넘친다 → 카드 폭 기준으로 글자만 한 단계 줄임 (위치·양식은 그대로) */
+.tile { container-type: inline-size; }
+@container (max-width: 136px) {
+  .tile__top { gap: 4px; }
+}
+@container (max-width: 124px) {   /* 시뮬레이터 카드 118 — 번호도 한 단계 */
+  .tile__no { font-size: 16px; }
+}
+/* 시뮬레이터 표(칸 118)에서 「분단위 시청률 (%) ↕」 머리가 칸보다 넓어 옆 칸으로 넘쳤다 */
+.cm-table.sz-s .table thead th.th--pred { min-width: 152px; }   /* 140 은 정렬 아이콘까지 2px 모자랐다 */
+/* 26-10-07 날짜 박스만 연한 선(--line)이라 옆 셀렉트·입력칸(--line-strong)과 테두리가 달라 보였다 */
+.cp-date { border-color: var(--line-strong); }   /* (옛) var(--line) */
+/* 26-10-07 GTV 채널현황 툴바가 두 줄로 꺾여 페이지·보기 전환만 아랫줄 오른쪽에 떠 있었다 (내부 폭 1041 < 필요 1063).
+   검색칸을 남는 폭만큼 늘었다 줄었다 하게 하고, 구간 셀렉트 최소 폭을 줄여 한 줄에 둔다 */
+.search { flex: 1 1 200px; min-width: 160px; }
+.search .input { width: 100%; }                 /* (옛) 260px · 1600 이하 200px */
+.select--pager { min-width: 160px; }            /* (옛) 225px — 가장 긴 구간 이름(「997~45번」)도 들어간다 */
+
+/* 26-10-07 카드 숫자 위계 — 다 검정 굵게라 채널 번호가 묻히던 것.
+   번호·채널명 = 검정(카드 주인), 지수 값 = 회색, 예측 값 = 보라 — 표 머리 「채널 지수(회색) / 시청 예측(보라)」과 같은 색 기준.
+   라벨은 전부 값 위(종합지수·분단위·시청UV 같은 모양) */
+.tile__no { font-size: 20px; line-height: 24px; font-weight: 700; color: var(--ink); }
+.tile__index { display: flex; flex-direction: column; gap: 2px; margin-top: 8px; }
+.tile__index .tile__score-lbl { align-self: flex-start; font-size: 11px; line-height: 14px; color: var(--ink-4); }
+.tile__index b { font-size: 14px; line-height: 18px; font-weight: 700; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+/* 예측 두 지표는 세로로 하나씩(라벨 위·값 아래). (옛·26-10-07 1차) 두 칸 가로 배치 — 좁은 카드에서 라벨이 겹쳐 되돌림 */
+.tile__audience { gap: 6px; }
+.tile__stat { flex-direction: column; flex-wrap: nowrap; align-items: flex-start; justify-content: flex-start; gap: 2px; min-width: 0; }
+.tile__stat > span { font-size: 11px; line-height: 14px; color: var(--ink-4); }
+.tile__stat > b { font-size: 14px; line-height: 18px; font-weight: 700; color: var(--brand); }
+.tile__audience.is-compare .tile__stat > b { flex-basis: auto; }
+
+/* 26-10-07 상세 패널 — 표와 같은 두 묶음 제목 + 묶음별 막대 색 하나 */
+/* 묶음 제목은 지표 라벨(14px 회색)보다 한 단계 위: 16px 굵게 + 묶음 색 밑줄, 두 번째 묶음 앞은 넓게 띄움 */
+.scores__group { display: flex; align-items: baseline; gap: 8px; padding-bottom: 8px; border-bottom: 2px solid var(--brand); font-size: 16px; line-height: 20px; font-weight: 700; color: var(--brand); }
+.scores__group small { font-size: 12px; font-weight: 500; color: var(--ink-4); }
+.scores__group--idx { margin-top: 16px; border-bottom-color: var(--ink-4); color: var(--ink); }
+/* 막대는 표·패널 모두 KT 원래 보라 하나. 예측/지수 구분은 묶음 제목·밑줄로만 한다.
+   (옛) 종합지수만 var(--graph-07) 초록 — 이유 없는 예외라 제거. 26-10-07 1차에 지수 막대를 회색으로 바꿨다가 되돌림 */
+.score--composite .score__track i { background: var(--brand); }
+#currentPanel .score--aud .score__track i { background: var(--brand); }
+
+/* 26-10-07 「변경 구분」 가운데 — 머리·배지 모두 칸 가운데 */
+.cm-table.sz-s .table th[data-col="change"],
+.cm-table.sz-s .table th[data-col="change"] button { text-align: center; justify-content: center; }
+.cm-table.sz-s .table td:has(> .rolebadge) { text-align: center; padding-left: 12px; padding-right: 12px; }

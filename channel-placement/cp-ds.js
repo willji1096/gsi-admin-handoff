@@ -287,12 +287,38 @@ function sortRows(rows, scope, valueFn) {
   const s = sorts[scope], dir = s.dir === 'asc' ? 1 : -1;
   return rows.map((row, i) => ({ row, i })).sort((a, b) => compareVal(valueFn(a.row, s.key), valueFn(b.row, s.key)) * dir || a.i - b.i).map(x => x.row);
 }
+// 26-10-07 KT 요청: 예측값(분단위 시청률·시청UV — 현재 + 예측)과 지수(종합지수·SVI·CPI·ZPI — 현재값만)가
+// 한 줄에 섞여 헷갈린다 → 두 묶음이 같이 있는 표는 머리를 두 단으로 나눠 묶음 이름을 단다
+const HEAD_GROUPS = {
+  pred: { label: '시청 예측', sub: '현재 + 예측', keys: AUDIENCE_COLS.map(([k]) => k) },
+  idx:  { label: '채널 지수', sub: '현재값', keys: TABLE_METRICS.map(m => m.key) },
+};
+const headGroupOf = key => Object.keys(HEAD_GROUPS).find(g => HEAD_GROUPS[g].keys.includes(key)) || '';
 function renderHead(scope, cols, tbody) {
   const s = sorts[scope];
-  tbody.closest('table').querySelector('thead').innerHTML = `<tr>${cols.map(([key, label]) => {
-    const on = s.key === key;
-    return `<th aria-sort="${on ? (s.dir === 'asc' ? 'ascending' : 'descending') : 'none'}"><button type="button" class="${on ? 'is-on' : ''} ${on && s.dir === 'desc' ? 'is-desc' : ''}" data-sort="${key}">${label}</button></th>`;
-  }).join('')}</tr>`;
+  const groups = cols.map(([key]) => headGroupOf(key));
+  const split = groups.includes('pred') && groups.includes('idx');
+  const th = ([key, label], i) => {
+    const on = s.key === key, g = split ? groups[i] : '';
+    // 묶음 경계 세로선: 묶음 첫 칸 + 묶음 바로 뒤에 오는 묶음 밖 칸(시뮬레이터 「변경 구분」)
+    const start = split && i > 0 && groups[i - 1] !== groups[i] ? ' th--group-start' : '';
+    return `<th${g ? ` class="th--${g}${start}"` : split ? ` rowspan="2"${start ? ` class="${start.trim()}"` : ''}` : ''} data-col="${key}" aria-sort="${on ? (s.dir === 'asc' ? 'ascending' : 'descending') : 'none'}"><button type="button" class="${on ? 'is-on' : ''} ${on && s.dir === 'desc' ? 'is-desc' : ''}" data-sort="${key}">${label}</button></th>`;
+  };
+  if (!split) { tbody.closest('table').querySelector('thead').innerHTML = `<tr>${cols.map(th).join('')}</tr>`; }
+  else {
+    // 윗단: 묶음 없는 칸은 rowspan 2 로 내려오고, 묶음 칸은 이어진 개수만큼 colspan
+    let top = '', bottom = '';
+    cols.forEach((col, i) => {
+      const g = groups[i];
+      if (!g) { top += th(col, i); return; }
+      if (groups[i - 1] !== g) {
+        let n = 1; while (groups[i + n] === g) n++;
+        top += `<th class="th-group th-group--${g}" colspan="${n}" scope="colgroup"><span>${HEAD_GROUPS[g].label}</span></th>`; // (옛·26-10-07) 라벨 뒤 <small>${HEAD_GROUPS[g].sub}</small> 「현재 + 예측 / 현재값」 설명글 — 디자이너 지시로 뺌
+      }
+      bottom += th(col, i);
+    });
+    tbody.closest('table').querySelector('thead').innerHTML = `<tr>${top}</tr><tr>${bottom}</tr>`;
+  }
   $$('th button', tbody.closest('table')).forEach(b => b.addEventListener('click', () => toggleSort(scope, b.dataset.sort)));
 }
 function toggleSort(scope, key) {
@@ -458,10 +484,12 @@ function tile(c, opts = {}) {
     ? `<span class="tile__dual">${opts.isNew ? '—' : f1(opts.before)} <i>→</i> ${f1(opts.after.composite)}</span>` : '';
   const lift = opts.lift !== undefined && vv !== 'asis' ? `<span class="tile__lift ${opts.lift > 0 ? 'is-up' : opts.lift < 0 ? 'is-down' : ''}">${opts.lift ? signed(opts.lift) : f1(score)}</span>` : '';
   const tag = opts.readonly && !opts.selectable ? 'div' : 'button';
+  // 26-10-07 종합지수: 번호 옆 → 장르 아래 「지수」 칸(.tile__index). 구분선 아래는 「예측」(분단위 시청률·시청UV) — 표의 채널 지수/시청 예측 묶음과 같은 구분
+  // (옛) tile__top 안에 ${lift || 종합지수 라벨+값}
   return `<${tag} ${tag === 'button' ? 'type="button"' : ''} ${opts.selectable ? `aria-pressed="${trend.channelId === c.id}" aria-label="${esc(c.name)} ${c.no}번 이벤트 전후 추이 보기"` : ''} class="tile ${opts.selectable && trend.channelId === c.id ? 'is-result-selected' : ''} ${!opts.scenario && !opts.readonly && selectedId === c.id ? 'is-selected' : ''} ${meta.cls} ${role}" style="--genre:${genreColor(c.g)}" data-id="${c.id}" title="${esc(c.name)} · ${c.g}">
-    <div class="tile__top"><span class="tile__no">${c.no}</span>${lift || `<span class="tile__score"><span class="tile__score-lbl" data-float-tip="${esc(COMPOSITE_TIP)}">종합지수</span><b>${scoreText}</b></span>`}</div>
+    <div class="tile__top"><span class="tile__no">${c.no}</span>${lift}</div>
     <div class="tile__name">${esc(c.name)}</div>
-    <div class="tile__genre">${dual || c.g}</div>${tileAudience(c, opts)}${badge}
+    <div class="tile__genre">${dual || c.g}</div>${lift ? '' : `<div class="tile__index"><span class="tile__score-lbl" data-float-tip="${esc(COMPOSITE_TIP)}">종합지수</span><b>${scoreText}</b></div>`}${tileAudience(c, opts)}${badge}
   </${tag}>`;
 }
 
@@ -627,7 +655,8 @@ function renderDetail() {
     : `<div class="detail">
         <div><div class="detail__kicker">선택 채널</div><div class="detail__title"><b>${esc(c.name)}</b><span class="detail__no">${c.no}</span></div><div class="detail__genre"><i style="background:${genreColor(c.g)}"></i>${c.g}</div></div>
         <div class="trendbox">${sparkControls()}${sparkline(c)}</div>
-        <div class="scores">${DETAIL_METRICS.map(m => `<div class="score ${m.audience ? 'score--aud' : m.key === 'composite' ? 'score--composite' : ''}"><div class="score__lbl"><span>${m.audience ? `${m.label} (${m.unit})` : `${abbr(m)} · ${m.desc}`}</span><b>${detailNumber(m, detailValue(c, m))}</b></div><div class="score__track"><i style="width:${detailBar(c, m)}%"></i></div></div>`).join('')}</div>
+        <!-- 26-10-07 KT 예측/지수 구분: 표 머리와 같은 두 묶음 제목, 막대 색도 묶음별 하나(예측 보라 · 지수 회색). (옛) 종합지수만 초록 막대 -->
+        <div class="scores">${DETAIL_METRICS.map((m, i, all) => `${!i || !!all[i - 1].audience !== !!m.audience ? `<div class="scores__group scores__group--${m.audience ? 'pred' : 'idx'}"><span>${m.audience ? HEAD_GROUPS.pred.label : HEAD_GROUPS.idx.label}</span></div>` : ''}<div class="score ${m.audience ? 'score--aud' : m.key === 'composite' ? 'score--composite' : ''}"><div class="score__lbl"><span>${m.audience ? `${m.label} (${m.unit})` : `${abbr(m)} · ${m.desc}`}</span><b>${detailNumber(m, detailValue(c, m))}</b></div><div class="score__track"><i style="width:${detailBar(c, m)}%"></i></div></div>`).join('')}</div>
 
         <!-- 26-10-05 KT 화면수정 1-③ 삭제 (옛) <button class="btn btn--primary btn--block" type="button" id="detailToScenario">이 채널로 시나리오 만들기</button> -->
       </div>`;
