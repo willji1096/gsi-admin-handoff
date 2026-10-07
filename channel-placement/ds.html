@@ -169,14 +169,14 @@
         <span class="cp-date__lbl">조회일자</span>
         <input class="input input--date" id="baseDate" type="date" aria-label="조회일자">
       </label>
-      <button class="cm-btn btn-solid sty-02" id="historyBtn" type="button"><i data-ic="history"></i>실행 이력 <span class="badge" id="historyBadge">0</span></button>
+      <!-- 26-10-07 KT 화면수정: 실행 이력은 시뮬레이터 「현재 / 변경 후」로 옮김 -->
     </div>
     <p class="range-bar__msg channel-range__error" id="rangeMsg" role="alert"></p>
   </form>
 
 
   
-  <div class="notice" id="entryNotice" hidden></div>
+  <!-- 26-10-07 KT 화면수정: 최근 실행 결과는 시뮬레이터 「현재 / 변경 후」로 옮김 -->
 
   
 
@@ -262,7 +262,6 @@
             <ol class="flow__steps">
               <li class="flow__step" id="flowTarget"><i>1</i><div><b>첫 채널</b><span id="flowTargetName">선택하세요</span></div></li>
               <li class="flow__step" id="flowCounterpart"><i>2</i><div><b>맞바꿀 채널</b><span id="flowCounterpartName">대기</span></div></li>
-              <li class="flow__step" id="flowApply"><i>3</i><div><b>자동 반영</b><span id="flowApplyState">선택 즉시</span></div></li>
             </ol>
           </div>
           <label class="field"><span>첫 채널</span><select class="select" id="targetChannelSelect"></select></label>
@@ -301,8 +300,13 @@
         <h2>현재 / 변경 후</h2>
         
         <div class="right">
-          <button class="btn btn--sm btn--ghost" id="backToCurrentBtn" type="button"><i data-ic="arrow-left"></i>현재 배치</button>
+          <button class="btn btn--sm btn--ghost" id="backToCurrentBtn" type="button"><i data-ic="arrow-left"></i>현재 채널현황</button>
         </div>
+      </div>
+      <!-- 26-10-07 KT 화면수정 ②③⑤: 최근 실행 결과 · 최근 결과 보기 · 실행 이력 (GTV 채널현황에서 옮겨 옴) -->
+      <div class="board-run">
+        <div class="notice notice--result" id="entryNotice" hidden></div>
+        <button class="cm-btn btn-solid sty-02" id="historyBtn" type="button"><i data-ic="history"></i>실행 이력 <span class="badge" id="historyBadge">0</span></button>
       </div>
       <div class="toolbar">
         <div class="legend">

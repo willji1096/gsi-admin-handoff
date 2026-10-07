@@ -707,20 +707,20 @@ function renderBuilder() {
   $('#swapFlowCount').textContent = `${count}/${MAX_SWAPS}건`;
   if (limit) {
     guide.textContent = `교환 ${MAX_SWAPS}쌍 완료`;
-    setStep('flowTarget', 'is-done'); setStep('flowCounterpart', 'is-done'); setStep('flowApply', 'is-done');
-    $('#flowTargetName').textContent = `${MAX_SWAPS}건 완료`; $('#flowCounterpartName').textContent = `${MAX_SWAPS}건 완료`; $('#flowApplyState').textContent = '반영 완료';
+    setStep('flowTarget', 'is-done'); setStep('flowCounterpart', 'is-done');
+    $('#flowTargetName').textContent = `${MAX_SWAPS}건 완료`; $('#flowCounterpartName').textContent = `${MAX_SWAPS}건 완료`;
   } else if (autoApplyPending && counter) {
     guide.textContent = `${count + 1}번 교환안 반영 중 · ${target.name} ⇄ ${counter.name}`;
-    setStep('flowTarget', 'is-done'); setStep('flowCounterpart', 'is-done'); setStep('flowApply', 'is-active');
-    $('#flowTargetName').textContent = target.name; $('#flowCounterpartName').textContent = counter.name; $('#flowApplyState').textContent = '반영 중…';
+    setStep('flowTarget', 'is-done'); setStep('flowCounterpart', 'is-done');
+    $('#flowTargetName').textContent = target.name; $('#flowCounterpartName').textContent = counter.name;
   } else if (selectionPhase === 'target') {
     guide.textContent = `첫 채널을 선택하세요.`;
-    setStep('flowTarget', 'is-active'); setStep('flowCounterpart', ''); setStep('flowApply', '');
-    $('#flowTargetName').textContent = '선택하세요'; $('#flowCounterpartName').textContent = '대기'; $('#flowApplyState').textContent = '선택 즉시';
+    setStep('flowTarget', 'is-active'); setStep('flowCounterpart', '');
+    $('#flowTargetName').textContent = '선택하세요'; $('#flowCounterpartName').textContent = '대기';
   } else {
     guide.textContent = `맞바꿀 채널을 선택하면 즉시 반영됩니다.`;
-    setStep('flowTarget', 'is-done'); setStep('flowCounterpart', 'is-active'); setStep('flowApply', '');
-    $('#flowTargetName').textContent = target ? target.name : '선택됨'; $('#flowCounterpartName').textContent = '선택하세요'; $('#flowApplyState').textContent = '선택 즉시';
+    setStep('flowTarget', 'is-done'); setStep('flowCounterpart', 'is-active');
+    $('#flowTargetName').textContent = target ? target.name : '선택됨'; $('#flowCounterpartName').textContent = '선택하세요';
   }
 }
 function changeScenarioTarget(id) {
@@ -1339,7 +1339,9 @@ function renderTrend() {
   const channelLabel = c ? `${c.no}번 ${c.name}` : '전체 평균';
   $('#resultTrendChannel').innerHTML = '<option value="">전체 평균</option>' + resultRun.work.slice().sort((a,b) => ord(a.no)-ord(b.no)).map(x => `<option value="${esc(x.id)}">${x.no} · ${esc(x.name)}</option>`).join('');
   $('#resultTrendChannel').value = trend.channelId || '';
-  $('#resultTrendTitle').textContent = '이벤트 전/후 추이 비교';
+  // 시나리오별 제목 — scenarioMode 를 저장하기 전 이력은 변경안 종류로 판별
+  const trendMode = resultRun.scenarioMode || ((resultRun.ppScenarios || []).length ? 'pp' : (resultRun.swapScenarios || []).length ? 'swap' : resultRun.changes.some(x => x.type === 'new') ? 'new' : '');
+  $('#resultTrendTitle').textContent = `${{ pp: '채널 PP사 변경', swap: '채널교환', new: '신규 채널 입점' }[trendMode] || '이벤트'} 전/후 추이 비교`;
   $('#resultTrendDescription').textContent = c ? (isNew ? '신규 · 변경 전 데이터 없음' : `${c.no}번 기준: ${p.beforeName} → ${c.name}`) : '';
   $('#resultTrendDescription').hidden = !c;
   $('#resultTrendSummary').innerHTML = `<span><b>${esc(m.label)}</b> · 기준일 ${fmtDate(resultRun.baseDate)}</span><span>변경 전 <b>${isNew ? '—' : chartValue(baseV)}</b> → 변경 후 예상 <b>${chartValue(afterV)}</b></span>`;
@@ -1405,7 +1407,7 @@ function historySummary(entries, baseDate) {
 function recordHistory(type, entries, summary, status = '성공', run = null) {
   const details = entries.map(x => { const c = byId(x.id, work) || byId(x.id, base); return { no: x.no ?? (c ? c.no : ''), name: c ? c.name : '미확인 채널', genre: c ? c.g : '', before: x.before, after: x.after, changeType: x.type }; });
   
-  const item = { id: Date.now(), time: new Date().toISOString(), baseDate: $('#baseDate').value, type, summary, status, details, scenario: ops.map(o => ({ ...o })), run: run ? { baseline: run.baseline, sort: run.sort, page: run.page, range: run.range, time: run.time, baseDate: run.baseDate, changes: run.changes, swapScenarios: run.swapScenarios, ppScenarios: run.ppScenarios, work: run.work } : null };
+  const item = { id: Date.now(), time: new Date().toISOString(), baseDate: $('#baseDate').value, type, summary, status, details, scenario: ops.map(o => ({ ...o })), run: run ? { baseline: run.baseline, sort: run.sort, page: run.page, range: run.range, time: run.time, baseDate: run.baseDate, scenarioMode: run.scenarioMode, changes: run.changes, swapScenarios: run.swapScenarios, ppScenarios: run.ppScenarios, work: run.work } : null };
   history.unshift(item); saveHistory();
   return item;
 }
@@ -1460,11 +1462,10 @@ function renderEntryNotice() {
   const el = $('#entryNotice'), last = history.find(h => h.status === '성공' && h.run);
   el.hidden = !last;
   if (!last) { el.innerHTML = ''; return; }
-  el.className = 'notice notice--result';
+  // 26-10-07 KT 화면수정: 「최근 결과 보기」는 글 바로 옆, 실행 이력은 줄 오른쪽 끝 #historyBtn 하나로
   el.innerHTML = `<span class="notice__ic">${ic('check', 'i i--lg')}</span><div class="notice__txt"><b>최근 실행 결과</b><span>${fmtTime(last.time)} · ${esc(last.summary)}</span></div>
-    <div class="right"><button class="btn btn--sm btn--ghost" type="button" data-act="history">실행 이력</button><button class="btn btn--sm btn--primary" type="button" data-act="open">최근 결과 보기</button></div>`;
+    <button class="btn btn--sm btn--primary" type="button" data-act="open">최근 결과 보기</button>`;
   $('[data-act="open"]', el).addEventListener('click', () => openResult(last.id));
-  $('[data-act="history"]', el).addEventListener('click', openHistory);
 }
 function openHistory() { renderHistory(); $('#historyModal').hidden = false; }
 

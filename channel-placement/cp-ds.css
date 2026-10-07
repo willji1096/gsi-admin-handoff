@@ -421,7 +421,7 @@ button.tile:hover { border-color: var(--line-strong); box-shadow: 0 2px 8px rgba
 .flow { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
 .flow__head { display: flex; justify-content: space-between; padding: 8px 12px; background: var(--gray-100); font-size: var(--body-3); color: var(--ink-3); }
 .flow__head b { color: var(--brand); }
-.flow__steps { display: grid; grid-template-columns: repeat(3, 1fr); }
+.flow__steps { display: grid; grid-template-columns: repeat(2, 1fr); }
 .flow__step { display: flex; align-items: center; gap: 6px; padding: 10px 8px 10px 10px; min-width: 0; }
 .flow__step + .flow__step { border-left: 1px solid var(--line); }
 .flow__step i { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line-strong); font-size: 11px; font-weight: 700; font-style: normal; color: var(--ink-4); display: inline-flex; align-items: center; justify-content: center; flex: none; }
@@ -1102,12 +1102,15 @@ body { min-width: 1536px; background: #F1F3F9; }
 
 /* 1-④·2-④ 모든 카드 양식 — 번호 · 「종합지수」 라벨 + 값 / 채널명 크게 / 장르 / 지표 두 줄 */
 .tile { gap: 2px; padding: 12px; }
-.tile__top { align-items: center; }
+/* 26-10-07 종합지수: 회색 상자 라벨이 번호 옆에 떠 보여 상자를 걷고 번호와 글자 밑선(baseline)을 맞춤.
+   라벨은 표 머리 「종합지수」와 같은 점선 밑줄(설명 툴팁 표시) */
+.tile__top { align-items: baseline; }   /* (옛) center */
 .tile__no { font-size: 18px; line-height: 24px; }
-.tile__score { display: inline-flex; align-items: center; gap: 4px; color: var(--ink-3); font-size: 13px; }
-.tile__score b { font-weight: 600; color: var(--ink-2); }
-.tile__score-lbl { display: inline-flex; align-items: center; height: 18px; padding: 0 5px; border-radius: 4px;
-                   background: var(--gray-100, #F2F3F5); color: var(--ink-3); font-size: 10px; font-weight: 600; cursor: help; }
+.tile__score { display: inline-flex; align-items: baseline; gap: 4px; color: var(--ink-3); font-size: 13px; }
+.tile__score b { font-weight: 700; color: var(--ink-2); }   /* (옛) 600 */
+.tile__score-lbl { color: var(--ink-4); font-size: 11px; font-weight: 500; border-bottom: 1px dashed var(--ink-4); cursor: help; }
+/* (옛) .tile__score-lbl { display: inline-flex; align-items: center; height: 18px; padding: 0 5px; border-radius: 4px;
+                   background: var(--gray-100, #F2F3F5); color: var(--ink-3); font-size: 10px; font-weight: 600; } */
 .tile__name { margin-top: 4px; font-size: 15px; line-height: 20px; font-weight: 700; color: var(--ink); }
 .tile__genre { font-size: 12px; line-height: 16px; }
 .tile__audience { margin-top: 8px; padding-top: 8px; gap: 4px; }
@@ -1131,3 +1134,11 @@ body { min-width: 1536px; background: #F1F3F9; }
 [data-view-panel="results:table"] .table thead th:nth-child(8) { width: auto; }
 [data-view-panel="results:table"] .cm-table .table th:nth-child(8),
 [data-view-panel="results:table"] .cm-table .table td:nth-child(8) { padding-left: 32px; }
+
+
+/* ══ 26-10-07 KT 화면수정 — 최근 실행 결과·실행 이력을 「현재 / 변경 후」 머리 아래로 ═══ */
+.board-run { display: flex; align-items: center; gap: 16px; padding: 16px 32px; border-bottom: 1px solid var(--line); flex: none; }
+.board-run .notice { flex: 1; min-width: 0; padding: 0; background: none; box-shadow: none; border-radius: 0; }
+.board-run .notice[hidden] { display: none; }
+.board-run .notice__txt span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.board-run #historyBtn { margin-left: auto; flex: none; height: 36px; }   /* 「최근 결과 보기」(36)와 높이 맞춤 — GTV 채널현황에 있을 때도 36 */
